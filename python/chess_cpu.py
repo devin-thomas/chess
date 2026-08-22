@@ -995,7 +995,7 @@ def handle_request(request: Any, session: Optional[Game] = None) -> tuple[dict[s
         if op == "run":
             mode = parse_mode(request.get("mode"))
             seed = parse_seed(request.get("seed"))
-            max_plies = parse_nonnegative_int(request.get("max_plies", 200), "max_plies")
+            max_plies = parse_nonnegative_int(request.get("max_plies", 600), "max_plies")
             trace = request.get("trace", True)
             if not isinstance(trace, bool):
                 raise ProtocolError("E_INVALID_REQUEST", "trace must be boolean")

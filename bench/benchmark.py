@@ -1006,7 +1006,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fen", help="optional starting FEN passed to each protocol session")
     parser.add_argument("--runs", type=parse_positive_int, default=3)
     parser.add_argument("--warmups", type=parse_nonnegative_int, default=0)
-    parser.add_argument("--max-plies", type=parse_positive_int, default=200)
+    parser.add_argument("--max-plies", type=parse_positive_int, default=600)
     parser.add_argument("--samples", type=parse_positive_int, default=10_000)
     parser.add_argument("--seed", type=parse_seed, default=1)
     parser.add_argument(

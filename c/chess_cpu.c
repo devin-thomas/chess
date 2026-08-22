@@ -2126,7 +2126,7 @@ static void handle_run(const Request *request, Session *session)
         print_error("run", "E_INVALID_REQUEST", session);
         return;
     }
-    max_plies = request->has_max_plies ? request->max_plies : 200U;
+    max_plies = request->has_max_plies ? request->max_plies : 600U;
     if (request->has_trace) trace = request->trace;
     if (!session_init(&game, mode, request->fen, seed)) {
         print_error("run", "E_INVALID_FEN", session);

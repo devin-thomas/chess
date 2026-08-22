@@ -18,7 +18,7 @@ Every request has an `op` field. Supported operations are:
 | `run` | `op` | Start a fresh CPU-vs-CPU game. Optional `mode`, `fen`, `seed`, `max_plies`, and `trace`; `trace` defaults to `true` and controls whether `moves` is populated. |
 | `sample` | `op`, `samples` | Sample uniformly from the root position's legal moves without changing state. Optional `fen` and `seed`; the initial position is used when neither a session nor `fen` is supplied. |
 
-`new` defaults to `all-rules-enabled` and the orthodox initial position. `run` defaults to `all-rules-enabled`, seed `1`, and `max_plies` `200`. A run stops at a chess terminal result or at `max_plies`; the latter has termination `max_plies` and result `*`.
+`new` defaults to `all-rules-enabled` and the orthodox initial position. `run` defaults to `all-rules-enabled`, seed `1`, and `max_plies` `600`. A run stops at a chess terminal result or at `max_plies`; the latter has termination `max_plies` and result `*`.
 
 ## Success responses
 

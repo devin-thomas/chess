@@ -2134,7 +2134,7 @@ fn handle_request(request: JsonValue, session: &mut Option<Game>) -> JsonValue {
                 Err(error) => return error_response(json_string(op), error, session.as_ref()),
             };
             let max_plies = match object.get("max_plies") {
-                None => 200,
+                None => 600,
                 Some(value) => match parse_nonnegative(Some(value), "max_plies") {
                     Ok(value) => value,
                     Err(error) => return error_response(json_string(op), error, session.as_ref()),

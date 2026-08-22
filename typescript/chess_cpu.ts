@@ -1056,7 +1056,7 @@ function runRequest(request: RequestObject, current: Session | null): Record<str
   const mode = parseMode(request.mode, "all-rules-enabled");
   const position = request.fen === undefined ? parseFen(START_FEN) : parseFen(request.fen);
   const seed = parseSeed(request.seed);
-  const maxPlies = request.max_plies === undefined ? 200 : requireInteger(request.max_plies, "max_plies", 0);
+  const maxPlies = request.max_plies === undefined ? 600 : requireInteger(request.max_plies, "max_plies", 0);
   const trace = request.trace === undefined ? true : request.trace;
   if (typeof trace !== "boolean") {
     throw new ProtocolError("E_INVALID_REQUEST", "trace must be boolean", { field: "trace" });

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080d12" />
     <meta
       name="description"
       content="Run configurable CPU versus CPU chess simulations in your browser."
@@ -24,72 +25,47 @@
             <span id="status-message" role="status" aria-live="polite">Ready</span>
           </div>
 
-          <div class="mode-switch" role="tablist" aria-label="Run type">
-            <button id="mode-run" class="mode-button is-active" type="button" role="tab" aria-selected="true">
-              Single run
-            </button>
-            <button id="mode-batch" class="mode-button" type="button" role="tab" aria-selected="false">
-              Batch run
-            </button>
-          </div>
+          <div class="control-bar">
+            <div class="mode-switch" role="tablist" aria-label="Run type">
+              <button id="mode-run" class="mode-button is-active" type="button" role="tab" aria-selected="true">
+                Single run
+              </button>
+              <button id="mode-batch" class="mode-button" type="button" role="tab" aria-selected="false">
+                Batch run
+              </button>
+            </div>
 
-          <div class="control-grid">
-            <label>
-              Mode
-              <select id="chess-mode">
-                <option value="all-rules-enabled">All rules enabled</option>
-                <option value="basic">Basic</option>
-              </select>
-            </label>
-            <label>
-              Seed
-              <input id="seed" type="text" inputmode="numeric" value="1" autocomplete="off" />
-            </label>
-            <label>
-              Max plies
-              <input id="max-plies" type="number" min="0" max="5000" step="1" value="200" />
-            </label>
-            <label id="batch-count-field" hidden>
-              Runs
-              <input id="batch-count" type="number" min="1" max="1000" step="1" value="100" />
-            </label>
-          </div>
-
-          <div class="actions">
-            <button id="run-button" class="primary-button" type="button">Run</button>
-            <button id="stop-button" class="secondary-button" type="button" hidden>Stop</button>
-            <span id="progress-message" class="progress-message"></span>
-          </div>
-
-          <details id="advanced">
-            <summary>Advanced</summary>
-            <div class="advanced-grid">
-              <label class="wide-field">
-                FEN
-                <textarea
-                  id="fen"
-                  rows="2"
-                  spellcheck="false"
-                  placeholder="Starting position"
-                ></textarea>
+            <div class="control-grid">
+              <label>
+                Mode
+                <select id="chess-mode">
+                  <option value="all-rules-enabled">All rules enabled</option>
+                  <option value="basic">Basic</option>
+                </select>
               </label>
               <label>
-                Samples
-                <input id="sample-count" type="number" min="0" max="5000" step="1" value="1000" />
+                Seed
+                <input id="seed" type="text" inputmode="numeric" value="1" autocomplete="off" />
               </label>
-              <label class="check-field">
-                <input id="trace" type="checkbox" />
-                Include move trace
+              <label>
+                Max plies
+                <input id="max-plies" type="number" min="0" max="5000" step="1" value="600" />
               </label>
-              <label class="check-field">
-                <input id="terminal-toggle" type="checkbox" />
-                Terminal output
+              <label id="batch-count-field" hidden>
+                Runs
+                <input id="batch-count" type="number" min="1" max="1000" step="1" value="100" />
               </label>
             </div>
-          </details>
+
+            <div class="actions">
+              <button id="run-button" class="primary-button" type="button">Run</button>
+              <button id="stop-button" class="secondary-button" type="button" hidden>Stop</button>
+              <span id="progress-message" class="progress-message"></span>
+            </div>
+          </div>
         </section>
 
-        <aside class="summary-rail" aria-labelledby="summary-heading">
+        <aside class="summary-card" aria-labelledby="summary-heading">
           <div class="rail-top">
             <span class="rail-mark">01</span>
             <span>summary</span>
@@ -99,7 +75,7 @@
             <span id="summary-badge">waiting</span>
           </div>
           <div class="metric-list">
-            <div class="metric">
+            <div class="metric metric-primary">
               <span>Outcome</span>
               <strong id="metric-outcome">-</strong>
             </div>
@@ -159,11 +135,42 @@
               <strong id="batch-median">-</strong>
             </div>
             <div class="batch-stat">
-              <span>Completed</span>
+              <span>Runs</span>
               <strong id="batch-completed">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Capped</span>
+              <strong id="batch-capped">-</strong>
             </div>
           </div>
         </section>
+
+        <details id="advanced" class="advanced-card">
+          <summary>Advanced</summary>
+          <div class="advanced-grid">
+            <label class="wide-field">
+              FEN
+              <textarea
+                id="fen"
+                rows="2"
+                spellcheck="false"
+                placeholder="Starting position"
+              ></textarea>
+            </label>
+            <label>
+              Samples
+              <input id="sample-count" type="number" min="0" max="5000" step="1" value="1000" />
+            </label>
+            <label class="check-field">
+              <input id="trace" type="checkbox" />
+              Include move trace
+            </label>
+            <label class="check-field">
+              <input id="terminal-toggle" type="checkbox" />
+              Terminal output
+            </label>
+          </div>
+        </details>
 
         <details id="terminal-details" class="terminal-card" hidden>
           <summary>Terminal output</summary>

@@ -4,6 +4,8 @@ type JsonRecord = Record<string, unknown>;
 type OperationMode = "single" | "batch";
 type ChessMode = "basic" | "all-rules-enabled";
 
+const DEFAULT_MAX_PLIES = 600;
+
 const $ = <T extends Element>(selector: string): T => {
   const element = document.querySelector(selector);
   if (element === null) throw new Error("Missing UI element: " + selector);
@@ -43,6 +45,7 @@ const elements = {
   batchMean: $<HTMLElement>("#batch-mean"),
   batchMedian: $<HTMLElement>("#batch-median"),
   batchCompleted: $<HTMLElement>("#batch-completed"),
+  batchCapped: $<HTMLElement>("#batch-capped"),
   terminalDetails: $<HTMLDetailsElement>("#terminal-details"),
   terminalMeta: $<HTMLElement>("#terminal-meta"),
   terminalOutput: $<HTMLPreElement>("#terminal-output"),
@@ -180,6 +183,7 @@ function resetBatchStats(): void {
   setMetric(elements.batchMean, "-");
   setMetric(elements.batchMedian, "-");
   setMetric(elements.batchCompleted, "-");
+  setMetric(elements.batchCapped, "-");
 }
 
 function buildRunRequest(seed: string): JsonRecord {
@@ -187,7 +191,7 @@ function buildRunRequest(seed: string): JsonRecord {
     op: "run",
     mode: elements.chessMode.value as ChessMode,
     seed,
-    max_plies: clampField(elements.maxPlies, 200, 0, 5000),
+    max_plies: clampField(elements.maxPlies, DEFAULT_MAX_PLIES, 0, 5000),
     trace: elements.trace.checked,
   };
   const fen = elements.fen.value.trim();
@@ -299,12 +303,14 @@ function renderBatch(
   let white = 0;
   let black = 0;
   let draws = 0;
+  let capped = 0;
   const plies: number[] = [];
   for (const result of results) {
     const outcome = stringValue(result.result, "*");
     if (outcome === "1-0") white += 1;
     else if (outcome === "0-1") black += 1;
     else if (outcome === "1/2-1/2") draws += 1;
+    else if (outcome === "*") capped += 1;
     plies.push(integerValue(result.plies, 0));
   }
   const total = plies.reduce((sum, value) => sum + value, 0);
@@ -325,15 +331,20 @@ function renderBatch(
   );
   setMetric(
     elements.metricTermination,
-    wasCancelled ? "stopped at " + formatInteger(results.length) : "batch finished",
+    wasCancelled
+      ? "stopped at " + formatInteger(results.length)
+      : capped === 0
+        ? "all runs terminal"
+        : formatInteger(capped) + " capped",
   );
-  elements.batchMeta.textContent = formatInteger(results.length) + " completed";
+  elements.batchMeta.textContent = formatInteger(results.length) + " runs";
   setMetric(elements.batchWhite, formatInteger(white));
   setMetric(elements.batchDraws, formatInteger(draws));
   setMetric(elements.batchBlack, formatInteger(black));
   setMetric(elements.batchMean, sorted.length === 0 ? "-" : formatDecimal(total / sorted.length) + " plies");
   setMetric(elements.batchMedian, sorted.length === 0 ? "-" : formatDecimal(median) + " plies");
   setMetric(elements.batchCompleted, formatInteger(results.length));
+  setMetric(elements.batchCapped, formatInteger(capped));
 }
 
 function yieldToBrowser(): Promise<void> {
