@@ -204,7 +204,7 @@ def semantic_response(response: Any) -> Any:
         result["depth"] = response.get("depth")
         result["nodes"] = response.get("nodes")
     elif operation == "sample":
-        for field in ("seed", "moves", "counts", "samples"):
+        for field in ("seed", "moves", "counts", "sequence", "samples"):
             if field in response:
                 result[field] = semantic_value(response[field])
     elif operation == "run":

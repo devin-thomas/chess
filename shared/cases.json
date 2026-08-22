@@ -285,6 +285,23 @@
         {"response": 13, "path": "/nodes", "equals": 2079},
         {"response": 14, "path": "/nodes", "equals": 89890}
       ]
+    },
+    {
+      "id": "root-operations-and-fen-validation",
+      "description": "Read-only root operations default to the initial position, and malformed en-passant metadata is rejected consistently.",
+      "requests": [
+        {"op": "perft", "depth": 2},
+        {"op": "sample", "samples": 8, "seed": "7"},
+        {"op": "new", "fen": "4k3/8/8/8/8/8/8/4K3 w - d6 0 1"}
+      ],
+      "assertions": [
+        {"response": 0, "path": "/nodes", "equals": 400},
+        {"response": 1, "path": "/samples", "equals": 8},
+        {"response": 1, "path": "/moves", "length": 20},
+        {"response": 1, "path": "/sequence", "length": 8},
+        {"response": 2, "path": "/ok", "equals": false},
+        {"response": 2, "path": "/error/code", "equals": "E_INVALID_FEN"}
+      ]
     }
   ]
 }

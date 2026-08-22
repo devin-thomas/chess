@@ -1370,6 +1370,13 @@ static bool parse_fen(const char *fen, Position *position)
                 free(copy);
                 return false;
             }
+            {
+                int origin = position->en_passant + (position->side == WHITE ? 8 : -8);
+                if (origin < 0 || origin >= BOARD_SIZE || position->board[origin] != '.') {
+                    free(copy);
+                    return false;
+                }
+            }
         }
     }
     if (!parse_decimal_u64(fields[4], &position->halfmove, false) ||
@@ -2016,6 +2023,8 @@ static void handle_play(const Request *request, Session *session)
         return;
     }
     print_success_prefix("play");
+    fputs(",\"move\":", stdout);
+    json_string(request->move);
     fputs(",\"state\":", stdout);
     write_state_object(session);
     fputs("}\n", stdout);

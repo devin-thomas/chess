@@ -253,8 +253,16 @@ def parse_fen(value: str) -> Position:
             en_passant_target = square_index(ep_field)
         except ValueError:
             raise ProtocolError("E_INVALID_FEN", "invalid FEN en-passant square") from None
-        if ep_field[1] not in "36":
-            raise ProtocolError("E_INVALID_FEN", "FEN en-passant square must be on rank 3 or 6")
+        expected_rank = 5 if side_field == "w" else 2
+        if en_passant_target // 8 != expected_rank or board[en_passant_target] is not None:
+            raise ProtocolError("E_INVALID_FEN", "FEN en-passant square is incompatible with side to move")
+        pawn_square = en_passant_target - 8 if side_field == "w" else en_passant_target + 8
+        pawn = board[pawn_square]
+        if pawn is None or pawn.color == ("white" if side_field == "w" else "black") or pawn.kind != "p":
+            raise ProtocolError("E_INVALID_FEN", "FEN en-passant square has no opposing pawn")
+        pawn_origin = en_passant_target + 8 if side_field == "w" else en_passant_target - 8
+        if board[pawn_origin] is not None:
+            raise ProtocolError("E_INVALID_FEN", "FEN en-passant square has an occupied pawn origin")
 
     try:
         halfmove_clock = int(halfmove_field, 10)
