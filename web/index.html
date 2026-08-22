@@ -45,7 +45,7 @@
               </label>
               <label>
                 Seed
-                <input id="seed" type="text" inputmode="numeric" value="1" autocomplete="off" />
+                <input id="seed" type="text" inputmode="numeric" value="" autocomplete="off" />
               </label>
               <label>
                 Max plies
@@ -98,16 +98,6 @@
           </div>
         </aside>
 
-        <section class="distribution-card" aria-labelledby="distribution-heading">
-          <div class="section-head">
-            <h2 id="distribution-heading">Move distribution</h2>
-            <span id="distribution-meta">sampled from the current position</span>
-          </div>
-          <ul id="distribution-list" class="distribution-list">
-            <li class="empty-state">Run a simulation to see the first-move distribution.</li>
-          </ul>
-        </section>
-
         <section class="batch-card" aria-labelledby="batch-heading">
           <div class="section-head">
             <h2 id="batch-heading">Batch detail</h2>
@@ -143,6 +133,16 @@
               <strong id="batch-capped">-</strong>
             </div>
           </div>
+        </section>
+
+        <section class="distribution-card" aria-labelledby="distribution-heading">
+          <div class="section-head">
+            <h2 id="distribution-heading">Move distribution</h2>
+            <span id="distribution-meta">sampled from the current position</span>
+          </div>
+          <ul id="distribution-list" class="distribution-list">
+            <li class="empty-state">Run a simulation to see the first-move distribution.</li>
+          </ul>
         </section>
 
         <details id="advanced" class="advanced-card">

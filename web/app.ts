@@ -107,12 +107,23 @@ function clampField(input: HTMLInputElement, fallback: number, minimum: number, 
   return clamped;
 }
 
+function randomSeed(): string {
+  const words = new Uint32Array(2);
+  crypto.getRandomValues(words);
+  return ((BigInt(words[1]) << 32n) | BigInt(words[0])).toString(10);
+}
+
 function normalizeSeed(value: string): string {
   try {
-    return (BigInt(value.trim() || "1") & u64Mask).toString(10);
+    const trimmed = value.trim();
+    const seed = trimmed.length === 0 ? randomSeed() : trimmed;
+    const normalized = (BigInt(seed) & u64Mask).toString(10);
+    elements.seed.value = normalized;
+    return normalized;
   } catch {
-    elements.seed.value = "1";
-    return "1";
+    const seed = randomSeed();
+    elements.seed.value = seed;
+    return seed;
   }
 }
 
@@ -457,4 +468,5 @@ elements.advanced.addEventListener("toggle", () => {
   if (elements.advanced.open) elements.fen.focus();
 });
 
+elements.seed.value = randomSeed();
 resetBatchStats();
