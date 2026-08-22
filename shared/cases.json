@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "protocol": "docs/PROTOCOL.md",
+  "description": "Language-independent conformance cases for the public chess JSONL protocol.",
+  "cases": [
+    {
+      "id": "initial-legal-moves-and-perft",
+      "description": "The orthodox initial position has twenty legal moves and the standard first perft values.",
+      "requests": [
+        {"op": "new", "mode": "basic"},
+        {"op": "legal_moves"},
+        {"op": "perft", "depth": 1},
+        {"op": "perft", "depth": 2},
+        {"op": "perft", "depth": 3}
+      ],
+      "assertions": [
+        {"response": 0, "path": "/ok", "equals": true},
+        {"response": 0, "path": "/state/status", "equals": "active"},
+        {"response": 0, "path": "/state/side_to_move", "equals": "white"},
+        {"response": 1, "path": "/ok", "equals": true},
+        {"response": 1, "path": "/moves", "length": 20},
+        {"response": 1, "path": "/moves", "contains": "e2e4"},
+        {"response": 1, "path": "/moves", "contains": "b1c3"},
+        {"response": 1, "path": "/moves", "not_contains": "e1e2"},
+        {"response": 2, "path": "/nodes", "equals": 20},
+        {"response": 3, "path": "/nodes", "equals": 400},
+        {"response": 4, "path": "/nodes", "equals": 8902}
+      ]
+    },
+    {
+      "id": "castling-and-through-check",
+      "description": "Both castling directions move the rook atomically, remove the moving side's rights, and reject transit through attack.",
+      "requests": [
+        {"op": "new", "mode": "basic", "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "e1g1"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"},
+        {"op": "play", "move": "e1c1"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"},
+        {"op": "play", "move": "e8c8"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "r3kr1r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"},
+        {"op": "play", "move": "e1g1"},
+        {"op": "state"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/moves", "contains": "e1g1"},
+        {"response": 1, "path": "/moves", "contains": "e1c1"},
+        {"response": 2, "path": "/ok", "equals": true},
+        {"response": 3, "path": "/state/board/6", "equals": {"color": "white", "type": "king"}},
+        {"response": 3, "path": "/state/board/5", "equals": {"color": "white", "type": "rook"}},
+        {"response": 3, "path": "/state/castling_rights", "equals": "kq"},
+        {"response": 6, "path": "/state/board/2", "equals": {"color": "white", "type": "king"}},
+        {"response": 6, "path": "/state/board/3", "equals": {"color": "white", "type": "rook"}},
+        {"response": 6, "path": "/state/castling_rights", "equals": "kq"},
+        {"response": 9, "path": "/state/board/58", "equals": {"color": "black", "type": "king"}},
+        {"response": 9, "path": "/state/board/59", "equals": {"color": "black", "type": "rook"}},
+        {"response": 9, "path": "/state/castling_rights", "equals": "KQ"},
+        {"response": 11, "path": "/ok", "equals": false},
+        {"response": 11, "path": "/error/code", "equals": "E_CASTLE_THROUGH_CHECK"},
+        {"response": 11, "path": "/state", "same_as": {"response": 10, "path": "/state"}}
+      ]
+    },
+    {
+      "id": "en-passant-and-self-check",
+      "description": "A valid en-passant capture removes the bypassed pawn, while an en-passant capture that exposes the king is illegal; a missing target is rejected.",
+      "requests": [
+        {"op": "new", "mode": "basic", "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "e5d6"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "k3r3/8/8/3pP3/8/8/8/4K3 w - d6 0 1"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "e5d6"},
+        {"op": "new", "mode": "basic", "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - - 0 2"},
+        {"op": "play", "move": "e5d6"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/moves", "contains": "e5d6"},
+        {"response": 2, "path": "/ok", "equals": true},
+        {"response": 3, "path": "/state/board/43", "equals": {"color": "white", "type": "pawn"}},
+        {"response": 3, "path": "/state/board/35", "equals": null},
+        {"response": 3, "path": "/state/halfmove_clock", "equals": 0},
+        {"response": 5, "path": "/moves", "not_contains": "e5d6"},
+        {"response": 6, "path": "/ok", "equals": false},
+        {"response": 6, "path": "/error/code", "equals": "E_SELF_CHECK"},
+        {"response": 6, "path": "/state", "same_as": {"response": 4, "path": "/state"}},
+        {"response": 8, "path": "/ok", "equals": false},
+        {"response": 8, "path": "/state", "same_as": {"response": 7, "path": "/state"}}
+      ]
+    },
+    {
+      "id": "promotion-and-underpromotion",
+      "description": "Promotion is mandatory, offers all four choices, and also works on a capture square.",
+      "requests": [
+        {"op": "new", "mode": "basic", "fen": "2k5/P7/8/8/8/8/8/4K3 w - - 0 1"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "a7a8"},
+        {"op": "state"},
+        {"op": "play", "move": "a7a8q"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "2k5/P7/8/8/8/8/8/4K3 w - - 0 1"},
+        {"op": "play", "move": "a7a8n"},
+        {"op": "state"},
+        {"op": "new", "mode": "basic", "fen": "1r2k3/P7/8/8/8/8/8/4K3 w - - 37 1"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "a7b8n"},
+        {"op": "state"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/moves", "contains": "a7a8q"},
+        {"response": 1, "path": "/moves", "contains": "a7a8r"},
+        {"response": 1, "path": "/moves", "contains": "a7a8b"},
+        {"response": 1, "path": "/moves", "contains": "a7a8n"},
+        {"response": 2, "path": "/ok", "equals": false},
+        {"response": 2, "path": "/error/code", "equals": "E_INVALID_PROMOTION"},
+        {"response": 3, "path": "/state", "same_as": {"response": 0, "path": "/state"}},
+        {"response": 5, "path": "/state/board/56", "equals": {"color": "white", "type": "queen"}},
+        {"response": 5, "path": "/state/check", "equals": "black"},
+        {"response": 8, "path": "/state/board/56", "equals": {"color": "white", "type": "knight"}},
+        {"response": 8, "path": "/state/check", "equals": null},
+        {"response": 10, "path": "/moves", "contains": "a7b8q"},
+        {"response": 10, "path": "/moves", "contains": "a7b8r"},
+        {"response": 10, "path": "/moves", "contains": "a7b8b"},
+        {"response": 10, "path": "/moves", "contains": "a7b8n"},
+        {"response": 12, "path": "/state/board/57", "equals": {"color": "white", "type": "knight"}},
+        {"response": 12, "path": "/state/halfmove_clock", "equals": 0}
+      ]
+    },
+    {
+      "id": "pinned-piece-self-check",
+      "description": "A geometrically valid move by a pinned piece is excluded because it exposes its own king.",
+      "requests": [
+        {"op": "new", "mode": "basic", "fen": "4r1k1/8/8/8/8/8/4R3/4K3 w - - 0 1"},
+        {"op": "legal_moves"},
+        {"op": "play", "move": "e2a2"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/moves", "not_contains": "e2a2"},
+        {"response": 2, "path": "/ok", "equals": false},
+        {"response": 2, "path": "/error/code", "equals": "E_SELF_CHECK"},
+        {"response": 2, "path": "/state", "same_as": {"response": 0, "path": "/state"}}
+      ]
+    },
+    {
+      "id": "checkmate-and-stalemate",
+      "description": "Terminal checkmate and stalemate are distinguished, and commands after a terminal result are rejected atomically.",
+      "requests": [
+        {"op": "new", "mode": "basic", "fen": "7k/6Q1/6K1/8/8/8/8/8 b - - 0 1"},
+        {"op": "play", "move": "h8g8"},
+        {"op": "new", "mode": "basic", "fen": "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1"}
+      ],
+      "assertions": [
+        {"response": 0, "path": "/state/status", "equals": "terminal"},
+        {"response": 0, "path": "/state/check", "equals": "black"},
+        {"response": 0, "path": "/state/outcome/reason", "equals": "checkmate"},
+        {"response": 0, "path": "/state/outcome/result", "equals": "1-0"},
+        {"response": 0, "path": "/state/outcome/winner", "equals": "white"},
+        {"response": 1, "path": "/ok", "equals": false},
+        {"response": 1, "path": "/error/code", "equals": "E_GAME_OVER"},
+        {"response": 1, "path": "/state", "same_as": {"response": 0, "path": "/state"}},
+        {"response": 2, "path": "/state/status", "equals": "terminal"},
+        {"response": 2, "path": "/state/check", "equals": null},
+        {"response": 2, "path": "/state/outcome/reason", "equals": "stalemate"},
+        {"response": 2, "path": "/state/outcome/result", "equals": "1/2-1/2"}
+      ]
+    },
+    {
+      "id": "all-rules-repetition",
+      "description": "The initial occurrence counts, the third occurrence becomes claimable, and the fifth occurrence is automatic.",
+      "requests": [
+        {"op": "new", "mode": "all-rules-enabled", "fen": "4k3/8/8/8/8/8/R3K2N/8 w - - 0 1"},
+        {"op": "play", "move": "h2f3"},
+        {"op": "play", "move": "e8d8"},
+        {"op": "play", "move": "f3h2"},
+        {"op": "play", "move": "d8e8"},
+        {"op": "play", "move": "h2f3"},
+        {"op": "play", "move": "e8d8"},
+        {"op": "play", "move": "f3h2"},
+        {"op": "play", "move": "d8e8"},
+        {"op": "play", "move": "h2f3"},
+        {"op": "play", "move": "e8d8"},
+        {"op": "play", "move": "f3h2"},
+        {"op": "play", "move": "d8e8"},
+        {"op": "play", "move": "h2f3"},
+        {"op": "play", "move": "e8d8"},
+        {"op": "play", "move": "f3h2"},
+        {"op": "play", "move": "d8e8"}
+      ],
+      "assertions": [
+        {"response": 8, "path": "/state/status", "equals": "active"},
+        {"response": 8, "path": "/state/claimable_draws", "length": 1},
+        {"response": 16, "path": "/state/status", "equals": "terminal"},
+        {"response": 16, "path": "/state/outcome/reason", "equals": "fivefold_repetition"},
+        {"response": 16, "path": "/state/outcome/result", "equals": "1/2-1/2"}
+      ]
+    },
+    {
+      "id": "all-rules-fifty-and-seventy-five-move",
+      "description": "The 50-move threshold is claimable but not automatic, while the 75-move threshold is automatic; checkmate wins at the same threshold.",
+      "requests": [
+        {"op": "new", "mode": "all-rules-enabled", "fen": "4k3/8/8/8/8/8/R7/K7 w - - 99 1"},
+        {"op": "play", "move": "a2a3"},
+        {"op": "new", "mode": "basic", "fen": "4k3/8/8/8/8/8/R7/K7 w - - 99 1"},
+        {"op": "play", "move": "a2a3"},
+        {"op": "new", "mode": "all-rules-enabled", "fen": "4k3/8/8/8/8/8/R7/K7 w - - 149 1"},
+        {"op": "play", "move": "a2a3"},
+        {"op": "new", "mode": "all-rules-enabled", "fen": "7k/8/5KQ1/8/8/8/8/8 w - - 149 1"},
+        {"op": "play", "move": "g6g7"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/state/status", "equals": "active"},
+        {"response": 1, "path": "/state/halfmove_clock", "equals": 100},
+        {"response": 1, "path": "/state/claimable_draws", "length": 1},
+        {"response": 3, "path": "/state/status", "equals": "active"},
+        {"response": 3, "path": "/state/halfmove_clock", "equals": 100},
+        {"response": 3, "path": "/state/claimable_draws", "length": 0},
+        {"response": 5, "path": "/state/status", "equals": "terminal"},
+        {"response": 5, "path": "/state/halfmove_clock", "equals": 150},
+        {"response": 5, "path": "/state/outcome/reason", "equals": "seventy_five_move"},
+        {"response": 5, "path": "/state/outcome/result", "equals": "1/2-1/2"},
+        {"response": 7, "path": "/state/status", "equals": "terminal"},
+        {"response": 7, "path": "/state/outcome/reason", "equals": "checkmate"},
+        {"response": 7, "path": "/state/outcome/result", "equals": "1-0"}
+      ]
+    },
+    {
+      "id": "deterministic-run-and-sample",
+      "description": "The public CPU run and root sampler are repeatable for a fixed seed and must agree across engines.",
+      "requests": [
+        {"op": "new", "mode": "all-rules-enabled", "seed": "42"},
+        {"op": "sample", "samples": 64, "seed": "42"},
+        {"op": "state"},
+        {"op": "run", "mode": "all-rules-enabled", "seed": "42", "max_plies": 24},
+        {"op": "run", "mode": "all-rules-enabled", "seed": "42", "max_plies": 24},
+        {"op": "sample", "samples": 64, "seed": "42"}
+      ],
+      "assertions": [
+        {"response": 1, "path": "/ok", "equals": true},
+        {"response": 1, "path": "/seed", "equals": "42"},
+        {"response": 1, "path": "/samples", "equals": 64},
+        {"response": 1, "path": "/moves", "length": 20},
+        {"response": 2, "path": "/state", "same_as": {"response": 0, "path": "/state"}},
+        {"response": 3, "path": "/seed", "equals": "42"},
+        {"response": 4, "path": "", "same_as": {"response": 3, "path": ""}},
+        {"response": 5, "path": "", "same_as": {"response": 1, "path": ""}}
+      ]
+    },
+    {
+      "id": "standard-perft-stress-positions",
+      "description": "Canonical perft positions exercise castling, en passant, pins, checks, and promotions beyond the initial position.",
+      "requests": [
+        {"op": "perft", "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", "depth": 1},
+        {"op": "perft", "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", "depth": 2},
+        {"op": "perft", "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", "depth": 3},
+        {"op": "perft", "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", "depth": 1},
+        {"op": "perft", "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", "depth": 2},
+        {"op": "perft", "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", "depth": 3},
+        {"op": "perft", "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1", "depth": 1},
+        {"op": "perft", "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1", "depth": 2},
+        {"op": "perft", "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1", "depth": 3},
+        {"op": "perft", "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", "depth": 1},
+        {"op": "perft", "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", "depth": 2},
+        {"op": "perft", "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8", "depth": 3},
+        {"op": "perft", "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", "depth": 1},
+        {"op": "perft", "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", "depth": 2},
+        {"op": "perft", "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", "depth": 3}
+      ],
+      "assertions": [
+        {"response": 0, "path": "/nodes", "equals": 48},
+        {"response": 1, "path": "/nodes", "equals": 2039},
+        {"response": 2, "path": "/nodes", "equals": 97862},
+        {"response": 3, "path": "/nodes", "equals": 14},
+        {"response": 4, "path": "/nodes", "equals": 191},
+        {"response": 5, "path": "/nodes", "equals": 2812},
+        {"response": 6, "path": "/nodes", "equals": 6},
+        {"response": 7, "path": "/nodes", "equals": 264},
+        {"response": 8, "path": "/nodes", "equals": 9467},
+        {"response": 9, "path": "/nodes", "equals": 44},
+        {"response": 10, "path": "/nodes", "equals": 1486},
+        {"response": 11, "path": "/nodes", "equals": 62379},
+        {"response": 12, "path": "/nodes", "equals": 46},
+        {"response": 13, "path": "/nodes", "equals": 2079},
+        {"response": 14, "path": "/nodes", "equals": 89890}
+      ]
+    }
+  ]
+}
