@@ -7,29 +7,29 @@
       name="description"
       content="Run configurable CPU versus CPU chess simulations in your browser."
     />
-    <title>Chess sim</title>
+    <title>Chess simulation</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="shell">
       <header class="topbar">
-        <h1>chess sim</h1>
+        <h1>CPU simulation</h1>
         <span class="engine-state"><span class="state-dot"></span>local engine</span>
       </header>
 
       <main class="layout">
         <section class="control-card" aria-labelledby="simulation-heading">
           <div class="section-head">
-            <h2 id="simulation-heading">Run</h2>
+            <h2 id="simulation-heading">Simulation</h2>
             <span id="status-message" role="status" aria-live="polite">Ready</span>
           </div>
 
           <div class="mode-switch" role="tablist" aria-label="Run type">
             <button id="mode-run" class="mode-button is-active" type="button" role="tab" aria-selected="true">
-              Individual
+              Single run
             </button>
             <button id="mode-batch" class="mode-button" type="button" role="tab" aria-selected="false">
-              Batch
+              Batch run
             </button>
           </div>
 
@@ -50,7 +50,7 @@
               <input id="max-plies" type="number" min="0" max="5000" step="1" value="200" />
             </label>
             <label id="batch-count-field" hidden>
-              Batch count
+              Runs
               <input id="batch-count" type="number" min="1" max="1000" step="1" value="100" />
             </label>
           </div>
@@ -58,7 +58,6 @@
           <div class="actions">
             <button id="run-button" class="primary-button" type="button">Run</button>
             <button id="stop-button" class="secondary-button" type="button" hidden>Stop</button>
-            <progress id="batch-progress" value="0" max="1" aria-label="Batch progress" hidden></progress>
             <span id="progress-message" class="progress-message"></span>
           </div>
 
@@ -75,16 +74,12 @@
                 ></textarea>
               </label>
               <label>
-                Sample count
+                Samples
                 <input id="sample-count" type="number" min="0" max="5000" step="1" value="1000" />
               </label>
               <label class="check-field">
-                <input id="extra-statistics" type="checkbox" checked />
-                Extra statistics
-              </label>
-              <label class="check-field">
                 <input id="trace" type="checkbox" />
-                Trace moves
+                Include move trace
               </label>
               <label class="check-field">
                 <input id="terminal-toggle" type="checkbox" />
@@ -96,7 +91,8 @@
 
         <aside class="summary-rail" aria-labelledby="summary-heading">
           <div class="rail-top">
-            <span>Results</span>
+            <span class="rail-mark">01</span>
+            <span>summary</span>
           </div>
           <div class="summary-title">
             <h2 id="summary-heading">Ready</h2>
@@ -128,7 +124,7 @@
 
         <section class="distribution-card" aria-labelledby="distribution-heading">
           <div class="section-head">
-            <h2 id="distribution-heading">Root moves</h2>
+            <h2 id="distribution-heading">Move distribution</h2>
             <span id="distribution-meta">sampled from the current position</span>
           </div>
           <ul id="distribution-list" class="distribution-list">
@@ -138,7 +134,7 @@
 
         <section class="batch-card" aria-labelledby="batch-heading">
           <div class="section-head">
-            <h2 id="batch-heading">Batch</h2>
+            <h2 id="batch-heading">Batch detail</h2>
             <span id="batch-meta">single-run mode</span>
           </div>
           <div class="batch-stat-grid">
@@ -163,17 +159,16 @@
               <strong id="batch-median">-</strong>
             </div>
             <div class="batch-stat">
-              <span>Capped</span>
-              <strong id="batch-capped">-</strong>
+              <span>Completed</span>
+              <strong id="batch-completed">-</strong>
             </div>
           </div>
         </section>
 
         <details id="terminal-details" class="terminal-card" hidden>
-          <summary>Terminal</summary>
+          <summary>Terminal output</summary>
           <div class="terminal-toolbar">
             <span id="terminal-meta">No output yet</span>
-            <button id="expand-terminal" class="text-button" type="button">Expand</button>
             <button id="clear-terminal" class="text-button" type="button">Clear</button>
           </div>
           <pre id="terminal-output" tabindex="0"></pre>

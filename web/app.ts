@@ -25,10 +25,8 @@ const elements = {
   advanced: $<HTMLDetailsElement>("#advanced"),
   fen: $<HTMLTextAreaElement>("#fen"),
   sampleCount: $<HTMLInputElement>("#sample-count"),
-  extraStatistics: $<HTMLInputElement>("#extra-statistics"),
   trace: $<HTMLInputElement>("#trace"),
   terminalToggle: $<HTMLInputElement>("#terminal-toggle"),
-  batchProgress: $<HTMLProgressElement>("#batch-progress"),
   summaryHeading: $<HTMLElement>("#summary-heading"),
   summaryBadge: $<HTMLElement>("#summary-badge"),
   metricOutcome: $<HTMLElement>("#metric-outcome"),
@@ -44,11 +42,10 @@ const elements = {
   batchBlack: $<HTMLElement>("#batch-black"),
   batchMean: $<HTMLElement>("#batch-mean"),
   batchMedian: $<HTMLElement>("#batch-median"),
-  batchCapped: $<HTMLElement>("#batch-capped"),
+  batchCompleted: $<HTMLElement>("#batch-completed"),
   terminalDetails: $<HTMLDetailsElement>("#terminal-details"),
   terminalMeta: $<HTMLElement>("#terminal-meta"),
   terminalOutput: $<HTMLPreElement>("#terminal-output"),
-  expandTerminal: $<HTMLButtonElement>("#expand-terminal"),
   clearTerminal: $<HTMLButtonElement>("#clear-terminal"),
 };
 
@@ -64,7 +61,6 @@ let operationMode: OperationMode = "single";
 let busy = false;
 let cancelled = false;
 let terminalLines: string[] = [];
-const simulator = createSimulator();
 
 function record(value: unknown): JsonRecord {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -95,7 +91,7 @@ function responseError(response: JsonRecord): string {
 }
 
 function requestEngine(payload: JsonRecord): JsonRecord {
-  const response = record(simulator.request(payload));
+  const response = record(createSimulator().request(payload));
   if (response.ok !== true) throw new Error(responseError(response));
   return response;
 }
@@ -158,7 +154,6 @@ function setBusy(nextBusy: boolean): void {
   elements.batchCount.disabled = nextBusy;
   elements.fen.disabled = nextBusy;
   elements.sampleCount.disabled = nextBusy;
-  elements.extraStatistics.disabled = nextBusy;
   elements.trace.disabled = nextBusy;
   elements.terminalToggle.disabled = nextBusy;
   elements.stopButton.hidden = !nextBusy;
@@ -184,7 +179,7 @@ function resetBatchStats(): void {
   setMetric(elements.batchBlack, "-");
   setMetric(elements.batchMean, "-");
   setMetric(elements.batchMedian, "-");
-  setMetric(elements.batchCapped, "-");
+  setMetric(elements.batchCompleted, "-");
 }
 
 function buildRunRequest(seed: string): JsonRecord {
