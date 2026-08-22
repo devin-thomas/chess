@@ -1,24 +1,36 @@
-# CPU-vs-CPU Chess in C, Python, TypeScript, and Rust
+# Chess Rules and Presentation Specification
 
-This repository contains four independent implementations of the same orthodox chess CLI:
+This repository is the language-agnostic source of truth for a deterministic chess rules core and the machine-facing presentation seams needed by later ports. The first presentation targets are a PlayStation 1 renderer and a Sega Dreamcast renderer built with KallistiOS.
 
-- `python/chess_cpu.py` - reference implementation with no third-party dependencies.
+The rules model must remain independent of meshes, textures, camera behavior, SDK headers, and console memory layouts. Console renderers consume stable state and events, then select platform-specific asset derivatives.
+
+## Documents
+
+- [`SPEC.md`](./SPEC.md) — preserved authoritative orthodox-chess rules and command/state contract.
+- [`CONTEXT.md`](./CONTEXT.md) — project vocabulary and boundaries.
+- [`spec/3d-presentation-requirements.md`](./spec/3d-presentation-requirements.md) — normative machine-facing requirements for rendering chess in 3D.
+- [`docs/research/3d-modeling-and-platform-integration.md`](./docs/research/3d-modeling-and-platform-integration.md) — sourced research on PS1/Dreamcast constraints, asset sources, and the production pipeline.
+
+`SPEC.md` remains the rules source. The presentation specification consumes a read-only projection of it and does not add spatial chess rules or modify legality. The research document is deliberately separate from both: hardware facts and recommendations can change without silently changing chess rules.
+
+## Executable conformance suite
+
+The same rules contract is implemented as four independent CPU-vs-CPU command-line engines:
+
+- `python/chess_cpu.py` - dependency-free Python reference implementation.
 - `c/chess_cpu.c` - C11 implementation.
-- `typescript/chess_cpu.ts` - TypeScript source executed directly by Node 24's type stripping.
-- `rust/chess_cpu.rs` - standalone Rust 2021 implementation with no external crates.
+- `typescript/chess_cpu.ts` - TypeScript executed directly by Node 24's type stripping.
+- `rust/chess_cpu.rs` - dependency-free Rust 2021 implementation.
 
-All four expose the JSON Lines protocol in [`docs/PROTOCOL.md`](docs/PROTOCOL.md). The engines use the same legal-move semantics and the same SplitMix64 generator so deterministic runs can be compared byte-for-byte at the move-trace level.
+All four expose the JSON Lines protocol documented in [`docs/PROTOCOL.md`](./docs/PROTOCOL.md). The shared corpus covers both `basic` and `all-rules-enabled` modes, legal movement, king safety, castling, en passant, promotion, terminal states, repetition, 50/75-move rules, FEN validation, deterministic runs, and sampling.
 
-## Build and test
-
-The default `Makefile` requires Python 3, a C11 compiler, Node 24 or newer, and `rustc` with Rust 2021 support.
+The default build requires Python 3, a C11 compiler, Node 24 or newer, and `rustc` with Rust 2021 support:
 
 ```sh
 make build
 make test
+make benchmark
 ```
-
-The shared runner exercises each executable with the same independent conformance cases. The language-specific tests exercise the Python module and the three compiled/external CLIs through their public boundaries.
 
 ## Run a game
 
@@ -29,14 +41,8 @@ printf '%s\n' '{"op":"run","mode":"all-rules-enabled","seed":"42","max_plies":10
 printf '%s\n' '{"op":"run","mode":"all-rules-enabled","seed":"42","max_plies":100}' | ./build/chess_rust
 ```
 
-For interactive inspection, send requests such as `{"op":"new"}`, `{"op":"state"}`, `{"op":"legal_moves"}`, and `{"op":"play","move":"e2e4"}` one line at a time.
+For interactive inspection, send `new`, `state`, `legal_moves`, and `play` requests one JSON line at a time.
 
 ## Comparative analysis
 
-```sh
-make benchmark
-```
-
-The benchmark records wall-clock processing time, child maximum resident memory, source lines of code, and move-sampling quality. It writes machine-readable JSON and a Markdown summary under `reports/`. The randomness report uses a fixed root position and evaluates chi-square, Shannon entropy, maximum frequency deviation, and lag-1 correlation; it measures the move selector and PRNG, not strategic chess strength.
-
-The benchmark is intentionally reproducible rather than a claim about every machine. Run it on the same host, with the same seed and sample counts, when comparing languages.
+Benchmark results are written to `reports/benchmark.json` and `reports/benchmark.md`. The benchmark compares wall-clock processing time, child peak resident memory, implementation LOC, and root move-selector randomness quality.
