@@ -55,6 +55,10 @@ interface RequestObject {
   [key: string]: unknown;
 }
 
+export interface Simulator {
+  request(request: unknown): Record<string, unknown>;
+}
+
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const FILES = "abcdefgh";
 const PROMOTIONS: PromotionType[] = ["queen", "rook", "bishop", "knight"];
@@ -1136,45 +1140,122 @@ function dispatch(request: unknown, current: Session | null): { response: Record
   throw new ProtocolError("E_UNKNOWN_OPERATION", `unknown operation: ${op}`);
 }
 
-let session: Session | null = null;
-let inputBuffer = "";
-
-function writeResponse(response: Record<string, unknown>): void {
-  process.stdout.write(`${JSON.stringify(response)}\n`);
-}
-
-function handleLine(line: string): void {
-  if (line.trim() === "") return;
-  let request: unknown;
+function requestWithSession(request: unknown, current: Session | null): {
+  response: Record<string, unknown>;
+  session: Session | null;
+} {
+  const op = isRecord(request) && typeof request.op === "string" ? request.op : null;
   try {
-    request = JSON.parse(line);
-  } catch {
-    writeResponse(errorResponse(null, new ProtocolError("E_INVALID_REQUEST", "line is not valid JSON"), session));
-    return;
-  }
-  let op: string | null = isRecord(request) && typeof request.op === "string" ? request.op : null;
-  try {
-    const result = dispatch(request, session);
-    session = result.session;
-    writeResponse(result.response);
+    return dispatch(request, current);
   } catch (error) {
     const protocolError = error instanceof ProtocolError
       ? error
       : new ProtocolError("E_INVALID_REQUEST", "request could not be processed");
-    writeResponse(errorResponse(op, protocolError, session));
+    return { response: errorResponse(op, protocolError, current), session: current };
   }
 }
 
-process.stdin.setEncoding("utf8");
-process.stdin.on("data", (chunk: string) => {
-  inputBuffer += chunk;
-  let newline = inputBuffer.indexOf("\n");
-  while (newline !== -1) {
-    handleLine(inputBuffer.slice(0, newline).replace(/\r$/, ""));
-    inputBuffer = inputBuffer.slice(newline + 1);
-    newline = inputBuffer.indexOf("\n");
+interface SimulatorState {
+  simulator: Simulator;
+  invalidJsonResponse(): Record<string, unknown>;
+}
+
+function createSimulatorState(): SimulatorState {
+  let session: Session | null = null;
+
+  const simulator: Simulator = {
+    request(request: unknown): Record<string, unknown> {
+      const result = requestWithSession(request, session);
+      session = result.session;
+      return result.response;
+    },
+  };
+
+  return {
+    simulator,
+    invalidJsonResponse: () => errorResponse(
+      null,
+      new ProtocolError("E_INVALID_REQUEST", "line is not valid JSON"),
+      session,
+    ),
+  };
+}
+
+export function createSimulator(): Simulator {
+  return createSimulatorState().simulator;
+}
+
+interface CliInput {
+  setEncoding(encoding: string): void;
+  on(event: "data", listener: (chunk: string) => void): void;
+  on(event: "end", listener: () => void): void;
+}
+
+interface CliOutput {
+  write(value: string): void;
+}
+
+interface CliProcess {
+  stdin: CliInput;
+  stdout: CliOutput;
+}
+
+function isCliInput(value: unknown): value is CliInput {
+  if (!isRecord(value)) return false;
+  return typeof value.setEncoding === "function" && typeof value.on === "function";
+}
+
+function isCliOutput(value: unknown): value is CliOutput {
+  if (!isRecord(value)) return false;
+  return typeof value.write === "function";
+}
+
+function getCliProcess(): CliProcess | null {
+  const globalObject = globalThis as typeof globalThis & { process?: unknown };
+  const processValue = globalObject.process;
+  if (!isRecord(processValue) || !isCliInput(processValue.stdin) || !isCliOutput(processValue.stdout)) {
+    return null;
   }
-});
-process.stdin.on("end", () => {
-  if (inputBuffer.length > 0) handleLine(inputBuffer.replace(/\r$/, ""));
-});
+  return { stdin: processValue.stdin, stdout: processValue.stdout };
+}
+
+export function runCli(): void {
+  const cliProcess = getCliProcess();
+  if (cliProcess === null) return;
+
+  const simulatorState = createSimulatorState();
+  const simulator = simulatorState.simulator;
+  let inputBuffer = "";
+
+  const writeResponse = (response: Record<string, unknown>): void => {
+    cliProcess.stdout.write(`${JSON.stringify(response)}\n`);
+  };
+
+  const handleLine = (line: string): void => {
+    if (line.trim() === "") return;
+    let request: unknown;
+    try {
+      request = JSON.parse(line);
+    } catch {
+      writeResponse(simulatorState.invalidJsonResponse());
+      return;
+    }
+    writeResponse(simulator.request(request));
+  };
+
+  cliProcess.stdin.setEncoding("utf8");
+  cliProcess.stdin.on("data", (chunk: string) => {
+    inputBuffer += chunk;
+    let newline = inputBuffer.indexOf("\n");
+    while (newline !== -1) {
+      handleLine(inputBuffer.slice(0, newline).replace(/\r$/, ""));
+      inputBuffer = inputBuffer.slice(newline + 1);
+      newline = inputBuffer.indexOf("\n");
+    }
+  });
+  cliProcess.stdin.on("end", () => {
+    if (inputBuffer.length > 0) handleLine(inputBuffer.replace(/\r$/, ""));
+  });
+}
+
+if (getCliProcess() !== null) runCli();
