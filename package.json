@@ -2,9 +2,18 @@
   "name": "portable-cpu-chess",
   "version": "1.0.0",
   "private": true,
-  "description": "Comparable CPU-vs-CPU orthodox chess CLIs in C, Python, TypeScript/Node, and Rust",
+  "type": "module",
+  "description": "Comparable CPU-vs-CPU orthodox chess engines and a browser simulation interface",
   "scripts": {
     "check": "node --experimental-strip-types typescript/chess_cpu.ts < /dev/null",
-    "run": "node --experimental-strip-types typescript/chess_cpu.ts"
+    "run": "node --experimental-strip-types typescript/chess_cpu.ts",
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2",
+    "wrangler": "^4.125.0"
   }
 }

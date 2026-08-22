@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Run configurable CPU versus CPU chess simulations in your browser."
+    />
+    <title>Chess sim</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <h1>chess sim</h1>
+        <span class="engine-state"><span class="state-dot"></span>local engine</span>
+      </header>
+
+      <main class="layout">
+        <section class="control-card" aria-labelledby="simulation-heading">
+          <div class="section-head">
+            <h2 id="simulation-heading">Run</h2>
+            <span id="status-message" role="status" aria-live="polite">Ready</span>
+          </div>
+
+          <div class="mode-switch" role="tablist" aria-label="Run type">
+            <button id="mode-run" class="mode-button is-active" type="button" role="tab" aria-selected="true">
+              Individual
+            </button>
+            <button id="mode-batch" class="mode-button" type="button" role="tab" aria-selected="false">
+              Batch
+            </button>
+          </div>
+
+          <div class="control-grid">
+            <label>
+              Mode
+              <select id="chess-mode">
+                <option value="all-rules-enabled">All rules enabled</option>
+                <option value="basic">Basic</option>
+              </select>
+            </label>
+            <label>
+              Seed
+              <input id="seed" type="text" inputmode="numeric" value="1" autocomplete="off" />
+            </label>
+            <label>
+              Max plies
+              <input id="max-plies" type="number" min="0" max="5000" step="1" value="200" />
+            </label>
+            <label id="batch-count-field" hidden>
+              Batch count
+              <input id="batch-count" type="number" min="1" max="1000" step="1" value="100" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="run-button" class="primary-button" type="button">Run</button>
+            <button id="stop-button" class="secondary-button" type="button" hidden>Stop</button>
+            <progress id="batch-progress" value="0" max="1" aria-label="Batch progress" hidden></progress>
+            <span id="progress-message" class="progress-message"></span>
+          </div>
+
+          <details id="advanced">
+            <summary>Advanced</summary>
+            <div class="advanced-grid">
+              <label class="wide-field">
+                FEN
+                <textarea
+                  id="fen"
+                  rows="2"
+                  spellcheck="false"
+                  placeholder="Starting position"
+                ></textarea>
+              </label>
+              <label>
+                Sample count
+                <input id="sample-count" type="number" min="0" max="5000" step="1" value="1000" />
+              </label>
+              <label class="check-field">
+                <input id="extra-statistics" type="checkbox" checked />
+                Extra statistics
+              </label>
+              <label class="check-field">
+                <input id="trace" type="checkbox" />
+                Trace moves
+              </label>
+              <label class="check-field">
+                <input id="terminal-toggle" type="checkbox" />
+                Terminal output
+              </label>
+            </div>
+          </details>
+        </section>
+
+        <aside class="summary-rail" aria-labelledby="summary-heading">
+          <div class="rail-top">
+            <span>Results</span>
+          </div>
+          <div class="summary-title">
+            <h2 id="summary-heading">Ready</h2>
+            <span id="summary-badge">waiting</span>
+          </div>
+          <div class="metric-list">
+            <div class="metric">
+              <span>Outcome</span>
+              <strong id="metric-outcome">-</strong>
+            </div>
+            <div class="metric">
+              <span>Plies</span>
+              <strong id="metric-plies">-</strong>
+            </div>
+            <div class="metric">
+              <span>Duration</span>
+              <strong id="metric-duration">-</strong>
+            </div>
+            <div class="metric">
+              <span>Rate</span>
+              <strong id="metric-rate">-</strong>
+            </div>
+          </div>
+          <div class="rail-note">
+            <span>Termination</span>
+            <strong id="metric-termination">-</strong>
+          </div>
+        </aside>
+
+        <section class="distribution-card" aria-labelledby="distribution-heading">
+          <div class="section-head">
+            <h2 id="distribution-heading">Root moves</h2>
+            <span id="distribution-meta">sampled from the current position</span>
+          </div>
+          <ul id="distribution-list" class="distribution-list">
+            <li class="empty-state">Run a simulation to see the first-move distribution.</li>
+          </ul>
+        </section>
+
+        <section class="batch-card" aria-labelledby="batch-heading">
+          <div class="section-head">
+            <h2 id="batch-heading">Batch</h2>
+            <span id="batch-meta">single-run mode</span>
+          </div>
+          <div class="batch-stat-grid">
+            <div class="batch-stat">
+              <span>White wins</span>
+              <strong id="batch-white">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Draws</span>
+              <strong id="batch-draws">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Black wins</span>
+              <strong id="batch-black">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Mean plies</span>
+              <strong id="batch-mean">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Median plies</span>
+              <strong id="batch-median">-</strong>
+            </div>
+            <div class="batch-stat">
+              <span>Capped</span>
+              <strong id="batch-capped">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <details id="terminal-details" class="terminal-card" hidden>
+          <summary>Terminal</summary>
+          <div class="terminal-toolbar">
+            <span id="terminal-meta">No output yet</span>
+            <button id="expand-terminal" class="text-button" type="button">Expand</button>
+            <button id="clear-terminal" class="text-button" type="button">Clear</button>
+          </div>
+          <pre id="terminal-output" tabindex="0"></pre>
+        </details>
+      </main>
+    </div>
+    <script type="module" src="/app.ts"></script>
+  </body>
+</html>

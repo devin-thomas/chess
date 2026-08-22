@@ -32,6 +32,17 @@ make test
 make benchmark
 ```
 
+## Web simulator
+
+The browser interface runs the TypeScript engine locally in the page. It supports single games, deterministic batches, optional FEN and move tracing, terminal-style JSON output, and first-move sampling statistics.
+
+    npm install
+    npm run dev
+
+Open the local URL printed by Vite. The deployed interface is intended for https://chess-sim.uppercut-labs.workers.dev/.
+
+The production asset bundle is built with npm run build. With an authenticated Wrangler session, npm run deploy publishes it through wrangler.jsonc.
+
 ## Run a game
 
 ```sh
