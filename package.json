@@ -2,7 +2,7 @@
   "name": "portable-cpu-chess",
   "version": "1.0.0",
   "private": true,
-  "description": "Comparable CPU-vs-CPU orthodox chess CLIs in C, Python, and TypeScript/Node",
+  "description": "Comparable CPU-vs-CPU orthodox chess CLIs in C, Python, TypeScript/Node, and Rust",
   "scripts": {
     "check": "node --experimental-strip-types typescript/chess_cpu.ts < /dev/null",
     "run": "node --experimental-strip-types typescript/chess_cpu.ts"

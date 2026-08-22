@@ -7,4 +7,4 @@ The generated report is comparative, not an absolute ranking. All engines are ru
 - Lines of code count nonblank, non-comment source lines in the implementation files. Generated reports and tests are excluded from the implementation count.
 - Randomness quality samples the root position's uniformly selected legal moves. The report includes Shannon entropy, expected entropy, chi-square goodness-of-fit, maximum absolute frequency deviation, and lag-1 correlation. These statistics evaluate the PRNG and selector, not chess strength or move quality.
 
-The engines intentionally share the SplitMix64 algorithm. A quality difference therefore indicates a translation or numeric-semantics defect rather than a different RNG design.
+The engines intentionally share the SplitMix64 algorithm. A quality difference therefore indicates a translation or numeric-semantics defect rather than a different RNG design. Rust is compiled as an optimized standalone binary alongside the other implementations.

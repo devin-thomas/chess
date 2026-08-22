@@ -12,7 +12,8 @@ Examples:
     python3 tests/run_shared.py \
         --python "python3 python/chess_cpu.py" \
         --c "./build/chess_c" \
-        --typescript "node --experimental-strip-types typescript/chess_cpu.ts"
+        --typescript "node --experimental-strip-types typescript/chess_cpu.ts" \
+        --rust "./build/chess_rust"
 
     python3 tests/run_shared.py --engine py="python3 python/chess_cpu.py"
 
@@ -452,6 +453,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--python", dest="python_command", metavar="COMMAND")
     parser.add_argument("--c", dest="c_command", metavar="COMMAND")
     parser.add_argument("--typescript", dest="typescript_command", metavar="COMMAND")
+    parser.add_argument("--rust", dest="rust_command", metavar="COMMAND")
     args = parser.parse_args(argv)
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
@@ -460,6 +462,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         ("python", args.python_command),
         ("c", args.c_command),
         ("typescript", args.typescript_command),
+        ("rust", args.rust_command),
     ):
         if command is not None:
             try:

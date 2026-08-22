@@ -1,6 +1,6 @@
 # Chess CLI Protocol
 
-This project implements the same public JSON Lines protocol in C, Python, and TypeScript/Node. One JSON object is read from standard input per line and one JSON object is written to standard output per line. Diagnostics go to standard error. A process remains alive and retains one session until EOF.
+This project implements the same public JSON Lines protocol in C, Python, TypeScript/Node, and Rust. One JSON object is read from standard input per line and one JSON object is written to standard output per line. Diagnostics go to standard error. A process remains alive and retains one session until EOF.
 
 The protocol is intentionally smaller than a human chess notation interface. Moves use lowercase coordinate notation: `e2e4`, `e7e8q`, `e1g1`, or `e1c1`. Promotion suffixes are `q`, `r`, `b`, and `n`.
 
@@ -62,7 +62,7 @@ Both modes implement orthodox movement, captures, king safety, check, checkmate,
 
 ## CPU and randomness
 
-CPU players uniformly select one move from the sorted legal move list. All three implementations use the same SplitMix64 generator with unsigned 64-bit arithmetic:
+CPU players uniformly select one move from the sorted legal move list. All four implementations use the same SplitMix64 generator with unsigned 64-bit arithmetic:
 
 ```text
 state = (state + 0x9E3779B97F4A7C15) mod 2^64
@@ -72,4 +72,4 @@ z = ((z xor (z >> 27)) * 0x94D049BB133111EB) mod 2^64
 output = z xor (z >> 31)
 ```
 
-The selected index is `output mod number_of_legal_moves`. Seeds are serialized as decimal strings in responses so the C, Python, and JavaScript numeric domains remain equivalent.
+The selected index is `output mod number_of_legal_moves`. Seeds are serialized as decimal strings in responses so the C, Python, JavaScript, and Rust numeric domains remain equivalent.

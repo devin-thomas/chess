@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible benchmark harness for the three chess CLI implementations.
+"""Reproducible benchmark harness for the four chess CLI implementations.
 
 The harness speaks the JSON Lines protocol described in ``docs/PROTOCOL.md``.
 It deliberately uses only the Python standard library.  Each measured engine
@@ -13,11 +13,12 @@ Example:
         --engine 'c=./c/chess' \
         --engine 'python=python3 ./python/chess.py' \
         --engine 'typescript=node ./typescript/dist/chess.js' \
+        --engine 'rust=./build/chess_rust' \
         --output-dir analysis/benchmark
 
 Commands are tokenized with :func:`shlex.split` and are executed without a
 shell.  Source roots can be supplied with repeated ``--source NAME=PATH``;
-when omitted, ``c/``, ``python/``, and ``typescript/`` under the project root
+when omitted, ``c/``, ``python/``, ``typescript/``, and ``rust/`` under the project root
 are used when they exist.
 """
 
@@ -43,7 +44,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 SCRIPT_PATH = Path(__file__).resolve()
 MASK64 = (1 << 64) - 1
-ENGINE_ORDER = ("c", "python", "typescript")
+ENGINE_ORDER = ("c", "python", "typescript", "rust")
 ENGINE_ALIASES = {
     "c": "c",
     "c-lang": "c",
@@ -55,12 +56,16 @@ ENGINE_ALIASES = {
     "typescript/node": "typescript",
     "ts": "typescript",
     "node": "typescript",
+    "rust": "rust",
+    "rustc": "rust",
+    "rs": "rust",
 }
 
 SOURCE_EXTENSIONS = {
     "c": {".c", ".h", ".cc", ".cpp", ".cxx", ".hh", ".hpp", ".hxx"},
     "python": {".py"},
     "typescript": {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"},
+    "rust": {".rs"},
 }
 
 EXCLUDED_SOURCE_DIRECTORIES = {
@@ -952,7 +957,7 @@ def run_randomness_benchmark(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Benchmark C, Python, and TypeScript/Node chess engines through "
+            "Benchmark C, Python, TypeScript/Node, and Rust chess engines through "
             "the shared JSON Lines protocol."
         )
     )
@@ -966,7 +971,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         metavar="NAME=COMMAND",
-        help="engine command; repeat for c, python, and typescript",
+        help="engine command; repeat for c, python, typescript, and rust",
     )
     parser.add_argument("--c-command", "--c", dest="c_command")
     parser.add_argument("--python-command", "--python", dest="python_command")
@@ -976,6 +981,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--ts-command",
         dest="typescript_command",
     )
+    parser.add_argument("--rust-command", "--rust", "--rustc-command", dest="rust_command")
     parser.add_argument(
         "--source",
         action="append",
@@ -986,6 +992,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--c-source", dest="c_source")
     parser.add_argument("--python-source", dest="python_source")
     parser.add_argument("--typescript-source", "--ts-source", dest="typescript_source")
+    parser.add_argument("--rust-source", "--rs-source", dest="rust_source")
     parser.add_argument(
         "--project-root",
         default=str(SCRIPT_PATH.parent.parent),
@@ -1024,6 +1031,7 @@ def resolve_commands(args: argparse.Namespace) -> dict[str, tuple[str, list[str]
         "c": args.c_command,
         "python": args.python_command,
         "typescript": args.typescript_command,
+        "rust": args.rust_command,
     }
     for name, command in direct_values.items():
         if command is not None:
@@ -1048,6 +1056,7 @@ def resolve_sources(args: argparse.Namespace, project_root: Path) -> dict[str, P
         "c": args.c_source,
         "python": args.python_source,
         "typescript": args.typescript_source,
+        "rust": args.rust_source,
     }
     for name, value in direct_values.items():
         if value is not None:
