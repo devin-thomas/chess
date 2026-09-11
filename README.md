@@ -36,9 +36,15 @@ make test
 make benchmark
 ```
 
-## Planned replay viewer
+## Replay viewer and conformance
 
-The [replay handoff](docs/replay/README.md) defines Web V1 and its later retro proof. RPL-001 through RPL-005 are implemented as a [renderer-independent replay library](replay/README.md): schema, validation, navigation, shared fixtures, and presentation transitions. PGN import and the 3D viewer remain planned; the existing simulator and CLI interfaces remain supported.
+The [replay handoff](docs/replay/README.md) defines the web viewer and portability proof. RPL-001 through RPL-015 are implemented as a [renderer-independent replay library](replay/README.md), including schema validation, navigation, shared fixtures, presentation transitions, PGN import, curated replays, cached seeking, and a compiled derivative. The RPL-017 host baseline compares all four engines against every valid replay fixture with:
+
+```sh
+make conformance-replay
+```
+
+The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check.
 
 Run `npm run test:replay` for replay checks and `npm run typecheck` for TypeScript validation. Both are included in `make test`.
 

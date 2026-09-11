@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-015 implemented; RPL-016 through RPL-017 remain open. Phase 1 is complete; Phase 2 is complete.
+Status: RPL-001 through RPL-015 implemented; RPL-017 host baseline verified; RPL-016 and the final RPL-017 retro comparison remain open. Phase 1 and Phase 2 are complete.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -429,6 +429,8 @@ Render and navigate one compiled replay on an NES target/emulator.
 
 ## RPL-017 — Cross-platform replay conformance command
 
+Status: host baseline complete; final retro comparison follows RPL-016.
+
 **Goal**
 Make replay portability measurable rather than visual-only.
 
@@ -437,12 +439,14 @@ Make replay portability measurable rather than visual-only.
 - run a replay fixture through supported host rules implementations;
 - compare selected-ply board state and position keys where available;
 - emit machine-readable report;
-- later ingest outputs produced by retro test harnesses/emulators if practical.
+- compare retro harness output when a target adapter is available.
 
 **Acceptance**
 
 - TypeScript/Python/C/Rust agree on selected replay fixture states under their common implemented rules surface;
-- any disagreement identifies replay ID and ply.
+- any disagreement identifies replay ID and ply;
+- `make conformance-replay` writes `reports/replay-conformance.json` and exits non-zero on engine, protocol, state, or position-key failures;
+- the report covers all valid fixtures; the final retro comparison is recorded after RPL-016 supplies its selected-ply output.
 
 ---
 
@@ -462,6 +466,6 @@ Result: a polished replay-first website can load curated or user PGNs and presen
 
 ## Phase 3 — Portability proof
 
-Tickets RPL-015 through RPL-017. RPL-017 host baselines precede RPL-016; retro comparison closes this gate. Phase 3 is a later milestone, not required for Web V1.
+Tickets RPL-015 through RPL-017. The RPL-017 host baseline precedes RPL-016; the retro comparison closes this gate.
 
 Result: the same canonical replay demonstrably runs on a constrained retro target and agrees with host implementations.

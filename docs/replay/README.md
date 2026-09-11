@@ -1,6 +1,6 @@
 # Chess Replay Viewer Build Pack
 
-Status: RPL-001 through RPL-015 implemented; NES portability and cross-language replay reporting remain open
+Status: RPL-001 through RPL-015 implemented; RPL-017 host conformance baseline verified; NES/FCEUX portability remains open
 Project: `devin-thomas/chess`
 Primary first target: modern web replay viewer
 Portability target: deterministic replay playback across modern and retro platforms
@@ -100,6 +100,7 @@ This does not replace the existing PS1/Dreamcast presentation roadmap. It is a s
 - [COMPILED_FORMAT.md](COMPILED_FORMAT.md) — frozen RPL-015 binary layout, limits, and manifest contract.
 - [CACHE_BENCHMARK.md](CACHE_BENCHMARK.md) — reproducible full-history seek measurements.
 - [TICKETS.md](TICKETS.md) — implementation-ready work breakdown and acceptance checks.
+- [CONFORMANCE.md](CONFORMANCE.md) — host conformance report command and schema.
 
 ## Decisions intentionally deferred
 
@@ -123,6 +124,6 @@ This directory integrates the supplied `chess-replay-build-pack.zip`. It is the 
 
 [SPEC.md](../../SPEC.md) remains authoritative for chess rules. [PROTOCOL.md](../PROTOCOL.md) describes what the existing engines actually expose. The [presentation specification](../../spec/3d-presentation-requirements.md) owns rendering seams; console-specific profiles apply to their named targets, not the Web V1 milestone. A rules implementation gap is not permission to change the rules contract.
 
-The repository has four rules CLIs, a Vite simulator, and a [replay core library](../../replay/README.md) with schema validation, deterministic navigation, presentation transitions, PGN import, synchronized move lists, 20 shared technical fixtures, an attributed curated library, complete-history seek caching, and a compact compiled derivative. The public viewer uses a Three.js board with an accessible deterministic fallback, local PGN import, replay selection, and cached seeking; NES portability remains planned work. Web V1 is Phases 1 and 2; Phase 3 is in progress with the compiled format complete and host conformance/retro proof remaining. The completed core is exposed through the public viewer while the simulator remains independently reachable. No deployment is part of the core tickets.
+The repository has four rules CLIs, a Vite simulator, and a [replay core library](../../replay/README.md) with schema validation, deterministic navigation, presentation transitions, PGN import, synchronized move lists, 20 shared technical fixtures, an attributed curated library, complete-history seek caching, and a compact compiled derivative. The public viewer uses a Three.js board with an accessible deterministic fallback, local PGN import, replay selection, and cached seeking. Web V1 is Phases 1 and 2; Phase 3 has a frozen compiled format and verified host conformance baseline, with the NES/FCEUX proof remaining. The completed core is exposed through the public viewer while the simulator remains independently reachable. No deployment is part of the core tickets.
 
 Integration decisions resolved here: fixed `all-rules-enabled` mode; exact canonical setup fields; zero-based error indices and destination-ply lookup; atomic load; paused manual seeks; multiple-game PGN chooser; explicit import limits; deterministic identity reconstruction; complete-history caching; and recorded-result versus rules-outcome separation.

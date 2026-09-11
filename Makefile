@@ -9,7 +9,7 @@ TS_FILE := $(ROOT)/typescript/chess_cpu.ts
 RUST_SOURCE := $(ROOT)/rust/chess_cpu.rs
 RUST_BIN := $(ROOT)/build/chess_rust
 
-.PHONY: build test benchmark benchmark-replay compile-replay clean
+.PHONY: build test benchmark benchmark-replay compile-replay conformance-replay clean
 
 build:
 	mkdir -p build
@@ -22,6 +22,7 @@ test: build
 	npm run test:replay
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py' -v
 	$(PYTHON) tests/run_shared.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)"
+	$(PYTHON) tools/replay-conformance.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)" --output reports/replay-conformance.json
 
 benchmark: build
 	$(PYTHON) bench/benchmark.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)" --output-dir reports
@@ -32,6 +33,9 @@ benchmark-replay:
 compile-replay:
 	mkdir -p build
 	$(NODE) --experimental-strip-types tools/compile-replay.ts shared/replay-fixtures/opening.json build/opening.rply build/opening.rply.manifest.json
+
+conformance-replay: build
+	$(PYTHON) tools/replay-conformance.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)" --output reports/replay-conformance.json
 
 clean:
 	rm -rf build reports
