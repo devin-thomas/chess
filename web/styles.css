@@ -133,6 +133,7 @@ label,
 
 .control-card,
 .summary-card,
+.board-card,
 .distribution-card,
 .batch-card,
 .advanced-card,
@@ -143,13 +144,176 @@ label,
 }
 
 .control-card,
-.summary-card {
+.summary-card,
+.board-card {
   grid-column: 1 / -1;
 }
 
 .control-card {
   padding: 15px 17px 16px;
   background: linear-gradient(135deg, rgba(21, 31, 40, 0.98), rgba(16, 24, 32, 0.98));
+}
+
+.board-card {
+  padding: 15px 17px 18px;
+  background:
+    linear-gradient(135deg, rgba(18, 29, 36, 0.98), rgba(13, 20, 27, 0.98)),
+    var(--surface);
+}
+
+.board-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(205px, 235px);
+  gap: 20px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.board-frame {
+  width: min(100%, 620px);
+  margin: 0 auto;
+  padding: 8px;
+  border: 1px solid var(--line-strong);
+  background: #091117;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  overflow: hidden;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 244, 226, 0.14);
+}
+
+.board-square {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1;
+  color: #18252a;
+}
+
+.board-square.is-light {
+  background: #c8b89e;
+}
+
+.board-square.is-dark {
+  background: #4c5955;
+}
+
+.board-square.is-last-from {
+  box-shadow: inset 0 0 0 3px rgba(239, 87, 54, 0.58);
+}
+
+.board-square.is-last-to {
+  background: var(--accent);
+  box-shadow: inset 0 0 0 3px rgba(255, 239, 222, 0.68), inset 0 0 22px rgba(255, 218, 183, 0.22);
+}
+
+.board-piece {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-family: "Iowan Old Style", "Palatino Linotype", "DejaVu Serif", serif;
+  font-size: clamp(1.65rem, 7vw, 4.6rem);
+  line-height: 1;
+  transform: translateY(-2%);
+  user-select: none;
+}
+
+.board-piece.piece-white {
+  color: #fff0df;
+  text-shadow: 0 2px 0 rgba(80, 41, 28, 0.72), 0 0 7px rgba(255, 250, 240, 0.18);
+}
+
+.board-piece.piece-black {
+  color: #142126;
+  -webkit-text-stroke: 0.55px rgba(242, 224, 200, 0.55);
+  text-shadow: 0 2px 0 rgba(255, 243, 221, 0.2), 0 0 5px rgba(4, 13, 17, 0.22);
+}
+
+.board-coordinate {
+  position: absolute;
+  z-index: 2;
+  color: rgba(15, 28, 32, 0.62);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(0.48rem, 1.2vw, 0.68rem);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.is-dark .board-coordinate {
+  color: rgba(238, 231, 216, 0.68);
+}
+
+.board-file {
+  right: 5px;
+  bottom: 4px;
+}
+
+.board-rank {
+  top: 5px;
+  left: 5px;
+}
+
+.board-tools {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.board-reading {
+  display: grid;
+  gap: 14px;
+  padding-left: 14px;
+  border-left: 2px solid var(--accent);
+}
+
+.board-reading-row {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.board-reading-row span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.board-reading-row strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playback-panel {
+  display: grid;
+  gap: 8px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(141, 155, 165, 0.2);
+}
+
+.playback-panel select {
+  font-size: 0.78rem;
+}
+
+#playback-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 .section-head,
@@ -577,6 +741,25 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .board-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .board-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+  }
+
+  .board-reading {
+    padding-top: 14px;
+    padding-left: 0;
+    border-top: 2px solid var(--accent);
+    border-left: 0;
+  }
+
   .distribution-card,
   .batch-card {
     grid-column: 1;
@@ -622,6 +805,7 @@ pre {
 
   .control-card,
   .summary-card,
+  .board-card,
   .distribution-card,
   .batch-card {
     padding: 13px;
@@ -640,6 +824,18 @@ pre {
   .control-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 8px;
+  }
+
+  .board-frame {
+    padding: 5px;
+  }
+
+  .board-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .board-reading {
+    padding-top: 12px;
   }
 
   .summary-title {
