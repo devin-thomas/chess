@@ -38,13 +38,13 @@ make benchmark
 
 ## Replay viewer and conformance
 
-The [replay handoff](docs/replay/README.md) defines the web viewer and portability proof. RPL-001 through RPL-015 are implemented as a [renderer-independent replay library](replay/README.md), including schema validation, navigation, shared fixtures, presentation transitions, PGN import, curated replays, cached seeking, and a compiled derivative. The RPL-017 host baseline compares all four engines against every valid replay fixture with:
+The [replay handoff](docs/replay/README.md) defines the web viewer and portability proof. RPL-001 through RPL-016 are implemented as a [renderer-independent replay library](replay/README.md), including schema validation, navigation, shared fixtures, presentation transitions, PGN import, curated replays, cached seeking, a compiled derivative, and a constrained NES profile. The RPL-017 report compares all four engines against every valid replay fixture and includes the selected retro checkpoints with:
 
 ```sh
 make conformance-replay
 ```
 
-The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check.
+The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check. `make conformance-replay-retro` switches the retro input to the cc65/FCEUX JSON trace when those tools are available.
 
 Run `npm run test:replay` for replay checks and `npm run typecheck` for TypeScript validation. Both are included in `make test`.
 

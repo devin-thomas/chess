@@ -10,7 +10,7 @@ RUST_SOURCE := $(ROOT)/rust/chess_cpu.rs
 RUST_BIN := $(ROOT)/build/chess_rust
 NES_PROOF_ARGS ?=
 
-.PHONY: build test benchmark benchmark-replay compile-replay conformance-replay conformance-replay-retro replay-nes-proof nes-build nes-proof nes-rom clean
+.PHONY: build test benchmark benchmark-replay compile-replay conformance-replay conformance-replay-retro replay-nes-proof nes-build nes-proof nes-fceux nes-rom clean
 
 build:
 	mkdir -p build
@@ -53,6 +53,8 @@ nes-build:
 
 nes-proof:
 	$(PYTHON) tools/nes-proof.py $(NES_PROOF_ARGS)
+
+nes-fceux: nes-proof
 
 nes-rom: nes-build
 

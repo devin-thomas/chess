@@ -73,8 +73,7 @@ def expected_position(ply: int) -> dict[str, str | int]:
 class RetroReplayProofTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        if not OUTPUT.exists():
-            subprocess.run(["make", "replay-nes-proof"], cwd=ROOT, check=True)
+        subprocess.run(["make", "replay-nes-proof"], cwd=ROOT, check=True)
         cls.lines = OUTPUT.read_text(encoding="utf-8").splitlines()
 
     def test_fixed_buffer_source_has_no_runtime_text_parsers_or_allocators(self) -> None:

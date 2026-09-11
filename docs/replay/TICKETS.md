@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-016 implemented in repository scope; RPL-017 host baseline verified; final retro comparison follows the fixed-buffer proof. Phase 1 and Phase 2 are complete.
+Status: RPL-001 through RPL-017 implemented; host and fixed-buffer retro comparisons are verified. Phase 1 and Phase 2 are complete; the optional cc65/FCEUX run remains environment-gated.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -406,7 +406,7 @@ Create the first offline compiler from canonical Replay V1 to a compact target-f
 
 ## RPL-016 — NES/FCEUX portability proof
 
-Status: complete in repository scope; cc65 ROM build and fixed-buffer host trace are verified, while the FCEUX run remains blocked only by the emulator not being available on the current host.
+Status: complete in repository scope. The host safety proof and cc65 ROM build are verified; the deterministic FCEUX trace remains environment-gated when the emulator is unavailable.
 
 **Goal**
 Render and navigate one compiled replay on an NES target/emulator.
@@ -427,18 +427,19 @@ Render and navigate one compiled replay on an NES target/emulator.
 - no web runtime, JSON parser, PGN parser, or SAN parser exists in the NES playback path;
 - invalid data fails safely within fixed buffers.
 
-Repository evidence: `make replay-nes-proof`, `make nes-rom`,
+Repository evidence: `make replay-nes-proof`, `make nes-build`,
 `tools/nes-proof.py`, `retro/nes_replay_main.c`, `retro/nes_replay.c`,
 `tools/nes_trace.lua`, and `tests/test_retro_replay.py`. The fixed-buffer
 adapter consumes the RPL-015 payload directly and is compared against the
-independent castle fixture checkpoints; `make nes-fceux` is the reproducible
-external emulator step when FCEUX is installed.
+independent castle fixture checkpoints; `make nes-proof` runs the reproducible
+ROM/emulator sequence with cc65 and FCEUX supplied through `NES_PROOF_ARGS` or
+the corresponding environment variables.
 
 ---
 
 ## RPL-017 — Cross-platform replay conformance command
 
-Status: host baseline complete; final retro comparison follows RPL-016.
+Status: complete; host and fixed-buffer retro comparisons are recorded by the report, with an optional cc65/FCEUX JSON adapter.
 
 **Goal**
 Make replay portability measurable rather than visual-only.
@@ -455,7 +456,8 @@ Make replay portability measurable rather than visual-only.
 - TypeScript/Python/C/Rust agree on selected replay fixture states under their common implemented rules surface;
 - any disagreement identifies replay ID and ply;
 - `make conformance-replay` writes `reports/replay-conformance.json` and exits non-zero on engine, protocol, state, or position-key failures;
-- the report covers all valid fixtures; the final retro comparison is recorded after RPL-016 supplies its selected-ply output.
+- `make conformance-replay-retro` writes `reports/replay-conformance-retro.json` and exits non-zero on a ROM trace or selected-ply mismatch;
+- the report covers all valid fixtures and records the retro fixture, selected states, navigation sequence, and emulator profile.
 
 ---
 

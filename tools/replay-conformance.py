@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Compare every valid Replay V1 fixture across the four host engines.
+"""Compare every valid Replay V1 fixture across host engines and the retro proof.
 
 The committed expected states are the independent fixture oracle. The report
-also records normalized state and effective position-key output from each host
-so a retro harness can be added without changing the report shape.
+also records normalized state and effective position-key output from each host.
+The optional retro input accepts the fixed-buffer host trace or the JSON trace
+captured from the cc65/FCEUX ROM.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from typing import Any, Mapping, Sequence
 ROOT = Path(__file__).resolve().parents[1]
 CASES_PATH = ROOT / "shared" / "replay-cases.json"
 FIXTURE_DIR = ROOT / "shared" / "replay-fixtures"
+RETRO_FIXTURE_ID = "castle-kingside"
 STATE_FIELDS = (
     "mode",
     "board",
@@ -273,6 +275,239 @@ def compare_values(expected: Any, actual: Any) -> dict[str, dict[str, Any]]:
     }
 
 
+def parse_retro_position(line: str) -> tuple[int, dict[str, Any]]:
+    fields = line.split()
+    if len(fields) != 8 or fields[0] != "NES_PLY":
+        raise RunnerError(f"retro output has a malformed position line: {line!r}")
+    try:
+        ply = int(fields[1])
+        values = {key: value for key, value in (field.split("=", 1) for field in fields[2:])}
+        if set(values) != {"board", "side", "rights", "ep", "halfmove", "fullmove"}:
+            raise ValueError("unexpected position fields")
+        position = {
+            "board": values["board"],
+            "side": values["side"],
+            "rights": values["rights"],
+            "ep": values["ep"],
+            "halfmove": int(values["halfmove"]),
+            "fullmove": int(values["fullmove"]),
+        }
+    except (KeyError, ValueError) as exc:
+        raise RunnerError(f"retro output has an invalid position line: {line!r}") from exc
+    if ply < 0:
+        raise RunnerError(f"retro output has a negative ply: {line!r}")
+    return ply, position
+
+
+def load_retro_output(path: Path) -> tuple[int, dict[int, dict[str, Any]], bool, str, bool]:
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RunnerError(f"cannot load retro output {path}: {exc}") from exc
+    if raw.lstrip().startswith("{"):
+        return load_retro_json(raw)
+    return load_retro_text(raw.splitlines())
+
+
+def load_retro_text(lines: Sequence[str]) -> tuple[int, dict[int, dict[str, Any]], bool, str, bool]:
+    move_count: int | None = None
+    positions: dict[int, dict[str, Any]] = {}
+    navigation_ok = False
+    for line in lines:
+        if line.startswith("NES_OK "):
+            fields = line.split()
+            if len(fields) != 3 or fields[1] != "format=1" or not fields[2].startswith("moves="):
+                raise RunnerError(f"retro output has an invalid success line: {line!r}")
+            try:
+                move_count = int(fields[2].split("=", 1)[1])
+            except ValueError as exc:
+                raise RunnerError(f"retro output has an invalid move count: {line!r}") from exc
+        elif line.startswith("NES_PLY "):
+            ply, position = parse_retro_position(line)
+            if ply in positions:
+                raise RunnerError(f"retro output repeats ply {ply}")
+            positions[ply] = position
+        elif line == "NES_NAV ok":
+            navigation_ok = True
+        elif line == "NES_INVALID ok":
+            continue
+        elif line.startswith("NES_ERROR") or line.strip():
+            raise RunnerError(f"retro output contains an unexpected line: {line!r}")
+    if move_count is None:
+        raise RunnerError("retro output is missing NES_OK")
+    return move_count, positions, navigation_ok, "nes-fixed-buffer-host", False
+
+
+def retro_json_position(record: Mapping[str, Any]) -> tuple[int, dict[str, Any]]:
+    required = {"ply", "valid", "board", "side", "rights", "ep", "halfmove", "fullmove"}
+    if set(record) < required:
+        raise RunnerError("retro JSON record is missing a position field")
+    try:
+        ply = record["ply"]
+        valid = record["valid"]
+        position = {
+            "board": record["board"],
+            "side": record["side"],
+            "rights": record["rights"],
+            "ep": record["ep"],
+            "halfmove": record["halfmove"],
+            "fullmove": record["fullmove"],
+        }
+    except KeyError as exc:
+        raise RunnerError("retro JSON record is missing a position field") from exc
+    if not isinstance(ply, int) or ply < 0 or not isinstance(valid, int) or valid != 1:
+        raise RunnerError(f"retro JSON record has invalid validity or ply: {record!r}")
+    if not all(isinstance(position[field], (str, int)) for field in ("board", "side", "rights", "ep", "halfmove", "fullmove")):
+        raise RunnerError(f"retro JSON record has invalid position values: {record!r}")
+    return ply, position
+
+
+def load_retro_json(raw: str) -> tuple[int, dict[int, dict[str, Any]], bool, str, bool]:
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise RunnerError(f"retro JSON is malformed: {exc}") from exc
+    if not isinstance(payload, dict) or payload.get("schema_version") != 1:
+        raise RunnerError("retro JSON has an unsupported schema")
+    profile = payload.get("profile")
+    if profile != "cc65-fceux":
+        raise RunnerError(f"retro JSON has an unsupported profile: {profile!r}")
+    records = payload.get("records")
+    if not isinstance(records, list) or not records:
+        raise RunnerError("retro JSON has no records")
+    positions: dict[int, dict[str, Any]] = {}
+    sequence: list[int] = []
+    commands: list[int] = []
+    move_count: int | None = None
+    completed = False
+    for item in records:
+        if not isinstance(item, dict):
+            raise RunnerError("retro JSON contains a non-object record")
+        ply, position = retro_json_position(item)
+        if ply not in positions:
+            positions[ply] = position
+        sequence.append(ply)
+        command = item.get("command")
+        if not isinstance(command, int):
+            raise RunnerError("retro JSON record is missing its command")
+        commands.append(command)
+        record_move_count = item.get("move_count")
+        if not isinstance(record_move_count, int):
+            raise RunnerError("retro JSON record is missing its move count")
+        if move_count is None:
+            move_count = record_move_count
+        elif move_count != record_move_count:
+            raise RunnerError("retro JSON move count changes between records")
+        completed = item.get("done") is True
+    if move_count is None:
+        raise RunnerError("retro JSON is missing its move count")
+    navigation_ok = (
+        sequence == [0, 1, 2, 1, 0, 2]
+        and commands == [0, 1, 1, 2, 3, 4]
+        and completed
+    )
+    return move_count, positions, navigation_ok, profile, True
+
+
+def retro_expected_position(checkpoint: Mapping[str, Any]) -> dict[str, Any]:
+    state = checkpoint.get("state")
+    if not isinstance(state, dict):
+        raise RunnerError("retro fixture checkpoint state is invalid")
+    rights = castling_rights(state.get("castling_rights"))
+    rights_text = "".join(
+        name
+        for name, key in (
+            ("K", "white_kingside"),
+            ("Q", "white_queenside"),
+            ("k", "black_kingside"),
+            ("q", "black_queenside"),
+        )
+        if rights[key]
+    ) or "-"
+    side = state.get("side_to_move")
+    if side not in ("white", "black"):
+        raise RunnerError("retro fixture checkpoint side_to_move is invalid")
+    en_passant = state.get("en_passant_target")
+    if en_passant is not None and not isinstance(en_passant, str):
+        raise RunnerError("retro fixture checkpoint en-passant value is invalid")
+    return {
+        "board": board_fen(state.get("board")),
+        "side": side,
+        "rights": rights_text,
+        "ep": en_passant or "-",
+        "halfmove": state.get("halfmove_clock"),
+        "fullmove": state.get("fullmove_number"),
+    }
+
+
+def build_retro_report(expected: Mapping[str, Any], output_path: Path, display_path: str) -> dict[str, Any]:
+    report: dict[str, Any] = {
+        "profile": "nes-fixed-buffer-host",
+        "fixture": RETRO_FIXTURE_ID,
+        "output_path": display_path,
+        "emulator_available": False,
+        "emulator_run": False,
+        "available": False,
+        "ok": False,
+        "mismatch_count": 0,
+        "checkpoints": [],
+    }
+    try:
+        move_count, positions, navigation_ok, profile, emulator_run = load_retro_output(output_path)
+    except RunnerError as exc:
+        report["error"] = str(exc)
+        report["mismatch_count"] = 1
+        return report
+    report["profile"] = profile
+    report["emulator_available"] = emulator_run
+    report["emulator_run"] = emulator_run
+    report["available"] = True
+    report["move_count"] = move_count
+    report["navigation_ok"] = navigation_ok
+    checkpoints = expected.get("checkpoints")
+    if not isinstance(checkpoints, list):
+        report["error"] = "retro fixture expected data is malformed"
+        report["mismatch_count"] = 1
+        return report
+    by_ply = {
+        checkpoint.get("ply"): checkpoint
+        for checkpoint in checkpoints
+        if isinstance(checkpoint, dict)
+    }
+    expected_plies = set(range(len(checkpoints)))
+    if set(by_ply) != expected_plies:
+        report["error"] = "retro fixture checkpoints do not form a complete zero-based sequence"
+        report["mismatch_count"] = 1
+        return report
+    mismatch_count = 0
+    for ply in sorted(expected_plies):
+        expected_position = retro_expected_position(by_ply[ply])
+        actual_position = positions.get(ply)
+        mismatches = compare_values(expected_position, actual_position)
+        matches = not mismatches and actual_position is not None
+        if not matches:
+            mismatch_count += 1
+        report["checkpoints"].append({
+            "ply": ply,
+            "expected": expected_position,
+            "actual": actual_position,
+            "matches_expected": matches,
+            "mismatches": mismatches,
+        })
+    expected_move_count = len(checkpoints) - 1
+    if move_count != expected_move_count:
+        mismatch_count += 1
+        report["move_count_mismatch"] = {"expected": expected_move_count, "actual": move_count}
+    if set(positions) != expected_plies:
+        mismatch_count += 1
+        report["ply_set_mismatch"] = {"expected": sorted(expected_plies), "actual": sorted(positions)}
+    if not navigation_ok:
+        mismatch_count += 1
+    report["mismatch_count"] = mismatch_count
+    report["ok"] = mismatch_count == 0
+    return report
+
+
 def checkpoint_result(
     expected_checkpoint: Mapping[str, Any],
     responses: Sequence[Mapping[str, Any]],
@@ -378,6 +613,7 @@ def build_fixture_report(
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "reports" / "replay-conformance.json")
+    parser.add_argument("--retro-output", type=Path, help="compare the RPL-016 selected-ply adapter output")
     parser.add_argument("--case", action="append", dest="case_ids", default=[])
     parser.add_argument("--timeout", type=float, default=10.0)
     parser.add_argument("--python", dest="python_command")
@@ -432,6 +668,28 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise RunnerError(f"fixture {fixture_id} is not an object")
         fixture_reports.append(build_fixture_report(fixture_id, replay, expected, args.engines, args.timeout))
     mismatches = sum(report["mismatch_count"] for report in fixture_reports)
+    retro_report: dict[str, Any] | None = None
+    if args.retro_output is not None:
+        if RETRO_FIXTURE_ID not in {report["id"] for report in fixture_reports}:
+            retro_report = {
+                "profile": "nes-fixed-buffer-host",
+                "fixture": RETRO_FIXTURE_ID,
+                "output_path": str(args.retro_output),
+                "emulator_available": False,
+                "emulator_run": False,
+                "available": False,
+                "ok": False,
+                "mismatch_count": 1,
+                "error": f"{RETRO_FIXTURE_ID} was not selected for this conformance run",
+                "checkpoints": [],
+            }
+        else:
+            retro_expected = load_json(FIXTURE_DIR / f"{RETRO_FIXTURE_ID}.expected.json")
+            if not isinstance(retro_expected, dict) or retro_expected.get("valid") is not True:
+                raise RunnerError(f"retro fixture {RETRO_FIXTURE_ID} is not a valid fixture")
+            retro_path = args.retro_output if args.retro_output.is_absolute() else ROOT / args.retro_output
+            retro_report = build_retro_report(retro_expected, retro_path, str(args.retro_output))
+        mismatches += retro_report["mismatch_count"]
     report = {
         "schema_version": 1,
         "kind": "replay-conformance",
@@ -448,6 +706,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "ok": mismatches == 0 and all(report["ok"] for report in fixture_reports),
         },
     }
+    if retro_report is not None:
+        report["retro"] = retro_report
+        report["summary"]["retro_mismatch_count"] = retro_report["mismatch_count"]
+        report["summary"]["retro_ok"] = retro_report["ok"]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report["summary"], sort_keys=True))

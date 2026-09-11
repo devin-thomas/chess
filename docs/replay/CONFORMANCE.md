@@ -4,6 +4,8 @@
 `shared/replay-cases.json` through the Python, C, TypeScript, and Rust JSONL
 engines. Invalid-input fixtures remain covered by `tests/run_shared.py`; this
 report focuses on authoritative replay positions after every recorded ply.
+When `--retro-output` is supplied, it also compares the castle fixture against
+the RPL-016 fixed-buffer trace or a cc65/FCEUX JSON trace.
 
 Run it after building the host engines:
 
@@ -26,8 +28,10 @@ termination, claims, move history, and the zero-based replay revision. CLI
 engines do not expose a revision field, so the runner derives that field from
 the fixture ply while comparing all other observable fields directly.
 
-The 2026-09-11 host baseline covered 18 valid fixtures and 62 checkpoints with
+The 2026-09-11 baseline covered 18 valid fixtures and 62 host checkpoints with
 zero mismatches. The two invalid fixtures remain listed in the report's
-`skipped_invalid_fixtures` array. Retro output is deliberately not treated as
-host evidence; RPL-016 supplies a separate selected-ply adapter for the final
-comparison.
+`skipped_invalid_fixtures` array. The same report now includes a `retro` object
+with the selected castle checkpoints, navigation result, adapter profile, and
+emulator availability. The default `make conformance-replay` command uses the
+portable fixed-buffer host trace; `make conformance-replay-retro` uses the
+cc65/FCEUX JSON trace when that external toolchain is installed.

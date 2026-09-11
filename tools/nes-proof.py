@@ -9,7 +9,9 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
+from typing import NoReturn
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -21,7 +23,7 @@ LUA = ROOT / "tools" / "nes_trace.lua"
 TRACE = BUILD / "nes-replay-trace.json"
 
 
-def fail(message: str) -> "NoReturn":
+def fail(message: str) -> NoReturn:
     print(f"FAIL: {message}", file=sys.stderr)
     raise SystemExit(1)
 
@@ -95,38 +97,65 @@ def build_rom(cc65_home: Path | None) -> None:
 
 def run_emulator(fceux: str) -> None:
     TRACE.unlink(missing_ok=True)
+    command = [fceux, "--loadlua", str(LUA), str(ROM)]
     try:
-        result = subprocess.run(
-            [fceux, "--nogui", "--loadlua", str(LUA), str(ROM)],
+        process = subprocess.Popen(
+            command,
             cwd=ROOT,
             text=True,
-            capture_output=True,
-            timeout=30.0,
-            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
     except FileNotFoundError as exc:
         fail(f"cannot execute FCEUX: {exc}")
-    except subprocess.CalledProcessError as exc:
-        details = (exc.stdout + exc.stderr).strip()
-        fail(f"FCEUX failed: {details}")
-    except subprocess.TimeoutExpired as exc:
-        details = ((exc.stdout or "") + (exc.stderr or "")).strip()
-        fail(f"FCEUX timed out: {details}")
-    if not TRACE.is_file():
-        details = (result.stdout + result.stderr).strip()
-        fail(f"FCEUX completed without {TRACE.relative_to(ROOT)}: {details}")
+    deadline = time.monotonic() + 30.0
+    while process.poll() is None and not TRACE.is_file():
+        if time.monotonic() >= deadline:
+            process.terminate()
+            try:
+                stdout, stderr = process.communicate(timeout=5.0)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                stdout, stderr = process.communicate()
+            details = (stdout + stderr).strip()
+            fail(f"FCEUX timed out: {details}")
+        time.sleep(0.1)
+    if TRACE.is_file():
+        process_was_running = process.poll() is None
+        if process_was_running:
+            process.terminate()
+        try:
+            stdout, stderr = process.communicate(timeout=5.0)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            stdout, stderr = process.communicate()
+        if not process_was_running and process.returncode != 0:
+            details = (stdout + stderr).strip()
+            fail(f"FCEUX failed after producing a trace: {details}")
+    else:
+        stdout, stderr = process.communicate()
+        details = (stdout + stderr).strip()
+        fail(f"FCEUX failed (exit {process.returncode}): {details}")
     try:
         report = json.loads(TRACE.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"FCEUX produced invalid trace JSON: {exc}")
     records = report.get("records") if isinstance(report, dict) else None
-    if report.get("schema_version") != 1 or report.get("profile") != "cc65-fceux" or not isinstance(records, list):
+    if (
+        not isinstance(report, dict)
+        or report.get("schema_version") != 1
+        or report.get("profile") != "cc65-fceux"
+        or not isinstance(records, list)
+        or not all(isinstance(record, dict) for record in records)
+    ):
         fail("FCEUX produced a trace with an unsupported schema")
-    if len(records) < 6 or not records[-1].get("done"):
+    if len(records) < 6 or records[-1].get("done") is not True:
         fail(f"FCEUX trace did not complete the scripted navigation sequence: records={len(records)}")
     print(f"NES_EMULATOR ok trace={TRACE.relative_to(ROOT)} records={len(records)}")
-    if result.stdout.strip():
-        print(result.stdout.strip())
+    if stdout.strip():
+        print(stdout.strip())
+    if stderr.strip():
+        print(stderr.strip(), file=sys.stderr)
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

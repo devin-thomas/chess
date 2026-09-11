@@ -207,29 +207,31 @@ RPL-016 must identify its toolchain, memory budget, engine/state reconstruction 
 
 ## 14. RPL-016 repository proof
 
-The repository includes a constrained NES-profile adapter in
-`retro/replay_nes.c`. It reads the frozen RPL-015 `RPLY` payload directly from
-an embedded byte array and supports root reconstruction, packed move
-application, previous/next navigation, and start/end seeking. The adapter has
-no runtime JSON, PGN, or SAN parser and uses no dynamic allocation.
+The repository includes a constrained NES profile in `retro/nes_replay.c` and
+`retro/nes_replay_main.c`. It reads the frozen RPL-015 `RPLY` payload directly
+from an embedded byte array, reconstructs seeks from the root, and exposes
+next/previous/first/last controls. The runtime contains no JSON, PGN, or SAN
+parser and uses no dynamic allocation. The board is drawn with cc65 text tiles;
+the current ply and move count are displayed alongside the pieces.
 
-Run the proof with:
+Run the host safety proof with:
 
 ```sh
 make replay-nes-proof
 ```
 
-`tests/test_retro_replay.py` compares the root and both selected moves with the
-independent castle fixture oracle and exercises malformed-buffer rejection.
-This is a host-compiler proof of the constrained playback path. The repository
-also includes a cc65 ROM entry point and FCEUX Lua trace adapter:
+Build the actual iNES ROM with cc65 and run its deterministic FCEUX trace with:
 
 ```sh
-make nes-rom
-make nes-fceux
+NES_CC65_HOME=/path/to/cc65 make nes-build
+NES_CC65_HOME=/path/to/cc65 NES_FCEUX=/path/to/fceux make nes-proof
+make conformance-replay-retro
 ```
 
-The current host has a usable cc65 build path but FCEUX is not yet available,
-so the ROM build is verified while the emulator invocation remains an
-environment-dependent follow-up rather than evidence silently inferred from
-the host executable.
+The build uses cc65's mapper-0 layout (32 KiB PRG plus 8 KiB CHR), a fixed
+decoder capacity of 4096 packed plies, and cartridge RAM at `$6000`. The trace
+record begins at `$7000`; `tools/nes_trace.lua` captures the root, both
+castling positions, and the scripted `next`, `next`, `previous`, `first`,
+`last` sequence. `tools/replay-conformance.py` compares the trace's selected
+positions and navigation sequence with the independent
+`castle-kingside.expected.json` oracle.
