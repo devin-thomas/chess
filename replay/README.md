@@ -1,6 +1,6 @@
 # Replay core library
 
-RPL-001 through RPL-006 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md).
+RPL-001 through RPL-007 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md) and public viewer shell.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
 Playback timers, renderer integration, and checkpoint caching are later tickets.
