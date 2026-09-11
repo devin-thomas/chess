@@ -3,223 +3,154 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#080d12" />
+    <meta name="theme-color" content="#111517" />
     <meta
       name="description"
-      content="Run configurable CPU versus CPU chess simulations in your browser."
+      content="Watch a curated chess replay from the opening position."
     />
-    <title>Chess simulation</title>
+    <title>Replay room · Chess</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
-  <body>
-    <div class="shell">
-      <header class="topbar">
-        <h1>CPU simulation</h1>
-        <span class="engine-state"><span class="state-dot"></span>local engine</span>
+  <body class="viewer-page">
+    <div id="replay-viewer" class="viewer-shell" data-route="viewer" data-playback-state="paused">
+      <header class="viewer-topbar">
+        <a class="viewer-brand" href="/" aria-label="Replay room home">
+          <span class="viewer-brand-mark" aria-hidden="true">♞</span>
+          <span>
+            <span class="viewer-brand-name">Replay room</span>
+            <span class="viewer-brand-subtitle">Portable chess / public viewer</span>
+          </span>
+        </a>
+        <nav class="viewer-nav" aria-label="Site navigation">
+          <a href="/simulator/">Developer simulator</a>
+        </nav>
       </header>
 
-      <main class="layout">
-        <section class="control-card" aria-labelledby="simulation-heading">
-          <div class="section-head">
-            <h2 id="simulation-heading">Simulation</h2>
-            <span id="status-message" role="status" aria-live="polite">Ready</span>
+      <main class="viewer-layout">
+        <section class="viewer-stage" aria-labelledby="viewer-title">
+          <div class="viewer-stage-header">
+            <p class="viewer-kicker">Curated replay · Opening fixture</p>
+            <h1 id="viewer-title">A game worth replaying.</h1>
+            <p class="viewer-intro">
+              Start at the root position, then watch the canonical game unfold one ply at a time.
+            </p>
           </div>
 
-          <div class="control-bar">
-            <div class="mode-switch" role="tablist" aria-label="Run type">
-              <button id="mode-run" class="mode-button is-active" type="button" role="tab" aria-selected="true">
-                Single run
-              </button>
-              <button id="mode-batch" class="mode-button" type="button" role="tab" aria-selected="false">
-                Batch run
-              </button>
+          <div class="viewer-board-card">
+            <div class="viewer-board-toolbar">
+              <span class="viewer-board-label">Current position</span>
+              <span id="viewer-board-orientation">White perspective</span>
             </div>
-
-            <div class="control-grid">
-              <label>
-                Mode
-                <select id="chess-mode">
-                  <option value="all-rules-enabled">All rules enabled</option>
-                  <option value="basic">Basic</option>
-                </select>
-              </label>
-              <label>
-                Seed
-                <input id="seed" type="text" inputmode="numeric" value="" autocomplete="off" />
-              </label>
-              <label>
-                Max plies
-                <input id="max-plies" type="number" min="0" max="5000" step="1" value="600" />
-              </label>
-              <label id="batch-count-field" hidden>
-                Runs
-                <input id="batch-count" type="number" min="1" max="1000" step="1" value="100" />
-              </label>
+            <div class="viewer-board-frame">
+              <div id="viewer-board" class="viewer-board" role="grid" aria-label="Chess board"></div>
             </div>
-
-            <div class="actions">
-              <button id="run-button" class="primary-button" type="button">Run</button>
-              <button id="stop-button" class="secondary-button" type="button" hidden>Stop</button>
-              <span id="progress-message" class="progress-message"></span>
-            </div>
+            <p id="viewer-board-state" class="viewer-board-state" aria-live="polite"></p>
           </div>
         </section>
 
-        <section class="board-card" aria-labelledby="board-heading">
-          <div class="section-head">
-            <h2 id="board-heading">Live board</h2>
-            <span id="board-meta" aria-live="polite">Starting position - white to move</span>
-          </div>
-
-          <div class="board-layout">
-            <div class="board-frame">
-              <div id="chess-board" class="chess-board" role="grid" aria-label="Chess board"></div>
+        <aside class="viewer-rail" aria-label="Replay information and controls">
+          <section class="viewer-card viewer-match-card" aria-labelledby="match-heading">
+            <div class="viewer-card-kicker">Match card</div>
+            <h2 id="match-heading" class="sr-only">Replay match information</h2>
+            <div class="viewer-player viewer-player-white">
+              <span class="viewer-player-side">White</span>
+              <strong id="replay-white">Fixture White</strong>
             </div>
-
-            <aside class="board-tools" aria-label="Board playback controls">
-              <div class="board-reading">
-                <div class="board-reading-row">
-                  <span>Turn</span>
-                  <strong id="board-turn">White to move</strong>
-                </div>
-                <div class="board-reading-row">
-                  <span>Last move</span>
-                  <strong id="board-last-move">-</strong>
-                </div>
+            <div class="viewer-versus" aria-hidden="true">vs</div>
+            <div class="viewer-player viewer-player-black">
+              <span class="viewer-player-side">Black</span>
+              <strong id="replay-black">Fixture Black</strong>
+            </div>
+            <div class="viewer-result-row">
+              <span>Result</span>
+              <strong id="replay-result">1-0 · White wins</strong>
+            </div>
+            <dl class="viewer-meta-list">
+              <div>
+                <dt>Event</dt>
+                <dd id="replay-event">Curated replay</dd>
               </div>
+              <div>
+                <dt>Site</dt>
+                <dd id="replay-site">Local replay fixture</dd>
+              </div>
+              <div>
+                <dt>Cursor</dt>
+                <dd><span id="replay-ply">0 / 3</span> ply</dd>
+              </div>
+            </dl>
+          </section>
 
-              <div class="playback-panel">
-                <label for="playback-speed">Turn speed</label>
-                <select id="playback-speed">
-                  <option value="0" selected>Full speed</option>
-                  <option value="160">160 ms / ply</option>
-                  <option value="400">400 ms / ply</option>
-                  <option value="800">800 ms / ply</option>
-                  <option value="1200">1.2 s / ply</option>
+          <section id="viewer-transport" class="viewer-card viewer-transport-card" data-shell="transport" aria-labelledby="transport-heading">
+            <div class="viewer-card-heading">
+              <div>
+                <div class="viewer-card-kicker">Broadcast controls</div>
+                <h2 id="transport-heading">Replay transport</h2>
+              </div>
+              <span id="viewer-transport-status" class="viewer-transport-status">Paused</span>
+            </div>
+            <div class="viewer-transport-buttons" aria-label="Replay navigation">
+              <button id="viewer-first" class="viewer-icon-button" type="button" aria-label="Jump to start" title="Jump to start">|&lt;</button>
+              <button id="viewer-previous" class="viewer-icon-button" type="button" aria-label="Previous ply" title="Previous ply">‹</button>
+              <button id="viewer-play" class="viewer-play-button" type="button" aria-pressed="false">Play</button>
+              <button id="viewer-next" class="viewer-icon-button" type="button" aria-label="Next ply" title="Next ply">›</button>
+              <button id="viewer-last" class="viewer-icon-button" type="button" aria-label="Jump to end" title="Jump to end">&gt;|</button>
+            </div>
+            <div class="viewer-timeline-block">
+              <div class="viewer-timeline-labels">
+                <label for="viewer-timeline">Timeline</label>
+                <span><span id="viewer-timeline-current">0</span> / <span id="viewer-timeline-end">3</span> ply</span>
+              </div>
+              <input id="viewer-timeline" type="range" min="0" max="3" value="0" step="1" aria-label="Seek replay ply" />
+            </div>
+            <div class="viewer-transport-options">
+              <button id="viewer-board-flip" class="viewer-secondary-button" type="button" aria-pressed="false">Flip board</button>
+              <label class="viewer-speed-field" for="viewer-speed">
+                Speed
+                <select id="viewer-speed">
+                  <option value="0.5">0.5×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="2">2×</option>
                 </select>
-                <p id="playback-note">Full speed renders the final position immediately.</p>
-              </div>
-            </aside>
-          </div>
-        </section>
+              </label>
+            </div>
+            <p id="viewer-current-move" class="viewer-current-move">Root position</p>
+          </section>
 
-        <aside class="summary-card" aria-labelledby="summary-heading">
-          <div class="rail-top">
-            <span class="rail-mark">01</span>
-            <span>summary</span>
-          </div>
-          <div class="summary-title">
-            <h2 id="summary-heading">Ready</h2>
-            <span id="summary-badge">waiting</span>
-          </div>
-          <div class="metric-list">
-            <div class="metric metric-primary">
-              <span>Outcome</span>
-              <strong id="metric-outcome">-</strong>
+          <section id="viewer-moves" class="viewer-card viewer-moves-card" data-shell="move-list" aria-labelledby="moves-heading">
+            <div class="viewer-card-heading">
+              <div>
+                <div class="viewer-card-kicker">Canonical sequence</div>
+                <h2 id="moves-heading">Move list</h2>
+              </div>
+              <span class="viewer-shell-note">select a ply</span>
             </div>
-            <div class="metric">
-              <span>Plies</span>
-              <strong id="metric-plies">-</strong>
+            <ol id="viewer-move-list" class="viewer-move-list" aria-label="Replay moves"></ol>
+          </section>
+
+          <section class="viewer-card viewer-library-card" data-shell="replay-library" aria-labelledby="library-heading">
+            <div class="viewer-card-heading">
+              <div>
+                <div class="viewer-card-kicker">More games</div>
+                <h2 id="library-heading">Replay library</h2>
+              </div>
             </div>
-            <div class="metric">
-              <span>Duration</span>
-              <strong id="metric-duration">-</strong>
-            </div>
-            <div class="metric">
-              <span>Rate</span>
-              <strong id="metric-rate">-</strong>
-            </div>
-          </div>
-          <div class="rail-note">
-            <span>Termination</span>
-            <strong id="metric-termination">-</strong>
-          </div>
+            <label for="viewer-replay-select">Curated replay</label>
+            <select id="viewer-replay-select" disabled>
+              <option value="opening">Opening fixture</option>
+            </select>
+            <button id="viewer-import-pgn" class="viewer-secondary-button viewer-import-button" type="button" disabled>Import PGN</button>
+            <p class="viewer-coming-soon">Library and PGN import are ready for the next replay milestone.</p>
+          </section>
         </aside>
-
-        <section class="batch-card" aria-labelledby="batch-heading">
-          <div class="section-head">
-            <h2 id="batch-heading">Batch detail</h2>
-            <span id="batch-meta">single-run mode</span>
-          </div>
-          <div class="batch-stat-grid">
-            <div class="batch-stat">
-              <span>White wins</span>
-              <strong id="batch-white">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Draws</span>
-              <strong id="batch-draws">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Black wins</span>
-              <strong id="batch-black">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Mean plies</span>
-              <strong id="batch-mean">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Median plies</span>
-              <strong id="batch-median">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Runs</span>
-              <strong id="batch-completed">-</strong>
-            </div>
-            <div class="batch-stat">
-              <span>Capped</span>
-              <strong id="batch-capped">-</strong>
-            </div>
-          </div>
-        </section>
-
-        <section class="distribution-card" aria-labelledby="distribution-heading">
-          <div class="section-head">
-            <h2 id="distribution-heading">Move distribution</h2>
-            <span id="distribution-meta">sampled from the current position</span>
-          </div>
-          <ul id="distribution-list" class="distribution-list">
-            <li class="empty-state">Run a simulation to see the first-move distribution.</li>
-          </ul>
-        </section>
-
-        <details id="advanced" class="advanced-card">
-          <summary>Advanced</summary>
-          <div class="advanced-grid">
-            <label class="wide-field">
-              FEN
-              <textarea
-                id="fen"
-                rows="2"
-                spellcheck="false"
-                placeholder="Starting position"
-              ></textarea>
-            </label>
-            <label>
-              Samples
-              <input id="sample-count" type="number" min="0" max="5000" step="1" value="1000" />
-            </label>
-            <label class="check-field">
-              <input id="trace" type="checkbox" />
-              Include move trace
-            </label>
-            <label class="check-field">
-              <input id="terminal-toggle" type="checkbox" />
-              Terminal output
-            </label>
-          </div>
-        </details>
-
-        <details id="terminal-details" class="terminal-card" hidden>
-          <summary>Terminal output</summary>
-          <div class="terminal-toolbar">
-            <span id="terminal-meta">No output yet</span>
-            <button id="clear-terminal" class="text-button" type="button">Clear</button>
-          </div>
-          <pre id="terminal-output" tabindex="0"></pre>
-        </details>
       </main>
+
+      <footer class="viewer-footer">
+        <span>Source: <span id="viewer-source">shared/replay-fixtures/opening.json</span></span>
+        <a href="/simulator/">Open the simulator</a>
+      </footer>
+      <p id="viewer-live-status" class="sr-only" role="status" aria-live="polite"></p>
     </div>
-    <script type="module" src="/app.ts"></script>
+    <script type="module" src="/viewer.ts"></script>
   </body>
 </html>
