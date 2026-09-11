@@ -36,12 +36,21 @@ make benchmark
 
 The browser interface runs the TypeScript engine locally in the page. It supports single games, deterministic batches, optional FEN and move tracing, terminal-style JSON output, and first-move sampling statistics.
 
-    npm install
-    npm run dev
+```sh
+npm install
+npm run dev
+```
 
-Open the local URL printed by Vite. The deployed interface is intended for https://chess-sim.uppercut-labs.workers.dev/.
+Open the local URL printed by Vite. The live interface is deployed to [chess-sim.pages.dev](https://chess-sim.pages.dev/).
 
-The production asset bundle is built with npm run build. With an authenticated Wrangler session, npm run deploy publishes it through wrangler.jsonc.
+The deployment uses the Cloudflare Pages project named `chess-sim`:
+
+```sh
+npm run build
+npm run deploy
+```
+
+`npm run deploy` builds `dist/` and uploads it to the Pages project. Authenticate Wrangler first with `npx wrangler login` if needed.
 
 ## Run a game
 
