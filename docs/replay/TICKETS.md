@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-011 implemented; RPL-012 through RPL-017 remain open. Phase 1 is complete; Phase 2 is in progress.
+Status: RPL-001 through RPL-012 implemented; RPL-013 through RPL-017 remain open. Phase 1 is complete; Phase 2 is in progress.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -311,6 +311,8 @@ Animate normalized replay transitions.
 ---
 
 ## RPL-012 — Add PGN import UI
+
+Status: complete. Validated by `npm run typecheck`, `npm run test:replay`, and `npm run build`.
 
 **Goal**
 Allow a user to watch their own or external games locally.
