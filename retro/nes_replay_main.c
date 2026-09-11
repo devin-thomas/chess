@@ -24,12 +24,17 @@
 #define TRACE_ERROR 80u
 #define TRACE_DEMO_STAGE 81u
 #define TRACE_DONE 82u
+#define TRACE_HISTORY_COUNT 83u
+#define TRACE_HISTORY_BASE 84u
+#define TRACE_RECORD_BYTES 83u
+#define TRACE_HISTORY_CAPACITY 8u
 
 #define COMMAND_LOAD 0u
 #define COMMAND_NEXT 1u
 #define COMMAND_PREVIOUS 2u
 #define COMMAND_FIRST 3u
 #define COMMAND_LAST 4u
+#define DEMO_DELAY_FRAMES 2u
 
 static void put_unsigned(unsigned int value)
 {
@@ -75,6 +80,7 @@ static void trace_position(const NesReplay *replay, unsigned char command,
     unsigned int index;
     unsigned long value;
     unsigned char event;
+    unsigned char history_count;
 
     /* Publish the event byte last so a Lua observer never consumes a partial
      * position while the board is being copied. */
@@ -101,6 +107,14 @@ static void trace_position(const NesReplay *replay, unsigned char command,
     TRACE[TRACE_DEMO_STAGE] = demo_stage;
     TRACE[TRACE_DONE] = done;
     TRACE[TRACE_EVENT] = event;
+    history_count = TRACE[TRACE_HISTORY_COUNT];
+    if (history_count < TRACE_HISTORY_CAPACITY) {
+        for (index = 0u; index < TRACE_RECORD_BYTES; ++index) {
+            TRACE[TRACE_HISTORY_BASE + history_count * TRACE_RECORD_BYTES + index] = TRACE[index];
+        }
+        ++history_count;
+        TRACE[TRACE_HISTORY_COUNT] = history_count;
+    }
 }
 
 static void navigation(NesReplay *replay, unsigned char command)
@@ -122,6 +136,8 @@ int main(void)
     unsigned char buttons;
     unsigned char pressed;
     unsigned char command;
+
+    TRACE[TRACE_HISTORY_COUNT] = 0u;
 
     if (nes_replay_load(&replay, NES_REPLAY_DATA, NES_REPLAY_DATA_LEN) != NES_REPLAY_OK) {
         TRACE[TRACE_VALID] = 0u;
@@ -152,7 +168,7 @@ int main(void)
         else if ((pressed & JOY_START_MASK) != 0u) command = COMMAND_LAST;
         else if (demo_stage < 5u) {
             ++demo_timer;
-            if (demo_timer >= 20u) {
+            if (demo_timer >= DEMO_DELAY_FRAMES) {
                 demo_timer = 0u;
                 command = (unsigned char)(demo_stage == 0u || demo_stage == 1u
                     ? COMMAND_NEXT
