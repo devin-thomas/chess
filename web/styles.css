@@ -1532,6 +1532,92 @@ pre {
   line-height: 1.45;
 }
 
+.viewer-import-panel {
+  display: grid;
+  gap: 9px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(178, 191, 181, 0.15);
+}
+
+.viewer-import-panel textarea {
+  min-height: 130px;
+  resize: vertical;
+  color: #dbe5dd;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  text-transform: none;
+}
+
+.viewer-import-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 7px;
+}
+
+.viewer-file-button {
+  display: grid;
+  min-height: 42px;
+  place-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(178, 191, 181, 0.22);
+  border-radius: 7px;
+  color: #e6ebe5;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.viewer-file-button:hover {
+  border-color: rgba(239, 188, 120, 0.64);
+  background: rgba(209, 150, 78, 0.12);
+}
+
+.viewer-file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.viewer-import-chooser {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(217, 167, 101, 0.25);
+  background: rgba(209, 150, 78, 0.06);
+}
+
+.viewer-import-chooser select {
+  min-height: 38px;
+  font-size: 0.72rem;
+}
+
+.viewer-import-status {
+  min-height: 1.2em;
+  margin: 0;
+  color: #8fa19a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.viewer-import-status[data-state="loading"] {
+  color: #efbc78;
+}
+
+.viewer-import-status[data-state="ready"] {
+  color: #91cba5;
+}
+
+.viewer-import-status[data-state="error"] {
+  color: #ff9987;
+}
+
 .viewer-footer {
   align-items: baseline;
   margin-top: 30px;
@@ -1655,6 +1741,10 @@ pre {
 
   .viewer-transport-buttons {
     gap: 4px;
+  }
+
+  .viewer-import-actions {
+    grid-template-columns: 1fr;
   }
 
   .viewer-icon-button,

@@ -10,6 +10,13 @@ import {
 import { createBoard3DRenderer } from './board3d.ts';
 import { buildReplayMoveList } from './replay-move-list.ts';
 import { browserReplayScheduler, createReplayTransport } from './replay-transport.ts';
+import {
+  choosePgnGame,
+  parsePgnForViewer,
+  pgnGameOptionLabel,
+  pgnImportErrorMessage,
+} from './replay-import.ts';
+import { PGN_LIMITS } from '../replay/pgn-import.ts';
 
 const $ = <T extends Element>(selector: string): T => {
   const element = document.querySelector(selector);
@@ -43,11 +50,20 @@ const elements = {
   timelineCurrent: $<HTMLElement>('#viewer-timeline-current'),
   timelineEnd: $<HTMLElement>('#viewer-timeline-end'),
   moveList: $<HTMLOListElement>('#viewer-move-list'),
+  importToggle: $<HTMLButtonElement>('#viewer-import-pgn'),
+  importPanel: $<HTMLElement>('#viewer-import-panel'),
+  pgnText: $<HTMLTextAreaElement>('#viewer-pgn-text'),
+  pgnFile: $<HTMLInputElement>('#viewer-pgn-file'),
+  importSubmit: $<HTMLButtonElement>('#viewer-import-submit'),
+  importChooser: $<HTMLElement>('#viewer-import-chooser'),
+  importGameSelect: $<HTMLSelectElement>('#viewer-import-game-select'),
+  importGame: $<HTMLButtonElement>('#viewer-import-game'),
+  importStatus: $<HTMLElement>('#viewer-import-status'),
 };
 
 const model = createDefaultViewerState();
 const boardRenderer = createBoard3DRenderer(elements.board);
-const displayMoves = buildReplayMoveList(model.replay);
+let displayMoves = buildReplayMoveList(model.replay);
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
   scheduler: browserReplayScheduler,
@@ -174,6 +190,101 @@ function reportNavigationResult(result: NavigationResult): void {
   }
 }
 
+function setImportStatus(message: string, state: 'idle' | 'loading' | 'error' | 'ready' = 'idle'): void {
+  elements.importStatus.textContent = message;
+  elements.importStatus.dataset.state = state;
+}
+
+function setImportBusy(busy: boolean): void {
+  elements.importSubmit.disabled = busy;
+  elements.pgnFile.disabled = busy;
+  elements.importGame.disabled = busy || elements.importGameSelect.options.length === 0;
+}
+
+function clearImportChooser(): void {
+  elements.importChooser.hidden = true;
+  elements.importGameSelect.replaceChildren();
+  elements.importGame.disabled = true;
+}
+
+function populateImportChooser(collection: ReturnType<typeof parsePgnForViewer>): void {
+  elements.importGameSelect.replaceChildren();
+  for (const game of collection.games) {
+    const option = document.createElement('option');
+    option.value = String(game.index);
+    option.textContent = pgnGameOptionLabel(game);
+    option.disabled = !game.valid;
+    elements.importGameSelect.append(option);
+  }
+  const firstValid = collection.games.find((game) => game.valid);
+  if (firstValid !== undefined) elements.importGameSelect.value = String(firstValid.index);
+  elements.importChooser.hidden = false;
+  elements.importGame.disabled = firstValid === undefined;
+}
+
+function loadImportedGame(index: number): boolean {
+  const collection = pendingImportCollection;
+  if (collection === null) {
+    setImportStatus('Import a PGN before choosing a game.', 'error');
+    return false;
+  }
+  const choice = choosePgnGame(collection, index);
+  if (!choice.ok) {
+    setImportStatus(pgnImportErrorMessage(choice.error), 'error');
+    return false;
+  }
+
+  // Stop the old timeline before swapping the controller's complete session.
+  transport.pause();
+  const loaded = model.controller.load(choice.replay);
+  if (!loaded.ok) {
+    setImportStatus(loaded.error.message, 'error');
+    return false;
+  }
+  model.replay = structuredClone(loaded.replay);
+  model.rootState = structuredClone(loaded.root_state);
+  displayMoves = buildReplayMoveList(model.replay);
+  clearImportChooser();
+  render();
+  setImportStatus(`Loaded game ${choice.game.index + 1} · ${choice.game.label}`, 'ready');
+  return true;
+}
+
+let pendingImportCollection: ReturnType<typeof parsePgnForViewer> | null = null;
+
+async function importPgnSource(source: string, label: string): Promise<void> {
+  setImportBusy(true);
+  setImportStatus(`Reading ${label}…`, 'loading');
+  clearImportChooser();
+  pendingImportCollection = null;
+  try {
+    await Promise.resolve();
+    const collection = parsePgnForViewer(source);
+    pendingImportCollection = collection;
+    if (collection.games.length === 0) {
+      setImportStatus('No PGN games were found.', 'error');
+      return;
+    }
+    if (collection.games.length > 1) {
+      populateImportChooser(collection);
+      const validCount = collection.games.filter((game) => game.valid).length;
+      setImportStatus(`${validCount} of ${collection.games.length} games are ready. Choose one to load.`, validCount > 0 ? 'ready' : 'error');
+      return;
+    }
+    const onlyGame = collection.games[0];
+    if (!onlyGame.valid) {
+      setImportStatus(pgnImportErrorMessage(onlyGame.error!), 'error');
+      return;
+    }
+    loadImportedGame(onlyGame.index);
+  } catch (error) {
+    pendingImportCollection = null;
+    setImportStatus(error instanceof Error ? error.message : 'PGN import failed.', 'error');
+  } finally {
+    setImportBusy(false);
+  }
+}
+
 function seekTo(ply: number): void {
   reportNavigationResult(transport.seek(ply));
 }
@@ -208,6 +319,31 @@ elements.last.addEventListener('click', () => reportNavigationResult(transport.l
 elements.flip.addEventListener('click', () => transport.toggleBoardFlip());
 elements.speed.addEventListener('change', () => setSpeed(elements.speed.value));
 elements.timeline.addEventListener('input', () => seekTo(Number(elements.timeline.value)));
+elements.importToggle.addEventListener('click', () => {
+  const open = elements.importPanel.hidden;
+  elements.importPanel.hidden = !open;
+  elements.importToggle.setAttribute('aria-expanded', String(open));
+  if (open) elements.pgnText.focus();
+});
+elements.importSubmit.addEventListener('click', () => {
+  void importPgnSource(elements.pgnText.value, 'pasted PGN');
+});
+elements.pgnFile.addEventListener('change', () => {
+  const file = elements.pgnFile.files?.[0];
+  if (file === undefined) return;
+  if (file.size > PGN_LIMITS.input_bytes) {
+    setImportStatus(`PGN exceeds input_bytes:${PGN_LIMITS.input_bytes}`, 'error');
+    elements.pgnFile.value = '';
+    return;
+  }
+  void file.text().then((source) => importPgnSource(source, file.name)).catch((error: unknown) => {
+    setImportBusy(false);
+    setImportStatus(error instanceof Error ? error.message : 'Could not read the PGN file.', 'error');
+  });
+});
+elements.importGame.addEventListener('click', () => {
+  loadImportedGame(Number(elements.importGameSelect.value));
+});
 window.addEventListener('keydown', (event) => {
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement || target instanceof HTMLButtonElement) return;

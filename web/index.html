@@ -29,7 +29,7 @@
       <main class="viewer-layout">
         <section class="viewer-stage" aria-labelledby="viewer-title">
           <div class="viewer-stage-header">
-            <p class="viewer-kicker">Curated replay · Opening fixture</p>
+            <p id="viewer-stage-kicker" class="viewer-kicker">Curated replay · Opening fixture</p>
             <h1 id="viewer-title">A game worth replaying.</h1>
             <p class="viewer-intro">
               Start at the root position, then watch the canonical game unfold one ply at a time.
@@ -139,8 +139,26 @@
             <select id="viewer-replay-select" disabled>
               <option value="opening">Opening fixture</option>
             </select>
-            <button id="viewer-import-pgn" class="viewer-secondary-button viewer-import-button" type="button" disabled>Import PGN</button>
-            <p class="viewer-coming-soon">Library and PGN import are ready for the next replay milestone.</p>
+            <button id="viewer-import-pgn" class="viewer-secondary-button viewer-import-button" type="button" aria-expanded="false" aria-controls="viewer-import-panel">Import PGN</button>
+            <p class="viewer-coming-soon">Paste a game or choose a PGN file. Everything is parsed locally in this browser.</p>
+            <div id="viewer-import-panel" class="viewer-import-panel" hidden>
+              <label for="viewer-pgn-text">Paste PGN</label>
+              <textarea id="viewer-pgn-text" rows="7" spellcheck="false" placeholder="[White &quot;Player One&quot;]\n\n1. e4 e5 2. Nf3 *"></textarea>
+              <div class="viewer-import-actions">
+                <button id="viewer-import-submit" class="viewer-play-button" type="button">Load pasted PGN</button>
+                <label class="viewer-file-button" for="viewer-pgn-file">
+                  Choose PGN file
+                  <input id="viewer-pgn-file" type="file" accept=".pgn,text/plain" />
+                </label>
+              </div>
+              <div id="viewer-import-chooser" class="viewer-import-chooser" hidden>
+                <label for="viewer-import-game-select">Choose a game</label>
+                <select id="viewer-import-game-select"></select>
+                <div id="viewer-import-game-errors" class="viewer-import-game-errors" role="status"></div>
+                <button id="viewer-import-game" class="viewer-secondary-button" type="button">Load selected game</button>
+              </div>
+              <p id="viewer-import-status" class="viewer-import-status" role="status" aria-live="polite"></p>
+            </div>
           </section>
         </aside>
       </main>
