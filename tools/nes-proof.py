@@ -95,6 +95,24 @@ def build_rom(cc65_home: Path | None) -> None:
         print(result.stderr.strip(), file=sys.stderr)
 
 
+def trace_is_complete(path: Path) -> bool:
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    if not isinstance(report, dict):
+        return False
+    records = report.get("records")
+    return (
+        report.get("schema_version") == 1
+        and report.get("profile") == "cc65-fceux"
+        and isinstance(records, list)
+        and len(records) >= 6
+        and all(isinstance(record, dict) for record in records)
+        and records[-1].get("done") is True
+    )
+
+
 def run_emulator(fceux: str) -> None:
     TRACE.unlink(missing_ok=True)
     command = [fceux, "--no-config", "1", "--sound", "0", "--loadlua", str(LUA), str(ROM)]
@@ -112,7 +130,7 @@ def run_emulator(fceux: str) -> None:
     except FileNotFoundError as exc:
         fail(f"cannot execute FCEUX: {exc}")
     deadline = time.monotonic() + 30.0
-    while process.poll() is None and not TRACE.is_file():
+    while process.poll() is None and not trace_is_complete(TRACE):
         if time.monotonic() >= deadline:
             process.terminate()
             try:
