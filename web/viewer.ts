@@ -2,14 +2,12 @@ import type { Color } from '../replay/schema.ts';
 import type { PresentationSnapshot } from '../replay/presentation.ts';
 import type { NavigationResult } from '../replay/controller.ts';
 import {
-  boardSquareOrder,
   createDefaultViewerState,
   moveContext,
-  PIECE_GLYPHS,
-  piecesBySquare,
   replayMetadataText,
   type ReplaySpeed,
 } from './viewer-shell.ts';
+import { createBoard3DRenderer } from './board3d.ts';
 import { buildReplayMoveList } from './replay-move-list.ts';
 import { browserReplayScheduler, createReplayTransport } from './replay-transport.ts';
 
@@ -48,6 +46,7 @@ const elements = {
 };
 
 const model = createDefaultViewerState();
+const boardRenderer = createBoard3DRenderer(elements.board);
 const displayMoves = buildReplayMoveList(model.replay);
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
@@ -67,48 +66,10 @@ function resultLabel(result: string): string {
   return '* · In progress';
 }
 
-function squareIndex(square: string): number {
-  return 'abcdefgh'.indexOf(square[0]) + (Number(square[1]) - 1) * 8;
-}
-
 function renderBoard(snapshot: PresentationSnapshot): void {
-  const pieces = piecesBySquare(snapshot);
-  const fragment = document.createDocumentFragment();
-  for (const squareName of boardSquareOrder(model.boardFlipped)) {
-    const index = squareIndex(squareName);
-    const file = index % 8;
-    const rank = Math.floor(index / 8);
-    const cell = document.createElement('div');
-    cell.className = 'viewer-board-square ' + ((file + rank) % 2 === 0 ? 'is-light' : 'is-dark');
-    cell.dataset.square = squareName;
-    cell.setAttribute('role', 'gridcell');
-    const piece = pieces.get(squareName);
-    cell.setAttribute('aria-label', squareName + ': ' + (piece ? piece.color + ' ' + piece.piece_type : 'empty'));
-
-    const pieceElement = document.createElement('span');
-    pieceElement.className = piece ? 'viewer-piece piece-' + piece.color : 'viewer-piece';
-    pieceElement.setAttribute('aria-hidden', 'true');
-    pieceElement.textContent = piece ? PIECE_GLYPHS[piece.color][piece.piece_type] : '';
-    cell.append(pieceElement);
-
-    if (file === 0) {
-      const rankLabel = document.createElement('span');
-      rankLabel.className = 'viewer-coordinate viewer-rank';
-      rankLabel.textContent = String(rank + 1);
-      rankLabel.setAttribute('aria-hidden', 'true');
-      cell.append(rankLabel);
-    }
-    if (rank === 0) {
-      const fileLabel = document.createElement('span');
-      fileLabel.className = 'viewer-coordinate viewer-file';
-      fileLabel.textContent = 'abcdefgh'[file];
-      fileLabel.setAttribute('aria-hidden', 'true');
-      cell.append(fileLabel);
-    }
-    fragment.append(cell);
-  }
-  elements.board.replaceChildren(fragment);
+  boardRenderer.render(snapshot, model.controller.lastTransition());
   elements.board.dataset.orientation = model.boardFlipped ? 'black' : 'white';
+  elements.board.dataset.renderer = boardRenderer.status;
   elements.boardOrientation.textContent = model.boardFlipped ? 'Black perspective' : 'White perspective';
 }
 

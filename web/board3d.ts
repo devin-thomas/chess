@@ -1,0 +1,735 @@
+import * as THREE from 'three';
+import type { MoveRecord, PresentedPiece, PresentationSnapshot } from '../replay/presentation.ts';
+import type { Color, PieceType } from '../replay/schema.ts';
+
+export const BOARD_SIZE = 8;
+export const BOARD_SQUARE_COUNT = BOARD_SIZE * BOARD_SIZE;
+export const CANONICAL_FILES = 'abcdefgh';
+export const CANONICAL_RANKS = '12345678';
+
+export type BoardOrientation = 'white' | 'black';
+export type BoardOrientationInput = BoardOrientation | boolean;
+export type BoardRendererStatus = 'unmounted' | 'webgl' | 'fallback' | 'unavailable';
+
+export interface BoardCoordinate {
+  readonly square: string;
+  readonly file: number;
+  readonly rank: number;
+  readonly x: number;
+  readonly z: number;
+}
+
+export interface BoardPieceProjection extends BoardCoordinate {
+  readonly piece_identity: string;
+  readonly piece_type: PieceType;
+  readonly color: Color;
+  readonly visual_asset_id: string;
+}
+
+export interface BoardSnapshotProjection {
+  readonly orientation: BoardOrientation;
+  readonly squareSize: number;
+  readonly pieces: readonly BoardPieceProjection[];
+  readonly occupancy: ReadonlyMap<string, BoardPieceProjection>;
+  readonly identities: ReadonlyMap<string, BoardPieceProjection>;
+}
+
+export interface PieceIdentityUpdate {
+  readonly piece_identity: string;
+  readonly before: BoardPieceProjection | null;
+  readonly after: BoardPieceProjection | null;
+}
+
+export interface FallbackAssetDescriptor {
+  readonly kind: 'primitive-fallback';
+  readonly piece_identity: string;
+  readonly piece_type: PieceType;
+  readonly color: Color;
+  readonly visual_asset_id: string;
+  readonly label: string;
+}
+
+export interface Board3DRendererOptions {
+  readonly orientation?: BoardOrientationInput;
+  readonly squareSize?: number;
+  readonly backgroundColor?: THREE.ColorRepresentation;
+  readonly antialias?: boolean;
+  readonly rendererFactory?: (parameters: THREE.WebGLRendererParameters) => THREE.WebGLRenderer;
+  readonly pieceAssetFactory?: (piece: PresentedPiece) => THREE.Object3D | null;
+}
+
+export interface BoardMountResult {
+  readonly status: Exclude<BoardRendererStatus, 'unmounted'>;
+  readonly error: string | null;
+}
+
+export interface BoardRenderResult {
+  readonly status: Exclude<BoardRendererStatus, 'unmounted'>;
+  readonly squareCount: number;
+  readonly pieceCount: number;
+  readonly fallbackAssetCount: number;
+  readonly error: string | null;
+}
+
+const pieceTypes: readonly PieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'];
+
+function isPieceType(value: string): value is PieceType {
+  return pieceTypes.includes(value as PieceType);
+}
+
+function orientationValue(input: BoardOrientationInput): BoardOrientation {
+  return typeof input === 'boolean' ? (input ? 'black' : 'white') : input;
+}
+
+export function normalizeBoardOrientation(input: BoardOrientationInput = 'white'): BoardOrientation {
+  const orientation = orientationValue(input);
+  if (orientation !== 'white' && orientation !== 'black') {
+    throw new Error('Board orientation must be white or black');
+  }
+  return orientation;
+}
+
+function assertSquare(square: string): void {
+  if (!/^[a-h][1-8]$/.test(square)) throw new Error(`Invalid canonical board square: ${square}`);
+}
+
+export function canonicalSquareToIndex(square: string): number {
+  assertSquare(square);
+  return CANONICAL_FILES.indexOf(square[0]) + (Number(square[1]) - 1) * BOARD_SIZE;
+}
+
+export function indexToCanonicalSquare(index: number): string {
+  if (!Number.isInteger(index) || index < 0 || index >= BOARD_SQUARE_COUNT) {
+    throw new Error(`Invalid canonical board index: ${index}`);
+  }
+  return CANONICAL_FILES[index % BOARD_SIZE] + CANONICAL_RANKS[Math.floor(index / BOARD_SIZE)];
+}
+
+export function canonicalBoardSquares(orientation: BoardOrientationInput = 'white'): string[] {
+  const view = normalizeBoardOrientation(orientation);
+  const files = view === 'white' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0];
+  const ranks = view === 'white' ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
+  return ranks.flatMap((rank) => files.map((file) => CANONICAL_FILES[file] + CANONICAL_RANKS[rank]));
+}
+
+export function canonicalSquareToBoardCoordinate(
+  square: string,
+  orientation: BoardOrientationInput = 'white',
+  squareSize = 1,
+): BoardCoordinate {
+  const index = canonicalSquareToIndex(square);
+  if (!Number.isFinite(squareSize) || squareSize <= 0) throw new Error('Board square size must be positive');
+  const view = normalizeBoardOrientation(orientation);
+  const file = index % BOARD_SIZE;
+  const rank = Math.floor(index / BOARD_SIZE);
+  const displayFile = view === 'white' ? file : BOARD_SIZE - 1 - file;
+  const displayRank = view === 'white' ? rank : BOARD_SIZE - 1 - rank;
+  const boardCenter = (BOARD_SIZE - 1) / 2;
+  return {
+    square,
+    file,
+    rank,
+    x: (displayFile - boardCenter) * squareSize,
+    z: (boardCenter - displayRank) * squareSize,
+  };
+}
+
+export const squareToBoardCoordinate = canonicalSquareToBoardCoordinate;
+export const boardPositionForSquare = canonicalSquareToBoardCoordinate;
+
+export function snapshotOccupancy(snapshot: PresentationSnapshot): Map<string, PresentedPiece> {
+  const occupancy = new Map<string, PresentedPiece>();
+  for (const piece of snapshot.pieces) {
+    assertSquare(piece.board_square);
+    if (occupancy.has(piece.board_square)) {
+      throw new Error(`Presentation snapshot has duplicate occupancy at ${piece.board_square}`);
+    }
+    occupancy.set(piece.board_square, piece);
+  }
+  return occupancy;
+}
+
+export function snapshotIdentityProjection(snapshot: PresentationSnapshot): Map<string, PresentedPiece> {
+  const identities = new Map<string, PresentedPiece>();
+  for (const piece of snapshot.pieces) {
+    if (piece.piece_identity.trim().length === 0) throw new Error('Presentation piece identity must not be empty');
+    if (identities.has(piece.piece_identity)) {
+      throw new Error(`Presentation snapshot has duplicate piece identity: ${piece.piece_identity}`);
+    }
+    identities.set(piece.piece_identity, piece);
+  }
+  return identities;
+}
+
+export const snapshotIdentities = snapshotIdentityProjection;
+
+export function projectSnapshot(
+  snapshot: PresentationSnapshot,
+  orientation: BoardOrientationInput = 'white',
+  squareSize = 1,
+): BoardSnapshotProjection {
+  const view = normalizeBoardOrientation(orientation);
+  const pieces = [...snapshot.pieces]
+    .sort((a, b) => canonicalSquareToIndex(a.board_square) - canonicalSquareToIndex(b.board_square))
+    .map((piece): BoardPieceProjection => ({
+      ...piece,
+      ...canonicalSquareToBoardCoordinate(piece.board_square, view, squareSize),
+    }));
+  const occupancy = new Map<string, BoardPieceProjection>();
+  const identities = new Map<string, BoardPieceProjection>();
+  for (const piece of pieces) {
+    if (occupancy.has(piece.square)) throw new Error(`Presentation snapshot has duplicate occupancy at ${piece.square}`);
+    if (identities.has(piece.piece_identity)) {
+      throw new Error(`Presentation snapshot has duplicate piece identity: ${piece.piece_identity}`);
+    }
+    occupancy.set(piece.square, piece);
+    identities.set(piece.piece_identity, piece);
+  }
+  return { orientation: view, squareSize, pieces, occupancy, identities };
+}
+
+export function projectSnapshotOccupancy(
+  snapshot: PresentationSnapshot,
+  orientation: BoardOrientationInput = 'white',
+  squareSize = 1,
+): Map<string, BoardPieceProjection> {
+  return new Map(projectSnapshot(snapshot, orientation, squareSize).occupancy);
+}
+
+export function projectSnapshotIdentities(
+  snapshot: PresentationSnapshot,
+  orientation: BoardOrientationInput = 'white',
+  squareSize = 1,
+): Map<string, BoardPieceProjection> {
+  return new Map(projectSnapshot(snapshot, orientation, squareSize).identities);
+}
+
+export function projectIdentityUpdates(
+  before: PresentationSnapshot,
+  after: PresentationSnapshot,
+  orientation: BoardOrientationInput = 'white',
+  squareSize = 1,
+): PieceIdentityUpdate[] {
+  const previous = projectSnapshot(before, orientation, squareSize).identities;
+  const next = projectSnapshot(after, orientation, squareSize).identities;
+  const identities = new Set([...previous.keys(), ...next.keys()]);
+  return [...identities].sort().map((piece_identity) => ({
+    piece_identity,
+    before: previous.get(piece_identity) ?? null,
+    after: next.get(piece_identity) ?? null,
+  }));
+}
+
+export function fallbackAssetDescriptor(
+  piece: Pick<PresentedPiece, 'piece_identity' | 'piece_type' | 'color' | 'visual_asset_id'>,
+): FallbackAssetDescriptor {
+  return {
+    kind: 'primitive-fallback',
+    piece_identity: piece.piece_identity,
+    piece_type: piece.piece_type,
+    color: piece.color,
+    visual_asset_id: piece.visual_asset_id,
+    label: `${piece.color} ${piece.piece_type}`,
+  };
+}
+
+export const primitiveAssetDescriptor = fallbackAssetDescriptor;
+
+interface PrimitivePart {
+  readonly geometry: THREE.BufferGeometry;
+  readonly position: readonly [number, number, number];
+  readonly rotation: readonly [number, number, number];
+}
+
+type PrimitiveGeometryCache = Record<PieceType, readonly PrimitivePart[]>;
+
+function createPrimitiveGeometryCache(): PrimitiveGeometryCache {
+  return {
+    pawn: [
+      { geometry: new THREE.CylinderGeometry(0.22, 0.3, 0.46, 8), position: [0, 0.25, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.SphereGeometry(0.2, 8, 6), position: [0, 0.58, 0], rotation: [0, 0, 0] },
+    ],
+    rook: [
+      { geometry: new THREE.CylinderGeometry(0.29, 0.34, 0.65, 8), position: [0, 0.35, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.CylinderGeometry(0.34, 0.3, 0.14, 8), position: [0, 0.74, 0], rotation: [0, 0, 0] },
+    ],
+    knight: [
+      { geometry: new THREE.ConeGeometry(0.3, 0.78, 8), position: [0, 0.42, 0], rotation: [0, 0, -0.16] },
+      { geometry: new THREE.SphereGeometry(0.23, 8, 6), position: [0.08, 0.8, 0], rotation: [0, 0, 0] },
+    ],
+    bishop: [
+      { geometry: new THREE.ConeGeometry(0.27, 0.82, 8), position: [0, 0.43, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.SphereGeometry(0.18, 8, 6), position: [0, 0.88, 0], rotation: [0, 0, 0] },
+    ],
+    queen: [
+      { geometry: new THREE.CylinderGeometry(0.3, 0.35, 0.7, 8), position: [0, 0.38, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.TorusGeometry(0.2, 0.055, 6, 8), position: [0, 0.78, 0], rotation: [Math.PI / 2, 0, 0] },
+      { geometry: new THREE.SphereGeometry(0.1, 8, 6), position: [0, 0.9, 0], rotation: [0, 0, 0] },
+    ],
+    king: [
+      { geometry: new THREE.CylinderGeometry(0.31, 0.36, 0.7, 8), position: [0, 0.38, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.BoxGeometry(0.12, 0.42, 0.12), position: [0, 0.83, 0], rotation: [0, 0, 0] },
+      { geometry: new THREE.BoxGeometry(0.38, 0.12, 0.12), position: [0, 0.84, 0], rotation: [0, 0, 0] },
+    ],
+  };
+}
+
+function colorForPiece(color: Color): number {
+  return color === 'white' ? 0xf1e4ce : 0x23303b;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function documentFor(container: HTMLElement): Document | null {
+  if (container.ownerDocument) return container.ownerDocument;
+  return typeof document === 'undefined' ? null : document;
+}
+
+function viewportWidth(container: HTMLElement): number {
+  return container.clientWidth > 0 ? container.clientWidth : 640;
+}
+
+function viewportHeight(container: HTMLElement, width: number): number {
+  return container.clientHeight > 0 ? container.clientHeight : width;
+}
+
+export class Board3DRenderer {
+  readonly container: HTMLElement;
+  readonly options: Board3DRendererOptions;
+
+  private rendererMode: BoardRendererStatus = 'unmounted';
+  private renderer: THREE.WebGLRenderer | null = null;
+  private scene: THREE.Scene | null = null;
+  private camera: THREE.PerspectiveCamera | null = null;
+  private boardRoot: THREE.Group | null = null;
+  private pieceRoot: THREE.Group | null = null;
+  private highlightRoot: THREE.Group | null = null;
+  private squareMeshes = new Map<string, THREE.Mesh>();
+  private pieceObjects = new Map<string, THREE.Group>();
+  private pieceVisualKeys = new Map<string, string>();
+  private primitiveGeometries: PrimitiveGeometryCache | null = null;
+  private sharedMaterials: Record<string, THREE.Material> = {};
+  private fallbackRoot: HTMLElement | null = null;
+  private fallbackGrid: HTMLElement | null = null;
+  private fallbackOrientation: BoardOrientation | null = null;
+  private snapshot: PresentationSnapshot | null = null;
+  private lastMove: MoveRecord | null = null;
+  private rendererError: string | null = null;
+  private resizeHandler: (() => void) | null = null;
+  private orientationValue: BoardOrientation;
+
+  constructor(container: HTMLElement, options: Board3DRendererOptions = {}) {
+    this.container = container;
+    this.options = options;
+    this.orientationValue = normalizeBoardOrientation(options.orientation ?? 'white');
+  }
+
+  get status(): BoardRendererStatus {
+    return this.rendererMode;
+  }
+
+  get orientation(): BoardOrientation {
+    return this.orientationValue;
+  }
+
+  get usesFallback(): boolean {
+    return this.rendererMode === 'fallback' || this.rendererMode === 'unavailable';
+  }
+
+  get currentSnapshot(): PresentationSnapshot | null {
+    return this.snapshot;
+  }
+
+  get currentMove(): MoveRecord | null {
+    return this.lastMove;
+  }
+
+  setFlipped(flipped: boolean): void {
+    this.setOrientation(flipped ? 'black' : 'white');
+  }
+
+  mount(): BoardMountResult {
+    if (this.rendererMode !== 'unmounted') {
+      return { status: this.rendererMode, error: this.rendererError };
+    }
+    if (!this.container || typeof this.container.appendChild !== 'function') {
+      this.rendererMode = 'unavailable';
+      this.rendererError = 'A board renderer requires a supplied HTMLElement container';
+      return { status: this.rendererMode, error: this.rendererError };
+    }
+
+    try {
+      const parameters: THREE.WebGLRendererParameters = {
+        antialias: this.options.antialias ?? true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      };
+      this.renderer = this.options.rendererFactory
+        ? this.options.rendererFactory(parameters)
+        : new THREE.WebGLRenderer(parameters);
+      this.renderer.setPixelRatio(this.pixelRatio());
+      this.renderer.setClearColor(this.options.backgroundColor ?? 0x111820, 1);
+      this.container.replaceChildren(this.renderer.domElement);
+      this.renderer.domElement.classList.add('board3d-canvas');
+      this.renderer.domElement.setAttribute('aria-label', 'Three-dimensional chess board');
+      this.createScene();
+      this.resize();
+      this.resizeHandler = () => this.resize();
+      if (typeof window !== 'undefined') window.addEventListener('resize', this.resizeHandler);
+      this.rendererMode = 'webgl';
+      this.rendererError = null;
+      if (this.snapshot) this.renderWebGL();
+      return { status: this.rendererMode, error: null };
+    } catch (error) {
+      this.rendererMode = 'fallback';
+      this.rendererError = errorMessage(error);
+      this.renderer = null;
+      this.showFallbackRoot(this.rendererError);
+      return { status: this.rendererMode, error: this.rendererError };
+    }
+  }
+
+  setOrientation(orientation: BoardOrientationInput): void {
+    const next = normalizeBoardOrientation(orientation);
+    if (next === this.orientationValue) return;
+    this.orientationValue = next;
+    if (this.rendererMode === 'webgl') {
+      this.positionBoardSquares();
+      this.positionCamera();
+      if (this.snapshot) this.renderWebGL();
+    } else if (this.rendererMode === 'fallback') {
+      this.fallbackOrientation = null;
+      if (this.snapshot) this.renderFallback(this.snapshot);
+    }
+  }
+
+  flip(): void {
+    this.setOrientation(this.orientationValue === 'white' ? 'black' : 'white');
+  }
+
+  resize(): void {
+    if (!this.renderer || !this.camera) return;
+    const width = viewportWidth(this.container);
+    const height = viewportHeight(this.container, width);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height, false);
+  }
+
+  render(snapshot: PresentationSnapshot, move: MoveRecord | null = null): BoardRenderResult {
+    this.snapshot = snapshot;
+    this.lastMove = move;
+    if (this.rendererMode === 'unmounted') this.mount();
+    if (this.rendererMode === 'webgl') {
+      try {
+        this.renderWebGL();
+      } catch (error) {
+        this.rendererMode = 'fallback';
+        this.rendererError = errorMessage(error);
+        this.renderer?.dispose();
+        this.renderer = null;
+        this.showFallbackRoot(this.rendererError);
+        this.renderFallback(snapshot);
+      }
+    } else if (this.rendererMode === 'fallback') {
+      this.renderFallback(snapshot);
+    }
+    const projection = projectSnapshot(snapshot, this.orientationValue, this.options.squareSize ?? 1);
+    return {
+      status: this.rendererMode === 'unmounted' ? 'unavailable' : this.rendererMode,
+      squareCount: BOARD_SQUARE_COUNT,
+      pieceCount: projection.pieces.length,
+      fallbackAssetCount: projection.pieces.length,
+      error: this.rendererError,
+    };
+  }
+
+  pieceObject(pieceIdentity: string): THREE.Object3D | null {
+    return this.pieceObjects.get(pieceIdentity) ?? null;
+  }
+
+  pieceObjectsSnapshot(): ReadonlyMap<string, THREE.Object3D> {
+    return new Map(this.pieceObjects);
+  }
+
+  dispose(): void {
+    if (this.resizeHandler && typeof window !== 'undefined') window.removeEventListener('resize', this.resizeHandler);
+    this.resizeHandler = null;
+    this.renderer?.dispose();
+    for (const material of Object.values(this.sharedMaterials)) material.dispose();
+    for (const parts of Object.values(this.primitiveGeometries ?? {})) {
+      for (const part of parts) part.geometry.dispose();
+    }
+    this.scene = null;
+    this.camera = null;
+    this.boardRoot = null;
+    this.pieceRoot = null;
+    this.highlightRoot = null;
+    this.renderer = null;
+    this.squareMeshes.clear();
+    this.pieceObjects.clear();
+    this.pieceVisualKeys.clear();
+    this.primitiveGeometries = null;
+    this.sharedMaterials = {};
+    this.rendererMode = 'unmounted';
+    this.fallbackRoot = null;
+    this.fallbackGrid = null;
+    this.fallbackOrientation = null;
+  }
+
+  private pixelRatio(): number {
+    if (typeof window === 'undefined' || !Number.isFinite(window.devicePixelRatio)) return 1;
+    return Math.min(Math.max(window.devicePixelRatio, 1), 2);
+  }
+
+  private createScene(): void {
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(this.options.backgroundColor ?? 0x111820);
+    this.camera = new THREE.PerspectiveCamera(31, 1, 0.1, 100);
+    this.positionCamera();
+
+    const ambient = new THREE.HemisphereLight(0xf4ead8, 0x17212b, 2.2);
+    const key = new THREE.DirectionalLight(0xffefd3, 3.2);
+    key.position.set(-4, 9, 6);
+    this.scene.add(ambient, key);
+
+    this.boardRoot = new THREE.Group();
+    this.boardRoot.name = 'board';
+    this.pieceRoot = new THREE.Group();
+    this.pieceRoot.name = 'pieces';
+    this.highlightRoot = new THREE.Group();
+    this.highlightRoot.name = 'last-move';
+    this.scene.add(this.boardRoot, this.pieceRoot, this.highlightRoot);
+    this.primitiveGeometries = createPrimitiveGeometryCache();
+    this.sharedMaterials = {
+      boardLight: new THREE.MeshStandardMaterial({ color: 0xd8c7a8, roughness: 0.9 }),
+      boardDark: new THREE.MeshStandardMaterial({ color: 0x3f5a5a, roughness: 0.9 }),
+      boardFrame: new THREE.MeshStandardMaterial({ color: 0x171d24, roughness: 0.72, metalness: 0.1 }),
+      whitePiece: new THREE.MeshStandardMaterial({ color: colorForPiece('white'), roughness: 0.42, metalness: 0.05 }),
+      blackPiece: new THREE.MeshStandardMaterial({ color: colorForPiece('black'), roughness: 0.44, metalness: 0.1 }),
+      moveFrom: new THREE.MeshBasicMaterial({ color: 0xffbf52, transparent: true, opacity: 0.62 }),
+      moveTo: new THREE.MeshBasicMaterial({ color: 0x65d5a6, transparent: true, opacity: 0.66 }),
+    };
+
+    const squareSize = this.options.squareSize ?? 1;
+    const tileGeometry = new THREE.BoxGeometry(squareSize, 0.12, squareSize);
+    const frameGeometry = new THREE.BoxGeometry(squareSize * BOARD_SIZE + 0.34, 0.2, squareSize * BOARD_SIZE + 0.34);
+    const frame = new THREE.Mesh(frameGeometry, this.sharedMaterials.boardFrame);
+    frame.name = 'board-frame';
+    frame.position.y = -0.14;
+    frame.receiveShadow = true;
+    this.boardRoot.add(frame);
+    for (let index = 0; index < BOARD_SQUARE_COUNT; index += 1) {
+      const square = indexToCanonicalSquare(index);
+      const file = index % BOARD_SIZE;
+      const rank = Math.floor(index / BOARD_SIZE);
+      const tile = new THREE.Mesh(tileGeometry, (file + rank) % 2 === 0
+        ? this.sharedMaterials.boardLight
+        : this.sharedMaterials.boardDark);
+      tile.name = `square:${square}`;
+      tile.userData.canonicalSquare = square;
+      tile.receiveShadow = true;
+      this.squareMeshes.set(square, tile);
+      this.boardRoot.add(tile);
+    }
+    const highlightGeometry = new THREE.BoxGeometry(squareSize * 0.84, 0.025, squareSize * 0.84);
+    for (const [name, material] of [['from', this.sharedMaterials.moveFrom], ['to', this.sharedMaterials.moveTo]] as const) {
+      const highlight = new THREE.Mesh(highlightGeometry, material);
+      highlight.name = `highlight:${name}`;
+      highlight.visible = false;
+      highlight.position.y = 0.075;
+      this.highlightRoot.add(highlight);
+    }
+    this.positionBoardSquares();
+  }
+
+  private positionCamera(): void {
+    if (!this.camera) return;
+    const distance = (this.options.squareSize ?? 1) * 9.8;
+    this.camera.position.set(0, distance * 0.86, this.orientationValue === 'white' ? distance : -distance);
+    this.camera.lookAt(0, 0, 0);
+  }
+
+  private positionBoardSquares(): void {
+    const squareSize = this.options.squareSize ?? 1;
+    for (const [square, mesh] of this.squareMeshes) {
+      const coordinate = canonicalSquareToBoardCoordinate(square, this.orientationValue, squareSize);
+      mesh.position.set(coordinate.x, 0, coordinate.z);
+    }
+  }
+
+  private renderWebGL(): void {
+    if (!this.renderer || !this.scene || !this.camera || !this.pieceRoot || !this.highlightRoot) {
+      throw new Error('Three.js board scene is not initialized');
+    }
+    const projection = projectSnapshot(this.snapshot!, this.orientationValue, this.options.squareSize ?? 1);
+    this.updateThreePieces(projection);
+    this.updateHighlights(this.lastMove);
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  private updateThreePieces(projection: BoardSnapshotProjection): void {
+    if (!this.pieceRoot || !this.primitiveGeometries) throw new Error('Three.js piece scene is not initialized');
+    const active = new Set<string>();
+    for (const piece of projection.pieces) {
+      active.add(piece.piece_identity);
+      let object = this.pieceObjects.get(piece.piece_identity);
+      if (!object) {
+        object = new THREE.Group();
+        object.name = `piece:${piece.piece_identity}`;
+        object.userData.piece_identity = piece.piece_identity;
+        this.pieceObjects.set(piece.piece_identity, object);
+        this.pieceRoot.add(object);
+      }
+      const visualKey = `${piece.color}:${piece.piece_type}:${piece.visual_asset_id}`;
+      if (this.pieceVisualKeys.get(piece.piece_identity) !== visualKey) {
+        object.clear();
+        const custom = this.options.pieceAssetFactory?.({
+          piece_identity: piece.piece_identity,
+          piece_type: piece.piece_type,
+          color: piece.color,
+          board_square: piece.square,
+          visual_asset_id: piece.visual_asset_id,
+        });
+        const visual = custom ?? this.createPrimitivePieceVisual(piece);
+        visual.userData.piece_identity = piece.piece_identity;
+        visual.userData.assetMode = custom ? 'provided' : 'primitive-fallback';
+        object.add(visual);
+        this.pieceVisualKeys.set(piece.piece_identity, visualKey);
+      }
+      object.position.set(piece.x, 0.08, piece.z);
+      object.userData.board_square = piece.square;
+      object.userData.piece_type = piece.piece_type;
+      object.userData.color = piece.color;
+    }
+    for (const [identity, object] of this.pieceObjects) {
+      if (active.has(identity)) continue;
+      object.removeFromParent();
+      this.pieceObjects.delete(identity);
+      this.pieceVisualKeys.delete(identity);
+    }
+  }
+
+  private createPrimitivePieceVisual(piece: BoardPieceProjection): THREE.Group {
+    const group = new THREE.Group();
+    group.name = `fallback:${piece.color}-${piece.piece_type}`;
+    group.userData.fallbackAsset = fallbackAssetDescriptor(piece);
+    const material = this.sharedMaterials[piece.color === 'white' ? 'whitePiece' : 'blackPiece'];
+    for (const part of this.primitiveGeometries![piece.piece_type]) {
+      const mesh = new THREE.Mesh(part.geometry, material);
+      mesh.position.set(...part.position);
+      mesh.rotation.set(...part.rotation);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+    }
+    return group;
+  }
+
+  private updateHighlights(move: MoveRecord | null): void {
+    if (!this.highlightRoot) return;
+    const from = this.highlightRoot.getObjectByName('highlight:from');
+    const to = this.highlightRoot.getObjectByName('highlight:to');
+    if (!(from instanceof THREE.Mesh) || !(to instanceof THREE.Mesh)) return;
+    if (!move) {
+      from.visible = false;
+      to.visible = false;
+      return;
+    }
+    const squareSize = this.options.squareSize ?? 1;
+    const fromPosition = canonicalSquareToBoardCoordinate(move.from, this.orientationValue, squareSize);
+    const toPosition = canonicalSquareToBoardCoordinate(move.to, this.orientationValue, squareSize);
+    from.position.set(fromPosition.x, 0.075, fromPosition.z);
+    to.position.set(toPosition.x, 0.075, toPosition.z);
+    from.visible = true;
+    to.visible = true;
+  }
+
+  private showFallbackRoot(reason: string): void {
+    const doc = documentFor(this.container);
+    if (!doc) {
+      this.container.textContent = `3D board unavailable: ${reason}`;
+      return;
+    }
+    this.container.replaceChildren();
+    const root = doc.createElement('section');
+    root.className = 'board3d-debug-fallback';
+    root.dataset.rendererStatus = 'fallback';
+    root.setAttribute('aria-label', 'Chess board fallback');
+    root.style.display = 'grid';
+    root.style.gap = '0.5rem';
+    root.style.width = '100%';
+    root.style.maxWidth = '720px';
+    const message = doc.createElement('p');
+    message.className = 'board3d-debug-message';
+    message.textContent = `3D board fallback: ${reason}`;
+    message.style.margin = '0';
+    message.style.font = '0.75rem ui-monospace, monospace';
+    message.style.color = '#f0d29b';
+    root.append(message);
+    const grid = doc.createElement('div');
+    grid.className = 'board3d-debug-grid';
+    grid.setAttribute('role', 'grid');
+    grid.setAttribute('aria-label', 'Deterministic chess board fallback');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(8, minmax(0, 1fr))';
+    grid.style.aspectRatio = '1';
+    grid.style.border = '1px solid #8e806a';
+    root.append(grid);
+    this.container.append(root);
+    this.fallbackRoot = root;
+    this.fallbackGrid = grid;
+    this.fallbackOrientation = null;
+  }
+
+  private renderFallback(snapshot: PresentationSnapshot): void {
+    if (!this.fallbackRoot || !this.fallbackGrid || this.fallbackOrientation !== this.orientationValue) {
+      this.showFallbackRoot(this.rendererError ?? 'WebGL is not available');
+    }
+    if (!this.fallbackGrid) return;
+    const projection = projectSnapshot(snapshot, this.orientationValue, this.options.squareSize ?? 1);
+    const occupancy = projection.occupancy;
+    const squares = canonicalBoardSquares(this.orientationValue);
+    this.fallbackGrid.replaceChildren();
+    const doc = documentFor(this.container);
+    if (!doc) return;
+    for (const square of squares) {
+      const cell = doc.createElement('div');
+      const index = canonicalSquareToIndex(square);
+      const file = index % BOARD_SIZE;
+      const rank = Math.floor(index / BOARD_SIZE);
+      const piece = occupancy.get(square);
+      cell.className = 'board3d-debug-square';
+      cell.dataset.square = square;
+      cell.setAttribute('role', 'gridcell');
+      cell.setAttribute('aria-label', piece ? `${square}: ${piece.color} ${piece.piece_type}` : `${square}: empty`);
+      cell.title = piece ? `${square} · ${piece.color} ${piece.piece_type} · ${piece.piece_identity}` : `${square} · empty`;
+      cell.textContent = piece ? `${piece.color} ${piece.piece_type}` : square;
+      cell.style.display = 'grid';
+      cell.style.placeItems = 'center';
+      cell.style.minWidth = '0';
+      cell.style.aspectRatio = '1';
+      cell.style.padding = '0.2rem';
+      cell.style.textAlign = 'center';
+      cell.style.font = 'clamp(0.42rem, 1.3vw, 0.75rem) ui-monospace, monospace';
+      cell.style.overflow = 'hidden';
+      cell.style.background = (file + rank) % 2 === 0 ? '#d8c7a8' : '#3f5a5a';
+      cell.style.color = piece?.color === 'white' ? '#242a31' : piece?.color === 'black' ? '#f5ead8' : '#6b655a';
+      this.fallbackGrid.append(cell);
+    }
+    this.fallbackOrientation = this.orientationValue;
+  }
+}
+
+export function createBoard3DRenderer(
+  container: HTMLElement,
+  options: Board3DRendererOptions = {},
+): Board3DRenderer {
+  const renderer = new Board3DRenderer(container, options);
+  renderer.mount();
+  return renderer;
+}
+
+export const createBoardRenderer = createBoard3DRenderer;

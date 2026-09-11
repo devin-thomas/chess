@@ -1,6 +1,6 @@
 # Chess Replay Viewer Build Pack
 
-Status: RPL-001 through RPL-009 implemented; 3D and import/library work remains open
+Status: RPL-001 through RPL-010 implemented; import/library work remains open
 Project: `devin-thomas/chess`
 Primary first target: modern web replay viewer
 Portability target: deterministic replay playback across modern and retro platforms
@@ -121,6 +121,6 @@ This directory integrates the supplied `chess-replay-build-pack.zip`. It is the 
 
 [SPEC.md](../../SPEC.md) remains authoritative for chess rules. [PROTOCOL.md](../PROTOCOL.md) describes what the existing engines actually expose. The [presentation specification](../../spec/3d-presentation-requirements.md) owns rendering seams; console-specific profiles apply to their named targets, not the Web V1 milestone. A rules implementation gap is not permission to change the rules contract.
 
-The repository has four rules CLIs, a Vite simulator, and a [replay core library](../../replay/README.md) with schema validation, deterministic navigation, presentation transitions, PGN import, and 20 shared technical fixtures. Three.js, the public replay viewer, curated historical games, and retro compilation remain planned work. Web V1 is Phases 1 and 2; Phase 3 is the later portability proof. The completed core is a library; it is not yet exposed by the browser simulator. No deployment is part of the core tickets.
+The repository has four rules CLIs, a Vite simulator, and a [replay core library](../../replay/README.md) with schema validation, deterministic navigation, presentation transitions, PGN import, synchronized move lists, and 20 shared technical fixtures. The public viewer now uses a Three.js board with an accessible deterministic fallback; curated historical games, import UI, and retro compilation remain planned work. Web V1 is Phases 1 and 2; Phase 3 is the later portability proof. The completed core is exposed through the public viewer while the simulator remains independently reachable. No deployment is part of the core tickets.
 
 Integration decisions resolved here: fixed `all-rules-enabled` mode; exact canonical setup fields; zero-based error indices and destination-ply lookup; atomic load; paused manual seeks; multiple-game PGN chooser; explicit import limits; deterministic identity reconstruction; complete-history caching; and recorded-result versus rules-outcome separation.
