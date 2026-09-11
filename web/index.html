@@ -136,11 +136,11 @@
               </div>
             </div>
             <label for="viewer-replay-select">Curated replay</label>
-            <select id="viewer-replay-select" disabled>
-              <option value="opening">Opening fixture</option>
+            <select id="viewer-replay-select">
+              <option value="">Imported PGN</option>
             </select>
             <button id="viewer-import-pgn" class="viewer-secondary-button viewer-import-button" type="button" aria-expanded="false" aria-controls="viewer-import-panel">Import PGN</button>
-            <p class="viewer-coming-soon">Paste a game or choose a PGN file. Everything is parsed locally in this browser.</p>
+            <p id="viewer-library-description" class="viewer-coming-soon">Choose a replay to inspect, or import your own game locally.</p>
             <div id="viewer-import-panel" class="viewer-import-panel" hidden>
               <label for="viewer-pgn-text">Paste PGN</label>
               <textarea id="viewer-pgn-text" rows="7" spellcheck="false" placeholder="[White &quot;Player One&quot;]\n\n1. e4 e5 2. Nf3 *"></textarea>

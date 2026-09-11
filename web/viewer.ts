@@ -1,4 +1,4 @@
-import type { Color } from '../replay/schema.ts';
+import type { Color, Replay } from '../replay/schema.ts';
 import type { PresentationSnapshot } from '../replay/presentation.ts';
 import type { NavigationResult } from '../replay/controller.ts';
 import {
@@ -17,6 +17,7 @@ import {
   pgnImportErrorMessage,
 } from './replay-import.ts';
 import { PGN_LIMITS } from '../replay/pgn-import.ts';
+import { cloneCuratedReplay, curatedReplayById, CURATED_REPLAYS, DEFAULT_CURATED_REPLAY_ID } from '../replay/library.ts';
 
 const $ = <T extends Element>(selector: string): T => {
   const element = document.querySelector(selector);
@@ -29,6 +30,8 @@ const elements = {
   board: $<HTMLElement>('#viewer-board'),
   boardState: $<HTMLElement>('#viewer-board-state'),
   boardOrientation: $<HTMLElement>('#viewer-board-orientation'),
+  stageKicker: $<HTMLElement>('#viewer-stage-kicker'),
+  title: $<HTMLElement>('#viewer-title'),
   white: $<HTMLElement>('#replay-white'),
   black: $<HTMLElement>('#replay-black'),
   result: $<HTMLElement>('#replay-result'),
@@ -50,6 +53,8 @@ const elements = {
   timelineCurrent: $<HTMLElement>('#viewer-timeline-current'),
   timelineEnd: $<HTMLElement>('#viewer-timeline-end'),
   moveList: $<HTMLOListElement>('#viewer-move-list'),
+  replaySelect: $<HTMLSelectElement>('#viewer-replay-select'),
+  libraryDescription: $<HTMLElement>('#viewer-library-description'),
   importToggle: $<HTMLButtonElement>('#viewer-import-pgn'),
   importPanel: $<HTMLElement>('#viewer-import-panel'),
   pgnText: $<HTMLTextAreaElement>('#viewer-pgn-text'),
@@ -57,6 +62,7 @@ const elements = {
   importSubmit: $<HTMLButtonElement>('#viewer-import-submit'),
   importChooser: $<HTMLElement>('#viewer-import-chooser'),
   importGameSelect: $<HTMLSelectElement>('#viewer-import-game-select'),
+  importGameErrors: $<HTMLElement>('#viewer-import-game-errors'),
   importGame: $<HTMLButtonElement>('#viewer-import-game'),
   importStatus: $<HTMLElement>('#viewer-import-status'),
 };
@@ -64,6 +70,9 @@ const elements = {
 const model = createDefaultViewerState();
 const boardRenderer = createBoard3DRenderer(elements.board);
 let displayMoves = buildReplayMoveList(model.replay);
+let selectedReplayId: string | null = DEFAULT_CURATED_REPLAY_ID;
+let replayTitle = 'Opening fixture';
+let replaySource = replayMetadataText(model.replay, 'source', 'Repository-authored canonical replay');
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
   scheduler: browserReplayScheduler,
@@ -147,6 +156,12 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
 
   renderBoard(snapshot);
   renderMoveList(currentPly);
+  elements.stageKicker.textContent = selectedReplayId === null ? 'Imported replay · local only' : `Curated replay · ${replayTitle}`;
+  elements.title.textContent = selectedReplayId === null ? 'A game from your file.' :
+    (replayTitle === 'Opening fixture' ? 'A game worth replaying.' : replayTitle);
+  elements.libraryDescription.textContent = selectedReplayId === null
+    ? 'Your imported game is held in this tab and is never uploaded.'
+    : curatedReplayById(selectedReplayId)?.description ?? 'Choose a replay to inspect.';
   elements.root.dataset.playbackState = transportState.paused ? 'paused' : 'playing';
   elements.root.dataset.currentPly = String(currentPly);
   elements.white.textContent = replayMetadataText(model.replay, 'white', 'White');
@@ -154,7 +169,7 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
   elements.result.textContent = resultLabel(recordedResult);
   elements.event.textContent = replayMetadataText(model.replay, 'event', 'Curated replay');
   elements.site.textContent = replayMetadataText(model.replay, 'site', 'Local replay fixture');
-  elements.source.textContent = replayMetadataText(model.replay, 'source', 'shared/replay-fixtures/opening.json');
+  elements.source.textContent = replaySource;
   elements.ply.textContent = currentPly + ' / ' + length;
   elements.currentMove.textContent = currentPly === 0
     ? 'Root position'
@@ -190,6 +205,61 @@ function reportNavigationResult(result: NavigationResult): void {
   }
 }
 
+function replaceReplay(replay: Replay, replayId: string | null, title: string, source: string): boolean {
+  // A replacement is atomic at the controller boundary; the old replay remains
+  // visible if validation rejects the candidate.
+  transport.pause();
+  const loaded = model.controller.load(replay);
+  if (!loaded.ok) {
+    reportNavigationError(loaded.error.message);
+    return false;
+  }
+  model.replay = structuredClone(loaded.replay);
+  model.rootState = structuredClone(loaded.root_state);
+  displayMoves = buildReplayMoveList(model.replay);
+  selectedReplayId = replayId;
+  replayTitle = title;
+  replaySource = source;
+  elements.replaySelect.value = replayId ?? '';
+  render();
+  return true;
+}
+
+function populateCuratedLibrary(): void {
+  elements.replaySelect.replaceChildren();
+  const importedOption = document.createElement('option');
+  importedOption.value = '';
+  importedOption.textContent = 'Imported PGN';
+  importedOption.disabled = true;
+  elements.replaySelect.append(importedOption);
+  for (const entry of CURATED_REPLAYS) {
+    const option = document.createElement('option');
+    option.value = entry.id;
+    option.textContent = entry.title;
+    option.title = entry.description;
+    elements.replaySelect.append(option);
+  }
+  elements.replaySelect.value = selectedReplayId ?? '';
+}
+
+function loadCuratedReplay(id: string): void {
+  const entry = curatedReplayById(id);
+  const replay = cloneCuratedReplay(id);
+  if (entry === null || replay === null) {
+    elements.replaySelect.value = selectedReplayId ?? '';
+    setImportStatus('That curated replay is unavailable.', 'error');
+    return;
+  }
+  pendingImportCollection = null;
+  if (replaceReplay(replay, entry.id, entry.title,
+    replayMetadataText(replay, 'source', 'Repository-authored canonical replay'))) {
+    clearImportChooser();
+    setImportStatus(`Loaded ${entry.title}.`, 'ready');
+  } else {
+    elements.replaySelect.value = selectedReplayId ?? '';
+  }
+}
+
 function setImportStatus(message: string, state: 'idle' | 'loading' | 'error' | 'ready' = 'idle'): void {
   elements.importStatus.textContent = message;
   elements.importStatus.dataset.state = state;
@@ -204,17 +274,26 @@ function setImportBusy(busy: boolean): void {
 function clearImportChooser(): void {
   elements.importChooser.hidden = true;
   elements.importGameSelect.replaceChildren();
+  elements.importGameErrors.replaceChildren();
   elements.importGame.disabled = true;
 }
 
 function populateImportChooser(collection: ReturnType<typeof parsePgnForViewer>): void {
   elements.importGameSelect.replaceChildren();
+  elements.importGameErrors.replaceChildren();
   for (const game of collection.games) {
     const option = document.createElement('option');
     option.value = String(game.index);
     option.textContent = pgnGameOptionLabel(game);
     option.disabled = !game.valid;
     elements.importGameSelect.append(option);
+  }
+  const invalidGames = collection.games.filter((game) => !game.valid);
+  if (invalidGames.length > 0) {
+    const errorText = document.createElement('p');
+    errorText.textContent = invalidGames.map((game) =>
+      `Game ${game.index + 1}: ${pgnImportErrorMessage(game.error!)}`).join(' ');
+    elements.importGameErrors.append(errorText);
   }
   const firstValid = collection.games.find((game) => game.valid);
   if (firstValid !== undefined) elements.importGameSelect.value = String(firstValid.index);
@@ -234,18 +313,12 @@ function loadImportedGame(index: number): boolean {
     return false;
   }
 
-  // Stop the old timeline before swapping the controller's complete session.
-  transport.pause();
-  const loaded = model.controller.load(choice.replay);
-  if (!loaded.ok) {
-    setImportStatus(loaded.error.message, 'error');
+  if (!replaceReplay(choice.replay, null, `Imported game ${choice.game.index + 1}`,
+    `Imported PGN · game ${choice.game.index + 1}`)) {
+    setImportStatus('The imported replay could not be loaded.', 'error');
     return false;
   }
-  model.replay = structuredClone(loaded.replay);
-  model.rootState = structuredClone(loaded.root_state);
-  displayMoves = buildReplayMoveList(model.replay);
   clearImportChooser();
-  render();
   setImportStatus(`Loaded game ${choice.game.index + 1} · ${choice.game.label}`, 'ready');
   return true;
 }
@@ -319,6 +392,7 @@ elements.last.addEventListener('click', () => reportNavigationResult(transport.l
 elements.flip.addEventListener('click', () => transport.toggleBoardFlip());
 elements.speed.addEventListener('change', () => setSpeed(elements.speed.value));
 elements.timeline.addEventListener('input', () => seekTo(Number(elements.timeline.value)));
+elements.replaySelect.addEventListener('change', () => loadCuratedReplay(elements.replaySelect.value));
 elements.importToggle.addEventListener('click', () => {
   const open = elements.importPanel.hidden;
   elements.importPanel.hidden = !open;
@@ -366,4 +440,5 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+populateCuratedLibrary();
 render();

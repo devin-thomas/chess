@@ -1,9 +1,9 @@
 # Replay core library
 
-RPL-001 through RPL-012 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, and local PGN import UI.
+RPL-001 through RPL-013 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, and curated replay library.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
-The web transport owns cancellable playback timers; checkpoint caching is a later ticket.
+The web transport owns cancellable playback timers; checkpoint caching is the next performance ticket.
 
 ## Use
 
@@ -53,6 +53,7 @@ clear the last transition/events. Rejected operations leave them unchanged.
 - `controller.ts`: deterministic navigation and integrated presentation updates.
 - `presentation.ts`: stable identities, explicit effects, event sequencing, and snapshots.
 - `pgn-import.ts`: bounded PGN collection parsing, strict SAN resolution, and canonical replay conversion.
+- `library.ts`: static attributed curated Replay V1 entries and isolated lookup copies.
 - `../web/replay-transport.ts`: browser-independent cursor transport with cancellable playback scheduling.
 - `../web/replay-move-list.ts`: SAN display notation derived from authoritative legal moves.
 - `../web/board3d.ts`: Three.js scene, canonical-square projection, stable piece objects, and fallback board.

@@ -1597,6 +1597,17 @@ pre {
   font-size: 0.72rem;
 }
 
+.viewer-import-game-errors {
+  color: #ff9987;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.viewer-import-game-errors p {
+  margin: 0;
+}
+
 .viewer-import-status {
   min-height: 1.2em;
   margin: 0;

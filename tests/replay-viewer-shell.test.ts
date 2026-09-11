@@ -48,6 +48,8 @@ test('production entry documents keep the public shell and simulator direct-load
   assert.match(viewerHtml, /id="viewer-board"/);
   assert.match(viewerHtml, /id="viewer-transport"/);
   assert.match(viewerHtml, /id="viewer-move-list"/);
+  assert.match(viewerHtml, /id="viewer-replay-select"/);
+  assert.doesNotMatch(viewerHtml, /id="viewer-replay-select"[^>]*disabled/);
   assert.match(viewerHtml, /src="\/viewer\.ts"/);
   assert.doesNotMatch(viewerHtml, /id="run-button"/);
   assert.match(simulatorHtml, /id="run-button"/);

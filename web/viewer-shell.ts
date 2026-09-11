@@ -3,23 +3,12 @@ import type { ReplayController } from '../replay/controller.ts';
 import type { PresentationSnapshot, PresentedPiece } from '../replay/presentation.ts';
 import type { Color, PieceType, Replay } from '../replay/schema.ts';
 import type { ReplayState } from '../replay/engine.ts';
+import { cloneCuratedReplay, DEFAULT_CURATED_REPLAY_ID } from '../replay/library.ts';
 
-export const DEFAULT_REPLAY_ID = 'opening';
-
-// This is the temporary public copy of shared/replay-fixtures/opening.json.
-// RPL-013 will replace it with the curated replay library and selector.
-export const DEFAULT_REPLAY: Replay = {
-  schema_version: 1,
-  ruleset: 'orthodox-chess-v1',
-  root: { kind: 'standard' },
-  moves: ['e2e4', 'e7e5', 'g1f3'],
-  metadata: {
-    white: 'Fixture White',
-    black: 'Fixture Black',
-    result: '1-0',
-    annotation: { ignored: true },
-  },
-};
+export const DEFAULT_REPLAY_ID = DEFAULT_CURATED_REPLAY_ID;
+const defaultReplay = cloneCuratedReplay(DEFAULT_REPLAY_ID);
+if (defaultReplay === null) throw new Error('The default curated replay is missing');
+export const DEFAULT_REPLAY: Replay = defaultReplay;
 
 export type PublicRoute = 'viewer' | 'simulator';
 export type ReplaySpeed = 0.5 | 1 | 2;
@@ -43,18 +32,22 @@ export function resolvePublicRoute(pathname: string): PublicRoute {
   return normalized === '/simulator' || normalized.startsWith('/simulator/') ? 'simulator' : 'viewer';
 }
 
-export function createDefaultViewerState(): ViewerShellState {
+export function createViewerState(replay: Replay = DEFAULT_REPLAY): ViewerShellState {
   const controller = createReplayController();
-  const loaded = controller.load(DEFAULT_REPLAY);
-  if (!loaded.ok) throw new Error('The default replay could not be loaded: ' + loaded.error.message);
+  const loaded = controller.load(replay);
+  if (!loaded.ok) throw new Error('The viewer replay could not be loaded: ' + loaded.error.message);
   return {
     controller,
-    replay: structuredClone(DEFAULT_REPLAY),
+    replay: structuredClone(loaded.replay),
     rootState: structuredClone(loaded.root_state),
     paused: true,
     boardFlipped: false,
     speed: 1,
   };
+}
+
+export function createDefaultViewerState(): ViewerShellState {
+  return createViewerState(DEFAULT_REPLAY);
 }
 
 export function replayMetadataText(replay: Replay, key: string, fallback: string): string {
