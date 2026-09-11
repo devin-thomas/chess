@@ -1,6 +1,6 @@
 # Chess Rules and Presentation Specification
 
-This repository is the language-agnostic source of truth for a deterministic chess rules core and the machine-facing presentation seams needed by later ports. The next product milestone is a web replay viewer. PlayStation 1 and Sega Dreamcast renderers remain planned console targets, with an NES/FCEUX replay proof scoped as a later portability milestone.
+This repository is the language-agnostic source of truth for a deterministic chess rules core and the machine-facing presentation seams needed by later ports. The next product milestone is a web replay viewer. PlayStation 1 and Sega Dreamcast renderers remain planned console targets; the NES/FCEUX replay proof is implemented as Phase 3 portability evidence.
 
 The rules model must remain independent of meshes, textures, camera behavior, SDK headers, and console memory layouts. Console renderers consume stable state and events, then select platform-specific asset derivatives.
 
@@ -38,13 +38,13 @@ make benchmark
 
 ## Replay viewer and conformance
 
-The [replay handoff](docs/replay/README.md) defines the web viewer and portability proof. RPL-001 through RPL-016 are implemented as a [renderer-independent replay library](replay/README.md), including schema validation, navigation, shared fixtures, presentation transitions, PGN import, curated replays, cached seeking, a compiled derivative, and a constrained NES profile. The RPL-017 report compares all four engines against every valid replay fixture and includes the selected retro checkpoints with:
+The [replay handoff](docs/replay/README.md) defines the web viewer and portability proof. RPL-001 through RPL-017 are implemented as a [renderer-independent replay library](replay/README.md), including schema validation, navigation, shared fixtures, presentation transitions, PGN import, curated replays, cached seeking, a compiled derivative, a constrained NES profile, and machine-readable cross-engine conformance. The RPL-017 report compares all four engines against every valid replay fixture and includes the selected retro checkpoints with:
 
 ```sh
 make conformance-replay
 ```
 
-The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check. `make conformance-replay-retro` switches the retro input to the cc65/FCEUX JSON trace when those tools are available.
+The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check. `NES_CC65_HOME=/path/to/cc65 NES_FCEUX=/path/to/fceux make conformance-replay-retro` switches the retro input to the cc65/FCEUX JSON trace when those tools are available.
 
 Run `npm run test:replay` for replay checks and `npm run typecheck` for TypeScript validation. Both are included in `make test`.
 
