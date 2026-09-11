@@ -565,6 +565,7 @@ function initializeBuilder(builder: GameBuilder, source: PgnSourceLocation): voi
   if (fen === undefined) {
     root = { kind: 'standard' };
   } else {
+    const fenSource = builder.tag_locations.get('FEN') ?? source;
     const simulator = createSimulator();
     const response = simulator.request({ op: 'new', mode: 'all-rules-enabled', fen });
     if (response.ok !== true) {
@@ -572,14 +573,14 @@ function initializeBuilder(builder: GameBuilder, source: PgnSourceLocation): voi
       if (typeof responseError === 'object' && responseError !== null && !Array.isArray(responseError)) {
         const details = responseError as Record<string, unknown>;
         if (typeof details.code === 'string' && typeof details.message === 'string') {
-          throw rootError(builder, `FEN root was rejected: ${details.message}`, source, {
+          throw rootError(builder, `FEN root was rejected: ${details.message}`, fenSource, {
             code: details.code, message: details.message,
           });
         }
       }
-      throw rootError(builder, 'FEN root was rejected by the authoritative engine', source);
+      throw rootError(builder, 'FEN root was rejected by the authoritative engine', fenSource);
     }
-    const position = positionFromEngineState(builder, response.state, source);
+    const position = positionFromEngineState(builder, response.state, fenSource);
     root = { kind: 'position', position };
   }
   try {
@@ -1034,6 +1035,10 @@ export function parsePgn(input: string): PgnImportCollection {
       if (token.kind === 'nag' || (token.kind === 'word' && isAnnotationOnly(token.value))) continue;
       builder = begin(token.location);
     }
+    if (builder.finished && token.kind !== 'nag' && !(token.kind === 'word' && isAnnotationOnly(token.value))) {
+      finish();
+      builder = begin(token.location);
+    }
     const activeBuilder = builder;
     if (activeBuilder === null) throw new Error('PGN parser lost its game builder');
     if (activeBuilder.error !== null) continue;
@@ -1043,7 +1048,6 @@ export function parsePgn(input: string): PgnImportCollection {
       if (error instanceof PgnImportError) setGameError(activeBuilder, error);
       else throw error;
     }
-    if (activeBuilder.error === null && activeBuilder.finished) finish();
   }
   finish();
   if (games.length === 0) throw globalError('E_REPLAY_PGN', 'PGN contains no games');
