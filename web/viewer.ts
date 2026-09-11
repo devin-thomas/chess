@@ -10,6 +10,7 @@ import {
   replayMetadataText,
   type ReplaySpeed,
 } from './viewer-shell.ts';
+import { buildReplayMoveList } from './replay-move-list.ts';
 import { browserReplayScheduler, createReplayTransport } from './replay-transport.ts';
 
 const $ = <T extends Element>(selector: string): T => {
@@ -47,6 +48,7 @@ const elements = {
 };
 
 const model = createDefaultViewerState();
+const displayMoves = buildReplayMoveList(model.replay);
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
   scheduler: browserReplayScheduler,
@@ -129,21 +131,20 @@ function renderMoveList(currentPly: number): void {
   rootItem.append(rootButton);
   elements.moveList.append(rootItem);
 
-  for (let ply = 1; ply <= model.replay.moves.length; ply += 1) {
-    const move = model.controller.moveAt(ply);
-    if (move === null) throw new Error('Default replay move list is missing ply ' + ply);
-    const context = moveContext(model.rootState, ply);
+  for (const entry of displayMoves) {
+    const context = moveContext(model.rootState, entry.ply);
     const item = document.createElement('li');
     item.className = 'viewer-move-item';
     const button = document.createElement('button');
     button.className = 'viewer-move-button ' + (context.side === 'white' ? 'is-white' : 'is-black');
     button.type = 'button';
-    button.dataset.ply = String(ply);
-    button.dataset.canonicalMove = move;
-    button.textContent = context.fullmove + (context.side === 'white' ? '.' : '...') + ' ' + move;
-    button.setAttribute('aria-label', 'Seek to ply ' + ply + ', ' + context.fullmove + ' ' + sideLabel(context.side) + ' ' + move);
-    markCurrentMove(button, ply, currentPly);
-    button.addEventListener('click', () => seekTo(ply));
+    button.dataset.ply = String(entry.ply);
+    button.dataset.canonicalMove = entry.canonical;
+    button.dataset.san = entry.san;
+    button.textContent = entry.notation;
+    button.setAttribute('aria-label', 'Seek to ply ' + entry.ply + ', ' + entry.fullmove + ' ' + sideLabel(entry.side) + ' ' + entry.san);
+    markCurrentMove(button, entry.ply, currentPly);
+    button.addEventListener('click', () => seekTo(entry.ply));
     item.append(button);
     elements.moveList.append(item);
   }
@@ -173,7 +174,7 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
   elements.ply.textContent = currentPly + ' / ' + length;
   elements.currentMove.textContent = currentPly === 0
     ? 'Root position'
-    : 'Ply ' + currentPly + ' · ' + (model.controller.moveAt(currentPly) ?? 'unknown move');
+    : 'Ply ' + currentPly + ' · ' + (displayMoves[currentPly - 1]?.san ?? 'unknown move');
   elements.boardState.textContent = 'Ply ' + currentPly + ' of ' + length + '. ' + sideLabel(position.side_to_move) + ' to move.';
   elements.transportStatus.textContent = transportState.paused ? 'Paused · ready to watch' : 'Playing · ply ' + currentPly;
   elements.liveStatus.textContent = elements.boardState.textContent + ' ' + (transportState.paused ? 'Paused.' : 'Playing.');

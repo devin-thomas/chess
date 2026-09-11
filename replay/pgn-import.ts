@@ -476,6 +476,19 @@ function actualCheckSuffix(state: ReplayState): '' | '+' | '#' {
   return state.check === null ? '' : '+';
 }
 
+/** Format an authoritative coordinate move for display without making SAN a rules source. */
+export function formatCanonicalMoveAsSan(
+  before: ReplayState,
+  legalMoves: readonly string[],
+  canonical: string,
+  after: ReplayState,
+): string {
+  if (!legalMoves.includes(canonical)) {
+    throw new Error(`Canonical move ${canonical} is not legal in the supplied position`);
+  }
+  return candidateCore(before, legalMoves, canonical) + actualCheckSuffix(after);
+}
+
 function newBuilder(index: number, source: PgnSourceLocation): GameBuilder {
   return {
     index, source, last_location: source, tags: new Map(), tag_locations: new Map(),
