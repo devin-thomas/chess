@@ -1,6 +1,7 @@
 build/
 dist/
 reports/
+retro/*.o
 test-results/
 .wrangler/
 __pycache__/

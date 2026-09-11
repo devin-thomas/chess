@@ -204,3 +204,32 @@ The portability milestone is achieved when:
 RPL-015 freezes the binary format before RPL-016 starts: byte order, square mapping (`a1 = 0`), promotion selectors, reserved-bit handling, lengths, root encoding, metadata encoding, capacity limits, and canonical/hash bytes require decoder tests and golden vectors. The frozen layout is documented in [COMPILED_FORMAT.md](COMPILED_FORMAT.md), with byte vectors in `shared/compiled-replay-vectors.json`. No illustrative bit layout in this document is already a published format.
 
 RPL-016 must identify its toolchain, memory budget, engine/state reconstruction strategy, and reproducible emulator invocation. Unsupported roots or oversized payloads must fail during compilation, never truncate. RPL-017 establishes host reference states before retro integration, then compares retro output including counters, castling, raw en-passant, and termination. A fixture-specific demonstration must state its coverage; it does not establish arbitrary Replay V1 or full orthodox-rules conformance.
+
+## 14. RPL-016 repository proof
+
+The repository includes a constrained NES-profile adapter in
+`retro/replay_nes.c`. It reads the frozen RPL-015 `RPLY` payload directly from
+an embedded byte array and supports root reconstruction, packed move
+application, previous/next navigation, and start/end seeking. The adapter has
+no runtime JSON, PGN, or SAN parser and uses no dynamic allocation.
+
+Run the proof with:
+
+```sh
+make replay-nes-proof
+```
+
+`tests/test_retro_replay.py` compares the root and both selected moves with the
+independent castle fixture oracle and exercises malformed-buffer rejection.
+This is a host-compiler proof of the constrained playback path. The repository
+also includes a cc65 ROM entry point and FCEUX Lua trace adapter:
+
+```sh
+make nes-rom
+make nes-fceux
+```
+
+The current host has a usable cc65 build path but FCEUX is not yet available,
+so the ROM build is verified while the emulator invocation remains an
+environment-dependent follow-up rather than evidence silently inferred from
+the host executable.
