@@ -128,6 +128,7 @@ static void navigation(NesReplay *replay, unsigned char command)
 int main(void)
 {
     NesReplay replay;
+    unsigned int trace_index;
     unsigned int frame_count = 0u;
     unsigned char previous_buttons = 0u;
     unsigned char demo_stage = 0u;
@@ -137,7 +138,11 @@ int main(void)
     unsigned char pressed;
     unsigned char command;
 
-    TRACE[TRACE_HISTORY_COUNT] = 0u;
+    for (trace_index = 0u;
+         trace_index < TRACE_HISTORY_BASE + TRACE_RECORD_BYTES * TRACE_HISTORY_CAPACITY;
+         ++trace_index) {
+        TRACE[trace_index] = 0u;
+    }
 
     if (nes_replay_load(&replay, NES_REPLAY_DATA, NES_REPLAY_DATA_LEN) != NES_REPLAY_OK) {
         TRACE[TRACE_VALID] = 0u;

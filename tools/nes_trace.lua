@@ -1,6 +1,10 @@
 -- FCEUX trace reader for retro/nes_replay_main.c.
 -- The ROM publishes a fixed-format state record at CPU address $7000.
 
+-- FCEUX preserves cartridge RAM between launches. Power-cycle after the
+-- observer attaches so stale completion flags cannot be mistaken for a run.
+FCEU.poweron()
+
 local base = 0x7000
 local history_base = base + 84
 local record_bytes = 83
@@ -72,6 +76,10 @@ local function capture(record)
   }
 end
 
+-- FCEUX loads this script before the ROM reset handler. Start from a known
+-- power-cycle so retained cartridge RAM cannot satisfy the completion check.
+FCEU.poweron()
+
 local saw_reset = false
 for _ = 1, 600 do
   local history_count = byte(history_count_offset)
@@ -85,7 +93,7 @@ for _ = 1, 600 do
     end
     break
   end
-  emu.frameadvance()
+  FCEU.frameadvance()
 end
 
 local trace_path = os.getenv('NES_TRACE_OUTPUT') or 'build/nes-replay-trace.json'
