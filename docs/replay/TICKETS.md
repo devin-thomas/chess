@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-005 implemented; RPL-006 through RPL-017 remain open. Phase 1 still requires the PGN importer (RPL-006).
+Status: RPL-001 through RPL-006 implemented; RPL-007 through RPL-017 remain open. Phase 1 is complete; Phase 2 is in progress.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -161,6 +161,8 @@ Connect replay stepping to the existing 3D presentation adapter contract.
 ---
 
 ## RPL-006 — Add PGN importer
+
+Status: complete. Validated by `npm run typecheck`, `npm run test:replay`, and `npm run build`.
 
 **Goal**
 Convert friendly PGN input into canonical Replay V1.

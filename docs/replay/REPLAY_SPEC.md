@@ -1,6 +1,6 @@
 # Replay Specification V1
 
-Status: schema, validation, controller, fixtures, and presentation bridge implemented (RPL-001 through RPL-005); PGN import remains planned
+Status: schema, validation, controller, fixtures, presentation bridge, and PGN import implemented (RPL-001 through RPL-006)
 Rules dependency: `SPEC.md` / `orthodox-chess-v1`
 
 ## 1. Purpose

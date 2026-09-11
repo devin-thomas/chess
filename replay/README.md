@@ -1,9 +1,9 @@
 # Replay core library
 
-RPL-001 through RPL-005 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md).
+RPL-001 through RPL-006 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md).
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
-PGN import, playback timers, renderer integration, and checkpoint caching are later tickets.
+Playback timers, renderer integration, and checkpoint caching are later tickets.
 
 ## Use
 
@@ -52,6 +52,7 @@ clear the last transition/events. Rejected operations leave them unchanged.
 - `validate.ts`: ordered legal execution, first-error location, and recorded-result diagnostics.
 - `controller.ts`: deterministic navigation and integrated presentation updates.
 - `presentation.ts`: stable identities, explicit effects, event sequencing, and snapshots.
+- `pgn-import.ts`: bounded PGN collection parsing, strict SAN resolution, and canonical replay conversion.
 
 `parseReplay` checks move syntax immediately. `validateReplay` defers string syntax
 checks to ordered execution so a malformed move reports its last valid state.
