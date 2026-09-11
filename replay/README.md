@@ -80,4 +80,5 @@ reconstruction. Normal tests do not regenerate expectations.
 
 The engine's existing conservative dead-position detection remains a known
 limitation; this library does not claim complete conformance to every session
-action in SPEC.md. The public simulator has not yet been converted to a replay viewer.
+action in SPEC.md. The public simulator remains a separate interface; the replay
+viewer is served at `/`.
