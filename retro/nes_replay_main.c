@@ -74,6 +74,12 @@ static void draw_board(const NesReplay *replay)
     cputs(replay->side_to_move == 0u ? "YES" : "NO");
 }
 
+static void trace_set_history_count(unsigned char value)
+{
+    /* Keep this store absolute: cc65 may otherwise reuse the copy pointer. */
+    *(volatile unsigned char *)0x7053 = value;
+}
+
 static void trace_position(const NesReplay *replay, unsigned char command,
                            unsigned char demo_stage, unsigned char done)
 {
@@ -113,7 +119,7 @@ static void trace_position(const NesReplay *replay, unsigned char command,
             TRACE[TRACE_HISTORY_BASE + history_count * TRACE_RECORD_BYTES + index] = TRACE[index];
         }
         ++history_count;
-        TRACE[TRACE_HISTORY_COUNT] = history_count;
+        trace_set_history_count(history_count);
     }
 }
 

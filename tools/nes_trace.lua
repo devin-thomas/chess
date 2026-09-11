@@ -1,10 +1,6 @@
 -- FCEUX trace reader for retro/nes_replay_main.c.
 -- The ROM publishes a fixed-format state record at CPU address $7000.
 
--- FCEUX preserves cartridge RAM between launches. Power-cycle after the
--- observer attaches so stale completion flags cannot be mistaken for a run.
-FCEU.poweron()
-
 local base = 0x7000
 local history_base = base + 84
 local record_bytes = 83
@@ -76,19 +72,16 @@ local function capture(record)
   }
 end
 
--- FCEUX loads this script before the ROM reset handler. Start from a known
--- power-cycle so retained cartridge RAM cannot satisfy the completion check.
-FCEU.poweron()
+-- FCEUX may expose the previous run's SRAM before the ROM has booted. Let the
+-- reset and short deterministic demo finish before inspecting the trace.
+for _ = 1, 120 do
+  emu.frameadvance()
+end
 
-local saw_reset = false
 for _ = 1, 600 do
   local history_count = byte(history_count_offset)
-  if not saw_reset then
-    -- Cartridge RAM can retain a prior run. Wait for the ROM's reset marker
-    -- before accepting a completion flag from that stale state.
-    saw_reset = history_count == 0
-  elseif history_count >= 6 and byte(82) ~= 0 then
-    for record = 0, 5 do
+  if history_count >= 6 and byte(82) ~= 0 then
+    for record = 0, history_count - 1 do
       records[#records + 1] = capture(record)
     end
     break
