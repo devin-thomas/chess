@@ -1,0 +1,213 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "7k/P7/8/8/8/8/8/7K w - -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "7k/P7/8/8/8/8/8/7K w - -"
+    },
+    {
+      "ply": 1,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "terminal",
+        "check": null,
+        "outcome": {
+          "reason": "dead_position",
+          "result": "1/2-1/2"
+        },
+        "claimable_draws": [],
+        "repetition_counts": {
+          "7k/P7/8/8/8/8/8/7K w - -": 1,
+          "N6k/8/8/8/8/8/8/7K b - -": 1
+        },
+        "moves": [
+          "a7a8n"
+        ],
+        "revision": 1
+      },
+      "position_key": "N6k/8/8/8/8/8/8/7K b - -"
+    }
+  ]
+}

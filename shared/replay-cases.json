@@ -1,0 +1,185 @@
+{
+  "fixture_version": 1,
+  "oracle": "python/chess_cpu.py; all-rules-enabled, clocks disabled, fresh root history",
+  "state_normalization": "Protocol state with canonical boolean castling rights and revision equal to ply. Checkpoints include every committed ply.",
+  "cases": [
+    {
+      "id": "opening",
+      "artifact": "replay-fixtures/opening.json",
+      "expected": "replay-fixtures/opening.expected.json",
+      "coverage": [
+        "short-opening",
+        "metadata-does-not-adjudicate"
+      ]
+    },
+    {
+      "id": "capture",
+      "artifact": "replay-fixtures/capture.json",
+      "expected": "replay-fixtures/capture.expected.json",
+      "coverage": [
+        "capture"
+      ]
+    },
+    {
+      "id": "castle-kingside",
+      "artifact": "replay-fixtures/castle-kingside.json",
+      "expected": "replay-fixtures/castle-kingside.expected.json",
+      "coverage": [
+        "white-kingside-castling",
+        "black-queenside-castling"
+      ]
+    },
+    {
+      "id": "castle-queenside",
+      "artifact": "replay-fixtures/castle-queenside.json",
+      "expected": "replay-fixtures/castle-queenside.expected.json",
+      "coverage": [
+        "white-queenside-castling",
+        "black-kingside-castling"
+      ]
+    },
+    {
+      "id": "en-passant",
+      "artifact": "replay-fixtures/en-passant.json",
+      "expected": "replay-fixtures/en-passant.expected.json",
+      "coverage": [
+        "en-passant"
+      ]
+    },
+    {
+      "id": "checkmate",
+      "artifact": "replay-fixtures/checkmate.json",
+      "expected": "replay-fixtures/checkmate.expected.json",
+      "coverage": [
+        "checkmate",
+        "metadata-result-disagreement"
+      ]
+    },
+    {
+      "id": "black-root",
+      "artifact": "replay-fixtures/black-root.json",
+      "expected": "replay-fixtures/black-root.expected.json",
+      "coverage": [
+        "non-standard-root",
+        "black-to-move",
+        "fullmove-offset"
+      ]
+    },
+    {
+      "id": "empty",
+      "artifact": "replay-fixtures/empty.json",
+      "expected": "replay-fixtures/empty.expected.json",
+      "coverage": [
+        "empty-replay"
+      ]
+    },
+    {
+      "id": "terminal-checkmate",
+      "artifact": "replay-fixtures/terminal-checkmate.json",
+      "expected": "replay-fixtures/terminal-checkmate.expected.json",
+      "coverage": [
+        "terminal-root",
+        "checkmate"
+      ]
+    },
+    {
+      "id": "terminal-stalemate",
+      "artifact": "replay-fixtures/terminal-stalemate.json",
+      "expected": "replay-fixtures/terminal-stalemate.expected.json",
+      "coverage": [
+        "terminal-root",
+        "stalemate"
+      ]
+    },
+    {
+      "id": "terminal-dead",
+      "artifact": "replay-fixtures/terminal-dead.json",
+      "expected": "replay-fixtures/terminal-dead.expected.json",
+      "coverage": [
+        "terminal-root",
+        "dead-position"
+      ]
+    },
+    {
+      "id": "repetition",
+      "artifact": "replay-fixtures/repetition.json",
+      "expected": "replay-fixtures/repetition.expected.json",
+      "coverage": [
+        "threefold-claim",
+        "fivefold-termination",
+        "history-sensitive-seek"
+      ]
+    },
+    {
+      "id": "seventy-five-move",
+      "artifact": "replay-fixtures/seventy-five-move.json",
+      "expected": "replay-fixtures/seventy-five-move.expected.json",
+      "coverage": [
+        "fifty-move-claim",
+        "75-move-termination"
+      ]
+    },
+    {
+      "id": "invalid-move",
+      "artifact": "replay-fixtures/invalid-move.json",
+      "expected": "replay-fixtures/invalid-move.expected.json",
+      "coverage": [
+        "invalid-replay",
+        "last-valid-state"
+      ]
+    },
+    {
+      "id": "after-checkmate",
+      "artifact": "replay-fixtures/after-checkmate.json",
+      "expected": "replay-fixtures/after-checkmate.expected.json",
+      "coverage": [
+        "invalid-replay",
+        "move-after-terminal"
+      ]
+    },
+    {
+      "id": "capture-promotion",
+      "artifact": "replay-fixtures/capture-promotion.json",
+      "expected": "replay-fixtures/capture-promotion.expected.json",
+      "coverage": [
+        "capture-promotion"
+      ]
+    },
+    {
+      "id": "promotion-q",
+      "artifact": "replay-fixtures/promotion-q.json",
+      "expected": "replay-fixtures/promotion-q.expected.json",
+      "coverage": [
+        "promotion-q",
+        "promotion"
+      ]
+    },
+    {
+      "id": "promotion-r",
+      "artifact": "replay-fixtures/promotion-r.json",
+      "expected": "replay-fixtures/promotion-r.expected.json",
+      "coverage": [
+        "promotion-r",
+        "underpromotion"
+      ]
+    },
+    {
+      "id": "promotion-b",
+      "artifact": "replay-fixtures/promotion-b.json",
+      "expected": "replay-fixtures/promotion-b.expected.json",
+      "coverage": [
+        "promotion-b",
+        "underpromotion"
+      ]
+    },
+    {
+      "id": "promotion-n",
+      "artifact": "replay-fixtures/promotion-n.json",
+      "expected": "replay-fixtures/promotion-n.expected.json",
+      "coverage": [
+        "promotion-n",
+        "underpromotion"
+      ]
+    }
+  ]
+}

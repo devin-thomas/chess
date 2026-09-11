@@ -1258,4 +1258,5 @@ export function runCli(): void {
   });
 }
 
-if (getCliProcess() !== null) runCli();
+// Importing the engine as a library must not attach a command-line stdin listener.
+if ("main" in import.meta && import.meta.main === true) runCli();

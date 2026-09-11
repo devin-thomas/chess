@@ -5,6 +5,8 @@
   "type": "module",
   "description": "Comparable CPU-vs-CPU orthodox chess engines and a browser simulation interface",
   "scripts": {
+    "test:replay": "node --experimental-strip-types --test tests/replay-*.test.ts",
+    "typecheck": "tsc --noEmit",
     "check": "node --experimental-strip-types typescript/chess_cpu.ts < /dev/null",
     "run": "node --experimental-strip-types typescript/chess_cpu.ts",
     "dev": "vite --host 0.0.0.0",
@@ -13,6 +15,8 @@
     "deploy": "npm run build && wrangler pages deploy dist --project-name chess-sim"
   },
   "devDependencies": {
+    "@types/node": "^22.20.2",
+    "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "wrangler": "^4.125.0"
   }

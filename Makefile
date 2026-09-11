@@ -18,6 +18,8 @@ build:
 	$(NODE) --experimental-strip-types $(TS_FILE) </dev/null
 
 test: build
+	npm run typecheck
+	npm run test:replay
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py' -v
 	$(PYTHON) tests/run_shared.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)"
 

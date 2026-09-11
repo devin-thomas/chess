@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "ruleset": "orthodox-chess-v1",
+  "root": {
+    "kind": "standard"
+  },
+  "moves": [
+    "e2e4",
+    "e7e5",
+    "g1f3"
+  ],
+  "metadata": {
+    "white": "Fixture White",
+    "black": "Fixture Black",
+    "result": "1-0",
+    "annotation": {
+      "ignored": true
+    }
+  }
+}

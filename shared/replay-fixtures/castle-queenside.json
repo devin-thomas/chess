@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "ruleset": "orthodox-chess-v1",
+  "root": {
+    "kind": "position",
+    "position": {
+      "board": [
+        {
+          "color": "white",
+          "type": "rook"
+        },
+        null,
+        null,
+        null,
+        {
+          "color": "white",
+          "type": "king"
+        },
+        null,
+        null,
+        {
+          "color": "white",
+          "type": "rook"
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "color": "black",
+          "type": "rook"
+        },
+        null,
+        null,
+        null,
+        {
+          "color": "black",
+          "type": "king"
+        },
+        null,
+        null,
+        {
+          "color": "black",
+          "type": "rook"
+        }
+      ],
+      "side_to_move": "white",
+      "en_passant_target": null,
+      "halfmove_clock": 0,
+      "fullmove_number": 1,
+      "castling_rights": {
+        "white_kingside": true,
+        "white_queenside": true,
+        "black_kingside": true,
+        "black_queenside": true
+      }
+    }
+  },
+  "moves": [
+    "e1c1",
+    "e8g8"
+  ]
+}

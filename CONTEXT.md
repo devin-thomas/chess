@@ -49,3 +49,20 @@ _Avoid_: Quality setting, console mode
 **Asset Provenance Record**:
 The immutable record linking an asset to its source URL or repository, author, license, version or commit, modifications, attribution text, and generated derivatives.
 _Avoid_: Credits list, download note
+
+## Replay
+
+**Canonical Replay**:
+A versioned ruleset, root position, and coordinate move sequence under the fixed V1 mode. Descriptive metadata cannot modify execution. Defined in [Replay V1](docs/replay/REPLAY_SPEC.md).
+
+**Replay Ply**:
+The cursor boundary: 0 is the root; N is the state after N moves. It is independent of the root fullmove number and viewer elapsed time.
+
+**Replay Controller**:
+Owns loading, validation, cursor navigation, and reconstruction through the rules engine. It does not own chess legality or renderer state.
+
+**Recorded Result**:
+The source game's descriptive score, which can reflect resignation or agreement absent from a move-only replay. It is distinct from a rules-derived terminal outcome and from reaching the end of playback.
+
+**Compiled Replay Derivative**:
+A versioned target representation produced offline from a validated canonical replay, preserving execution semantics. Its metadata and rendering may be reduced without changing the game.

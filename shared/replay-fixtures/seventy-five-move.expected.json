@@ -1,0 +1,323 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 148,
+        "fullmove_number": 76,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "fifty_move"
+        ],
+        "repetition_counts": {
+          "7k/8/8/8/8/8/8/KR6 w - -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "7k/8/8/8/8/8/8/KR6 w - -"
+    },
+    {
+      "ply": 1,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 149,
+        "fullmove_number": 76,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "fifty_move"
+        ],
+        "repetition_counts": {
+          "7k/8/8/8/8/8/8/KR6 w - -": 1,
+          "7k/8/8/8/8/8/1R6/K7 b - -": 1
+        },
+        "moves": [
+          "b1b2"
+        ],
+        "revision": 1
+      },
+      "position_key": "7k/8/8/8/8/8/1R6/K7 b - -"
+    },
+    {
+      "ply": 2,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 150,
+        "fullmove_number": 77,
+        "status": "terminal",
+        "check": null,
+        "outcome": {
+          "reason": "seventy_five_move",
+          "result": "1/2-1/2"
+        },
+        "claimable_draws": [],
+        "repetition_counts": {
+          "7k/8/8/8/8/8/8/KR6 w - -": 1,
+          "7k/8/8/8/8/8/1R6/K7 b - -": 1,
+          "8/7k/8/8/8/8/1R6/K7 w - -": 1
+        },
+        "moves": [
+          "b1b2",
+          "h8h7"
+        ],
+        "revision": 2
+      },
+      "position_key": "8/7k/8/8/8/8/1R6/K7 w - -"
+    }
+  ]
+}

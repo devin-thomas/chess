@@ -73,3 +73,9 @@ output = z xor (z >> 31)
 ```
 
 The selected index is `output mod number_of_legal_moves`. Seeds are serialized as decimal strings in responses so the C, Python, JavaScript, and Rust numeric domains remain equivalent.
+
+## Specification and replay integration boundary
+
+This protocol is an implemented subset of [SPEC.md](../SPEC.md), not its complete canonical command/state serialization. In particular it exposes `op`, FEN setup, string castling rights, and a coordinate move ledger; it does not expose canonical setup objects, `execute`, `save`/`restore`, revisions, enriched move records, or all competitive session actions. Conservative dead-position detection is an existing conformance gap, not a relaxation of the normative rule.
+
+The [Replay V1](replay/REPLAY_SPEC.md) uses `new` with explicit `all-rules-enabled`, then `play`/`state`/`legal_moves`. The [integration bridge](replay/ARCHITECTURE.md#15-current-engine-integration) converts canonical roots through FEN and owns replay/presentation bookkeeping. Replay controller operations are library operations, not additions to this JSONL protocol. The replay library does not add JSONL operations or change chess rules. The TypeScript module starts its CLI only when executed directly; imports expose `createSimulator` without reading stdin.

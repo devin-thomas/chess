@@ -1,0 +1,3419 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    },
+    {
+      "ply": 1,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 1,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 1
+        },
+        "moves": [
+          "g1f3"
+        ],
+        "revision": 1
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"
+    },
+    {
+      "ply": 2,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 2,
+        "fullmove_number": 2,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 1
+        },
+        "moves": [
+          "g1f3",
+          "g8f6"
+        ],
+        "revision": 2
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -"
+    },
+    {
+      "ply": 3,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 3,
+        "fullmove_number": 2,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 1
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1"
+        ],
+        "revision": 3
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
+    },
+    {
+      "ply": 4,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 4,
+        "fullmove_number": 3,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 2,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 1
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8"
+        ],
+        "revision": 4
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    },
+    {
+      "ply": 5,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 5,
+        "fullmove_number": 3,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 2,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 1,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 1
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3"
+        ],
+        "revision": 5
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"
+    },
+    {
+      "ply": 6,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 6,
+        "fullmove_number": 4,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 2,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 1
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6"
+        ],
+        "revision": 6
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -"
+    },
+    {
+      "ply": 7,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 7,
+        "fullmove_number": 4,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 2,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 2
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1"
+        ],
+        "revision": 7
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
+    },
+    {
+      "ply": 8,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 8,
+        "fullmove_number": 5,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 3,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 2
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8"
+        ],
+        "revision": 8
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    },
+    {
+      "ply": 9,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 9,
+        "fullmove_number": 5,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 3,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 2,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 2
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3"
+        ],
+        "revision": 9
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"
+    },
+    {
+      "ply": 10,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 10,
+        "fullmove_number": 6,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 3,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 2
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6"
+        ],
+        "revision": 10
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -"
+    },
+    {
+      "ply": 11,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 11,
+        "fullmove_number": 6,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 3,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 3
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1"
+        ],
+        "revision": 11
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
+    },
+    {
+      "ply": 12,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 12,
+        "fullmove_number": 7,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 4,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 3
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8"
+        ],
+        "revision": 12
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    },
+    {
+      "ply": 13,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 13,
+        "fullmove_number": 7,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 4,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 3,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 3
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3"
+        ],
+        "revision": 13
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"
+    },
+    {
+      "ply": 14,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 14,
+        "fullmove_number": 8,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 4,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 3
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6"
+        ],
+        "revision": 14
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -"
+    },
+    {
+      "ply": 15,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 15,
+        "fullmove_number": 8,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [
+          "threefold_repetition"
+        ],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 4,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 4
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1"
+        ],
+        "revision": 15
+      },
+      "position_key": "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
+    },
+    {
+      "ply": 16,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 16,
+        "fullmove_number": 9,
+        "status": "terminal",
+        "check": null,
+        "outcome": {
+          "reason": "fivefold_repetition",
+          "result": "1/2-1/2"
+        },
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 5,
+          "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq -": 4,
+          "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -": 4
+        },
+        "moves": [
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8",
+          "g1f3",
+          "g8f6",
+          "f3g1",
+          "f6g8"
+        ],
+        "revision": 16
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    }
+  ]
+}

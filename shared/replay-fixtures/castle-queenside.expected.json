@@ -1,0 +1,343 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "r3k2r/8/8/8/8/8/8/R3K2R w KQkq -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq -"
+    },
+    {
+      "ply": 1,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          },
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 1,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "r3k2r/8/8/8/8/8/8/R3K2R w KQkq -": 1,
+          "r3k2r/8/8/8/8/8/8/2KR3R b kq -": 1
+        },
+        "moves": [
+          "e1c1"
+        ],
+        "revision": 1
+      },
+      "position_key": "r3k2r/8/8/8/8/8/8/2KR3R b kq -"
+    },
+    {
+      "ply": 2,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          null
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 2,
+        "fullmove_number": 2,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "r3k2r/8/8/8/8/8/8/R3K2R w KQkq -": 1,
+          "r3k2r/8/8/8/8/8/8/2KR3R b kq -": 1,
+          "r4rk1/8/8/8/8/8/8/2KR3R w - -": 1
+        },
+        "moves": [
+          "e1c1",
+          "e8g8"
+        ],
+        "revision": 2
+      },
+      "position_key": "r4rk1/8/8/8/8/8/8/2KR3R w - -"
+    }
+  ]
+}

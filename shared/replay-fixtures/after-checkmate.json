@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "ruleset": "orthodox-chess-v1",
+  "root": {
+    "kind": "standard"
+  },
+  "moves": [
+    "f2f3",
+    "e7e5",
+    "g2g4",
+    "d8h4",
+    "a2a3"
+  ]
+}

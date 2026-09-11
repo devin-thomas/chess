@@ -1,0 +1,193 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          {
+            "color": "white",
+            "type": "king"
+          },
+          {
+            "color": "white",
+            "type": "bishop"
+          },
+          {
+            "color": "white",
+            "type": "knight"
+          },
+          {
+            "color": "white",
+            "type": "rook"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          {
+            "color": "white",
+            "type": "pawn"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "pawn"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "queen"
+          },
+          {
+            "color": "black",
+            "type": "king"
+          },
+          {
+            "color": "black",
+            "type": "bishop"
+          },
+          {
+            "color": "black",
+            "type": "knight"
+          },
+          {
+            "color": "black",
+            "type": "rook"
+          }
+        ],
+        "side_to_move": "white",
+        "castling_rights": {
+          "white_kingside": true,
+          "white_queenside": true,
+          "black_kingside": true,
+          "black_queenside": true
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "active",
+        "check": null,
+        "outcome": null,
+        "claimable_draws": [],
+        "repetition_counts": {
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    }
+  ]
+}

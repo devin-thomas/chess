@@ -1,12 +1,15 @@
 # Chess Rules and Presentation Specification
 
-This repository is the language-agnostic source of truth for a deterministic chess rules core and the machine-facing presentation seams needed by later ports. The first presentation targets are a PlayStation 1 renderer and a Sega Dreamcast renderer built with KallistiOS.
+This repository is the language-agnostic source of truth for a deterministic chess rules core and the machine-facing presentation seams needed by later ports. The next product milestone is a web replay viewer. PlayStation 1 and Sega Dreamcast renderers remain planned console targets, with an NES/FCEUX replay proof scoped as a later portability milestone.
 
 The rules model must remain independent of meshes, textures, camera behavior, SDK headers, and console memory layouts. Console renderers consume stable state and events, then select platform-specific asset derivatives.
 
 ## Documents
 
 - [`SPEC.md`](./SPEC.md) — preserved authoritative orthodox-chess rules and command/state contract.
+- [`docs/replay/README.md`](./docs/replay/README.md) — replay implementation handoff, contract, architecture, web requirements, portability strategy, and ordered tickets.
+- [`docs/replay/TICKETS.md`](./docs/replay/TICKETS.md) — implementation dependencies and phase acceptance gates.
+- [`docs/PROTOCOL.md`](./docs/PROTOCOL.md) — current executable engine surface and its differences from the full rules specification.
 - [`CONTEXT.md`](./CONTEXT.md) — project vocabulary and boundaries.
 - [`spec/3d-presentation-requirements.md`](./spec/3d-presentation-requirements.md) — normative machine-facing requirements for rendering chess in 3D.
 - [`docs/research/3d-modeling-and-platform-integration.md`](./docs/research/3d-modeling-and-platform-integration.md) — sourced research on PS1/Dreamcast constraints, asset sources, and the production pipeline.
@@ -27,10 +30,17 @@ All four expose the JSON Lines protocol documented in [`docs/PROTOCOL.md`](./doc
 The default build requires Python 3, a C11 compiler, Node 24 or newer, and `rustc` with Rust 2021 support:
 
 ```sh
+npm install
 make build
 make test
 make benchmark
 ```
+
+## Planned replay viewer
+
+The [replay handoff](docs/replay/README.md) defines Web V1 and its later retro proof. RPL-001 through RPL-005 are implemented as a [renderer-independent replay library](replay/README.md): schema, validation, navigation, shared fixtures, and presentation transitions. PGN import and the 3D viewer remain planned; the existing simulator and CLI interfaces remain supported.
+
+Run `npm run test:replay` for replay checks and `npm run typecheck` for TypeScript validation. Both are included in `make test`.
 
 ## Web simulator
 

@@ -6,6 +6,10 @@ This document translates the chess rules project into machine-facing requirement
 
 `SPEC.md` is the preserved authoritative source for orthodox chess rules, state, commands, and adjudication. This document consumes a read-only projection of that source; it does not amend `SPEC.md`, add spatial chess rules, or make geometry part of legality.
 
+The first product milestone is the [Web Replay Viewer](../docs/replay/WEB_VIEWER.md). Shared state/identity/event requirements here apply to it; PS1 and Dreamcast budgets apply only to their named console profiles. The later NES proof is a 2D consumer of shared replay semantics, not a 3D profile implementation.
+
+The [replay bridge](../docs/replay/ARCHITECTURE.md#15-current-engine-integration) documents how the current smaller JSONL surface supplies these projections, including bridge-owned revisions and identity reconstruction on seek. The replay adapter is implemented; the web and console renderers remain planned. Session epoch/event delivery counters need not match across arbitrary navigation paths; reconstructed piece handles and chess state must match for the same replay ply.
+
 ## 1. Scope and non-goals
 
 The system presents orthodox chess on a three-dimensional board. It does not make the rules three-dimensional: legal movement still operates on the 8-by-8 board, and geometry never participates in legality, check detection, repetition, or draw decisions.

@@ -1,0 +1,110 @@
+{
+  "valid": true,
+  "checkpoints": [
+    {
+      "ply": 0,
+      "state": {
+        "mode": "all-rules-enabled",
+        "board": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "king"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "white",
+            "type": "queen"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "color": "black",
+            "type": "king"
+          }
+        ],
+        "side_to_move": "black",
+        "castling_rights": {
+          "white_kingside": false,
+          "white_queenside": false,
+          "black_kingside": false,
+          "black_queenside": false
+        },
+        "en_passant_target": null,
+        "halfmove_clock": 0,
+        "fullmove_number": 1,
+        "status": "terminal",
+        "check": "black",
+        "outcome": {
+          "reason": "checkmate",
+          "result": "1-0",
+          "winner": "white"
+        },
+        "claimable_draws": [],
+        "repetition_counts": {
+          "7k/6Q1/5K2/8/8/8/8/8 b - -": 1
+        },
+        "moves": [],
+        "revision": 0
+      },
+      "position_key": "7k/6Q1/5K2/8/8/8/8/8 b - -"
+    }
+  ]
+}

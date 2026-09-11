@@ -8,7 +8,7 @@ Normative rules source: [FIDE Laws of Chess taking effect from 1 January 2023](h
 
 This is a language-agnostic specification for the rules engine and command-line boundary of a standard, non-variant chess game. The words MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are normative requirements.
 
-This directory is standalone and has no existing repository or remote issue tracker. The local Markdown artifact is therefore the publication target; the `ready-for-agent` status above is the local equivalent of the requested triage label.
+This file is the repository's normative rules contract. The `ready-for-agent` status describes specification readiness, not complete implementation conformance. See [docs/PROTOCOL.md](docs/PROTOCOL.md) for the current executable surface and [docs/replay/README.md](docs/replay/README.md) for the replay implementation handoff.
 
 ## Problem Statement
 
