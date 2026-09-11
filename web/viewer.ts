@@ -1,5 +1,6 @@
 import type { Color } from '../replay/schema.ts';
 import type { PresentationSnapshot } from '../replay/presentation.ts';
+import type { NavigationResult } from '../replay/controller.ts';
 import {
   boardSquareOrder,
   createDefaultViewerState,
@@ -9,6 +10,7 @@ import {
   replayMetadataText,
   type ReplaySpeed,
 } from './viewer-shell.ts';
+import { browserReplayScheduler, createReplayTransport } from './replay-transport.ts';
 
 const $ = <T extends Element>(selector: string): T => {
   const element = document.querySelector(selector);
@@ -45,8 +47,12 @@ const elements = {
 };
 
 const model = createDefaultViewerState();
-let playbackTimer: number | null = null;
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
+const transport = createReplayTransport(model.controller, {
+  scheduler: browserReplayScheduler,
+  onChange: () => render(),
+  onError: (error) => reportNavigationError(error.message),
+});
 
 function sideLabel(side: Color): string {
   return side === 'white' ? 'White' : 'Black';
@@ -61,13 +67,6 @@ function resultLabel(result: string): string {
 
 function squareIndex(square: string): number {
   return 'abcdefgh'.indexOf(square[0]) + (Number(square[1]) - 1) * 8;
-}
-
-function clearPlaybackTimer(): void {
-  if (playbackTimer !== null) {
-    window.clearTimeout(playbackTimer);
-    playbackTimer = null;
-  }
 }
 
 function renderBoard(snapshot: PresentationSnapshot): void {
@@ -151,15 +150,19 @@ function renderMoveList(currentPly: number): void {
 }
 
 function render(snapshot: PresentationSnapshot = model.controller.presentationSnapshot()!): void {
-  const currentPly = model.controller.currentPly();
-  const length = model.controller.length();
+  const transportState = transport.snapshot();
+  model.paused = transportState.paused;
+  model.boardFlipped = transportState.boardFlipped;
+  model.speed = transportState.speed;
+  const currentPly = transportState.currentPly;
+  const length = transportState.length;
   const position = model.controller.position();
   if (position === null) throw new Error('Viewer controller has no authoritative position');
   const recordedResult = replayMetadataText(model.replay, 'result', position.outcome?.result ?? '*');
 
   renderBoard(snapshot);
   renderMoveList(currentPly);
-  elements.root.dataset.playbackState = model.paused ? 'paused' : 'playing';
+  elements.root.dataset.playbackState = transportState.paused ? 'paused' : 'playing';
   elements.root.dataset.currentPly = String(currentPly);
   elements.white.textContent = replayMetadataText(model.replay, 'white', 'White');
   elements.black.textContent = replayMetadataText(model.replay, 'black', 'Black');
@@ -172,14 +175,17 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
     ? 'Root position'
     : 'Ply ' + currentPly + ' · ' + (model.controller.moveAt(currentPly) ?? 'unknown move');
   elements.boardState.textContent = 'Ply ' + currentPly + ' of ' + length + '. ' + sideLabel(position.side_to_move) + ' to move.';
-  elements.transportStatus.textContent = model.paused ? 'Paused · ready to watch' : 'Playing · ply ' + currentPly;
-  elements.liveStatus.textContent = elements.boardState.textContent + ' ' + (model.paused ? 'Paused.' : 'Playing.');
-  elements.play.textContent = model.paused ? 'Play' : 'Pause';
-  elements.play.setAttribute('aria-pressed', String(!model.paused));
-  elements.first.disabled = currentPly === 0;
-  elements.previous.disabled = currentPly === 0;
-  elements.next.disabled = currentPly >= length;
-  elements.last.disabled = currentPly >= length;
+  elements.transportStatus.textContent = transportState.paused ? 'Paused · ready to watch' : 'Playing · ply ' + currentPly;
+  elements.liveStatus.textContent = elements.boardState.textContent + ' ' + (transportState.paused ? 'Paused.' : 'Playing.');
+  elements.play.textContent = transportState.paused ? 'Play' : 'Pause';
+  elements.play.setAttribute('aria-pressed', String(transportState.playing));
+  elements.play.disabled = !transportState.canPlay;
+  elements.first.disabled = !transportState.canJumpToStart;
+  elements.previous.disabled = !transportState.canStepBack;
+  elements.next.disabled = !transportState.canStepForward;
+  elements.last.disabled = !transportState.canJumpToEnd;
+  elements.flip.setAttribute('aria-pressed', String(transportState.boardFlipped));
+  elements.speed.value = String(transportState.speed);
   elements.timeline.min = '0';
   elements.timeline.max = String(length);
   elements.timeline.value = String(currentPly);
@@ -193,99 +199,44 @@ function reportNavigationError(message: string): void {
   elements.transportStatus.textContent = message;
 }
 
-function seekTo(ply: number): void {
-  clearPlaybackTimer();
-  model.paused = true;
-  const result = model.controller.seek(ply);
+function reportNavigationResult(result: NavigationResult): void {
   if (!result.ok) {
     reportNavigationError(result.error.message);
-    render();
-    return;
   }
-  render();
+}
+
+function seekTo(ply: number): void {
+  reportNavigationResult(transport.seek(ply));
 }
 
 function stepForward(): void {
-  clearPlaybackTimer();
-  model.paused = true;
-  const result = model.controller.stepForward();
-  if (!result.ok) {
-    reportNavigationError(result.error.message);
-    render();
-    return;
-  }
-  render();
+  reportNavigationResult(transport.stepForward());
 }
 
 function stepBack(): void {
-  clearPlaybackTimer();
-  model.paused = true;
-  const result = model.controller.stepBack();
-  if (!result.ok) {
-    reportNavigationError(result.error.message);
-    render();
-    return;
-  }
-  render();
-}
-
-function schedulePlayback(): void {
-  clearPlaybackTimer();
-  if (model.paused) return;
-  if (model.controller.currentPly() >= model.controller.length()) {
-    model.paused = true;
-    render();
-    return;
-  }
-  playbackTimer = window.setTimeout(() => {
-    playbackTimer = null;
-    if (model.paused) return;
-    const result = model.controller.stepForward();
-    if (!result.ok) {
-      model.paused = true;
-      reportNavigationError(result.error.message);
-      render();
-      return;
-    }
-    render();
-    schedulePlayback();
-  }, 1000 / model.speed);
+  reportNavigationResult(transport.stepBack());
 }
 
 function togglePlayback(): void {
-  if (!model.paused) {
-    model.paused = true;
-    clearPlaybackTimer();
-    render();
-    return;
-  }
-  if (model.controller.currentPly() >= model.controller.length()) return;
-  model.paused = false;
-  render();
-  schedulePlayback();
+  transport.togglePlayback();
 }
 
 function setSpeed(value: string): void {
   const speed = speedOptions[value];
   if (speed === undefined) {
     elements.speed.value = '1';
-    model.speed = 1;
+    transport.setSpeed(1);
     return;
   }
-  model.speed = speed;
-  if (!model.paused) schedulePlayback();
+  transport.setSpeed(speed);
 }
 
 elements.play.addEventListener('click', togglePlayback);
 elements.first.addEventListener('click', () => seekTo(0));
 elements.previous.addEventListener('click', stepBack);
 elements.next.addEventListener('click', stepForward);
-elements.last.addEventListener('click', () => seekTo(model.controller.length()));
-elements.flip.addEventListener('click', () => {
-  model.boardFlipped = !model.boardFlipped;
-  elements.flip.setAttribute('aria-pressed', String(model.boardFlipped));
-  render();
-});
+elements.last.addEventListener('click', () => reportNavigationResult(transport.last()));
+elements.flip.addEventListener('click', () => transport.toggleBoardFlip());
 elements.speed.addEventListener('change', () => setSpeed(elements.speed.value));
 elements.timeline.addEventListener('input', () => seekTo(Number(elements.timeline.value)));
 window.addEventListener('keydown', (event) => {
