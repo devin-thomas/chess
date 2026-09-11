@@ -1,6 +1,12 @@
 import * as THREE from 'three';
 import type { MoveRecord, PresentedPiece, PresentationSnapshot } from '../replay/presentation.ts';
 import type { Color, PieceType } from '../replay/schema.ts';
+import {
+  createReplayAnimationModel,
+  type AnimationPieceFrame,
+  type ReplayAnimationFrame,
+  type ReplayAnimationOptions,
+} from './replay-animation.ts';
 
 export const BOARD_SIZE = 8;
 export const BOARD_SQUARE_COUNT = BOARD_SIZE * BOARD_SIZE;
@@ -319,6 +325,9 @@ export class Board3DRenderer {
   private rendererError: string | null = null;
   private resizeHandler: (() => void) | null = null;
   private orientationValue: BoardOrientation;
+  private readonly animationModel = createReplayAnimationModel();
+  private animationFrameHandle: number | null = null;
+  private animationGeneration = 0;
 
   constructor(container: HTMLElement, options: Board3DRendererOptions = {}) {
     this.container = container;
@@ -409,6 +418,19 @@ export class Board3DRenderer {
     this.setOrientation(this.orientationValue === 'white' ? 'black' : 'white');
   }
 
+  /** Stop a visual transition and redraw the authoritative snapshot immediately. */
+  cancelAnimation(): void {
+    this.animationGeneration += 1;
+    if (this.animationFrameHandle !== null) {
+      if (typeof window !== 'undefined') window.cancelAnimationFrame(this.animationFrameHandle);
+      this.animationFrameHandle = null;
+    }
+    if (this.animationModel.status !== 'running') return;
+    this.animationModel.cancel();
+    if (this.rendererMode === 'webgl') this.renderWebGL();
+    else if (this.rendererMode === 'fallback' && this.snapshot) this.renderFallback(this.snapshot);
+  }
+
   resize(): void {
     if (!this.renderer || !this.camera) return;
     const width = viewportWidth(this.container);
@@ -418,13 +440,21 @@ export class Board3DRenderer {
     this.renderer.setSize(width, height, false);
   }
 
-  render(snapshot: PresentationSnapshot, move: MoveRecord | null = null): BoardRenderResult {
+  render(
+    snapshot: PresentationSnapshot,
+    move: MoveRecord | null = null,
+    animationOptions: ReplayAnimationOptions = {},
+  ): BoardRenderResult {
+    const previous = this.snapshot;
+    this.cancelAnimation();
     this.snapshot = snapshot;
     this.lastMove = move;
     if (this.rendererMode === 'unmounted') this.mount();
     if (this.rendererMode === 'webgl') {
       try {
-        this.renderWebGL();
+        const canAnimate = previous !== null && move !== null && previous.after_ply + 1 === snapshot.after_ply;
+        if (canAnimate) this.startAnimation(previous, snapshot, move, animationOptions);
+        else this.renderWebGL();
       } catch (error) {
         this.rendererMode = 'fallback';
         this.rendererError = errorMessage(error);
@@ -441,7 +471,7 @@ export class Board3DRenderer {
       status: this.rendererMode === 'unmounted' ? 'unavailable' : this.rendererMode,
       squareCount: BOARD_SQUARE_COUNT,
       pieceCount: projection.pieces.length,
-      fallbackAssetCount: projection.pieces.length,
+      fallbackAssetCount: this.usesFallback ? projection.pieces.length : 0,
       error: this.rendererError,
     };
   }
@@ -455,6 +485,7 @@ export class Board3DRenderer {
   }
 
   dispose(): void {
+    this.cancelAnimation();
     if (this.resizeHandler && typeof window !== 'undefined') window.removeEventListener('resize', this.resizeHandler);
     this.resizeHandler = null;
     this.renderer?.dispose();
@@ -558,6 +589,113 @@ export class Board3DRenderer {
       const coordinate = canonicalSquareToBoardCoordinate(square, this.orientationValue, squareSize);
       mesh.position.set(coordinate.x, 0, coordinate.z);
     }
+  }
+
+  private startAnimation(
+    before: PresentationSnapshot,
+    after: PresentationSnapshot,
+    move: MoveRecord,
+    options: ReplayAnimationOptions = {},
+  ): void {
+    const plan = this.animationModel.begin(before, after, move, options);
+    if (plan.mode === 'immediate' || typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
+      this.animationModel.settle();
+      this.renderWebGL();
+      return;
+    }
+
+    const generation = ++this.animationGeneration;
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    this.applyAnimationFrame(plan.frame(0));
+    const tick = (timestamp: number): void => {
+      if (generation !== this.animationGeneration) return;
+      const frame = plan.frameAt(Math.max(0, timestamp - startedAt));
+      this.applyAnimationFrame(frame);
+      if (frame.settled) {
+        this.animationFrameHandle = null;
+        this.animationModel.settle();
+        this.renderWebGL();
+        return;
+      }
+      this.animationFrameHandle = window.requestAnimationFrame(tick);
+    };
+    this.animationFrameHandle = window.requestAnimationFrame(tick);
+  }
+
+  private animationProjection(piece: AnimationPieceFrame): BoardPieceProjection {
+    const square = piece.position.kind === 'square' ? piece.position.square : piece.position.to;
+    if (square === undefined) throw new Error(`Animation piece ${piece.piece_identity} has no board square`);
+    const target = canonicalSquareToBoardCoordinate(square, this.orientationValue, this.options.squareSize ?? 1);
+    if (piece.position.kind === 'square') {
+      return {
+        square,
+        file: target.file,
+        rank: target.rank,
+        x: target.x,
+        z: target.z,
+        piece_identity: piece.piece_identity,
+        piece_type: piece.piece_type,
+        color: piece.color,
+        visual_asset_id: piece.visual_asset_id,
+      };
+    }
+    if (piece.position.from === undefined || piece.position.progress === undefined) {
+      throw new Error(`Animation piece ${piece.piece_identity} has an incomplete interpolation`);
+    }
+    const start = canonicalSquareToBoardCoordinate(piece.position.from, this.orientationValue, this.options.squareSize ?? 1);
+    const progress = Math.min(1, Math.max(0, piece.position.progress));
+    return {
+      square,
+      file: target.file,
+      rank: target.rank,
+      x: start.x + (target.x - start.x) * progress,
+      z: start.z + (target.z - start.z) * progress,
+      piece_identity: piece.piece_identity,
+      piece_type: piece.piece_type,
+      color: piece.color,
+      visual_asset_id: piece.visual_asset_id,
+    };
+  }
+
+  private applyAnimationFrame(frame: ReplayAnimationFrame): void {
+    if (!this.pieceRoot || !this.primitiveGeometries) throw new Error('Three.js piece scene is not initialized');
+    for (const piece of frame.pieces) {
+      const projection = this.animationProjection(piece);
+      let object = this.pieceObjects.get(piece.piece_identity);
+      if (!object) {
+        object = new THREE.Group();
+        object.name = `piece:${piece.piece_identity}`;
+        object.userData.piece_identity = piece.piece_identity;
+        this.pieceObjects.set(piece.piece_identity, object);
+        this.pieceRoot.add(object);
+      }
+      const visualKey = `${projection.color}:${projection.piece_type}:${projection.visual_asset_id}`;
+      if (this.pieceVisualKeys.get(piece.piece_identity) !== visualKey) {
+        object.clear();
+        const custom = this.options.pieceAssetFactory?.({
+          piece_identity: projection.piece_identity,
+          piece_type: projection.piece_type,
+          color: projection.color,
+          board_square: projection.square,
+          visual_asset_id: projection.visual_asset_id,
+        });
+        const visual = custom ?? this.createPrimitivePieceVisual(projection);
+        visual.userData.piece_identity = projection.piece_identity;
+        visual.userData.assetMode = custom ? 'provided' : 'primitive-fallback';
+        object.add(visual);
+        this.pieceVisualKeys.set(piece.piece_identity, visualKey);
+      }
+      const liftProgress = piece.position.kind === 'interpolated' ? piece.position.progress : 0;
+      if (liftProgress === undefined) throw new Error(`Animation piece ${piece.piece_identity} has no interpolation progress`);
+      const lift = piece.position.kind === 'interpolated' ? Math.sin(liftProgress * Math.PI) * 0.28 : 0;
+      object.position.set(projection.x, 0.08 + lift, projection.z);
+      object.visible = piece.visible;
+      object.userData.board_square = projection.square;
+      object.userData.piece_type = projection.piece_type;
+      object.userData.color = projection.color;
+    }
+    this.updateHighlights(this.lastMove);
+    if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera);
   }
 
   private renderWebGL(): void {

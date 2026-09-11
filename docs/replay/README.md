@@ -1,6 +1,6 @@
 # Chess Replay Viewer Build Pack
 
-Status: RPL-001 through RPL-010 implemented; import/library work remains open
+Status: RPL-001 through RPL-011 implemented; import/library work remains open
 Project: `devin-thomas/chess`
 Primary first target: modern web replay viewer
 Portability target: deterministic replay playback across modern and retro platforms

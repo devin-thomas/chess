@@ -1,6 +1,6 @@
 # Replay Specification V1
 
-Status: schema, validation, controller, fixtures, presentation bridge, PGN import, public viewer shell, transport, synchronized move list, and Three.js board implemented (RPL-001 through RPL-010)
+Status: schema, validation, controller, fixtures, presentation bridge, PGN import, public viewer shell, transport, synchronized move list, Three.js board, and deterministic animation effects implemented (RPL-001 through RPL-011)
 Rules dependency: `SPEC.md` / `orthodox-chess-v1`
 
 ## 1. Purpose

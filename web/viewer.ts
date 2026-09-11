@@ -51,6 +51,7 @@ const displayMoves = buildReplayMoveList(model.replay);
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
   scheduler: browserReplayScheduler,
+  onCancelAnimation: () => boardRenderer.cancelAnimation(),
   onChange: () => render(),
   onError: (error) => reportNavigationError(error.message),
 });
@@ -66,8 +67,14 @@ function resultLabel(result: string): string {
   return '* · In progress';
 }
 
+function reducedMotionEnabled(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 function renderBoard(snapshot: PresentationSnapshot): void {
-  boardRenderer.render(snapshot, model.controller.lastTransition());
+  boardRenderer.setFlipped(model.boardFlipped);
+  boardRenderer.render(snapshot, model.controller.lastTransition(), { reducedMotion: reducedMotionEnabled() });
   elements.board.dataset.orientation = model.boardFlipped ? 'black' : 'white';
   elements.board.dataset.renderer = boardRenderer.status;
   elements.boardOrientation.textContent = model.boardFlipped ? 'Black perspective' : 'White perspective';

@@ -1,9 +1,9 @@
 # Replay core library
 
-RPL-001 through RPL-010 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, and Three.js board boundary.
+RPL-001 through RPL-011 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, and deterministic animation effects.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
-The web transport owns cancellable playback timers; move animation and checkpoint caching are later tickets.
+The web transport owns cancellable playback timers; checkpoint caching is a later ticket.
 
 ## Use
 
@@ -56,6 +56,7 @@ clear the last transition/events. Rejected operations leave them unchanged.
 - `../web/replay-transport.ts`: browser-independent cursor transport with cancellable playback scheduling.
 - `../web/replay-move-list.ts`: SAN display notation derived from authoritative legal moves.
 - `../web/board3d.ts`: Three.js scene, canonical-square projection, stable piece objects, and fallback board.
+- `../web/replay-animation.ts`: deterministic transition plans, interpolation, effects, and authoritative settling.
 
 `parseReplay` checks move syntax immediately. `validateReplay` defers string syntax
 checks to ordered execution so a malformed move reports its last valid state.
