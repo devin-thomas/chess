@@ -4,6 +4,7 @@
 local base = 0x7000
 local history_base = base + 84
 local record_bytes = 83
+local history_count_offset = 83
 local records = {}
 
 local function byte(offset)
@@ -71,8 +72,14 @@ local function capture(record)
   }
 end
 
+local saw_reset = false
 for _ = 1, 600 do
-  if byte(82) ~= 0 then
+  local history_count = byte(history_count_offset)
+  if not saw_reset then
+    -- Cartridge RAM can retain a prior run. Wait for the ROM's reset marker
+    -- before accepting a completion flag from that stale state.
+    saw_reset = history_count == 0
+  elseif history_count >= 6 and byte(82) ~= 0 then
     for record = 0, 5 do
       records[#records + 1] = capture(record)
     end

@@ -97,7 +97,7 @@ def build_rom(cc65_home: Path | None) -> None:
 
 def run_emulator(fceux: str) -> None:
     TRACE.unlink(missing_ok=True)
-    command = [fceux, "--loadlua", str(LUA), str(ROM)]
+    command = [fceux, "--no-config", "1", "--sound", "0", "--loadlua", str(LUA), str(ROM)]
     environment = os.environ.copy()
     environment["NES_TRACE_OUTPUT"] = str(TRACE)
     try:
