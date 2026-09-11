@@ -34,4 +34,6 @@ zero mismatches. The two invalid fixtures remain listed in the report's
 with the selected castle checkpoints, navigation result, adapter profile, and
 emulator availability. The default `make conformance-replay` command uses the
 portable fixed-buffer host trace; `make conformance-replay-retro` uses the
-cc65/FCEUX JSON trace when that external toolchain is installed.
+cc65/FCEUX JSON trace when that external toolchain is installed. The cc65 2.19
+and FCEUX 2.6.6 baseline also passed the retro comparison with six records and
+zero mismatches.

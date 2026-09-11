@@ -48,3 +48,6 @@ fixture checkpoints used by the four host engines. The retro report records
 board, side, castling rights, raw en-passant, halfmove, fullmove, and the
 navigation sequence; a missing tool or malformed trace fails loudly instead
 of becoming a host-only success.
+
+The 2026-09-11 baseline passed with cc65 2.19 and FCEUX 2.6.6: six trace
+records and zero retro conformance mismatches.

@@ -235,3 +235,8 @@ castling positions, and the scripted `next`, `next`, `previous`, `first`,
 `last` sequence. `tools/replay-conformance.py` compares the trace's selected
 positions and navigation sequence with the independent
 `castle-kingside.expected.json` oracle.
+
+The repository baseline was verified on 2026-09-11 with cc65 2.19 and FCEUX
+2.6.6: six trace records, the expected navigation sequence, and zero retro
+conformance mismatches. The external tools remain an explicit prerequisite for
+this target; the default host and fixed-buffer checks do not require them.

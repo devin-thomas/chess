@@ -46,6 +46,9 @@ make conformance-replay
 
 The command writes the machine-readable report to `reports/replay-conformance.json`; `make test` runs the same report check. `NES_CC65_HOME=/path/to/cc65 NES_FCEUX=/path/to/fceux make conformance-replay-retro` switches the retro input to the cc65/FCEUX JSON trace when those tools are available.
 
+The cc65 2.19 and FCEUX 2.6.6 baseline was verified on 2026-09-11 with six
+retro trace records and zero conformance mismatches.
+
 Run `npm run test:replay` for replay checks and `npm run typecheck` for TypeScript validation. Both are included in `make test`.
 
 ## Web simulator

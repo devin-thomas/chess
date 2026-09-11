@@ -1,6 +1,6 @@
 # Replay core library
 
-RPL-001 through RPL-015 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, curated replay library, full-history web cache, and compact compiled derivative.
+RPL-001 through RPL-017 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, curated replay library, full-history web cache, compact compiled derivative, constrained NES playback, and machine-readable cross-platform conformance.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
 The web transport owns cancellable playback timers; the controller can use a full-history cache for instant web seeks while retaining an uncached reference mode.
