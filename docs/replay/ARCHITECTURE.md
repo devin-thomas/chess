@@ -179,6 +179,15 @@ Permitted implementations include:
 
 Cache every resulting position or every N plies for instant scrubbing.
 
+RPL-014 implements the web option as a full-history cache: each ply stores the
+complete authoritative `ReplayState`, legal moves used for effective en-passant
+projection, and the presentation identity sidecar. A cached seek restores those
+snapshots without replaying hidden moves, then uses an isolated cache-backed
+session for the next move. This preserves repetition, counters, terminal
+outcomes, and the move ledger. `createReplayController()` keeps the uncached
+root-reconstruction reference path; the web viewer opts into
+`createReplayController({ cache: 'full' })`.
+
 ### PS1/Dreamcast
 
 Use fixed-size checkpoints at a chosen interval when useful.

@@ -11,5 +11,5 @@
     "types": ["node"],
     "lib": ["ES2023", "DOM"]
   },
-  "include": ["replay/**/*.ts", "tests/replay-*.test.ts", "typescript/**/*.ts", "web/**/*.ts"]
+  "include": ["replay/**/*.ts", "tests/replay-*.test.ts", "tools/**/*.ts", "typescript/**/*.ts", "web/**/*.ts"]
 }

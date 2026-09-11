@@ -197,6 +197,28 @@ export function createPresentationAdapter() {
     reset(rootState: ReplayState, legalMoves: readonly string[] = []): PresentationUpdate {
       return reconstruct(rootState, [], legalMoves);
     },
+    restore(state: ReplayState, restoredPieces: readonly PresentedPiece[],
+      legalMoves: readonly string[] = []): PresentationUpdate {
+      const identities = new Set<string>();
+      const squares = new Set<string>();
+      const rebuilt = new Map<string, PresentedPiece>();
+      for (const piece of restoredPieces) {
+        if (identities.has(piece.piece_identity) || squares.has(piece.board_square)) {
+          throw new Error('Presentation restore contains duplicate identity or square');
+        }
+        identities.add(piece.piece_identity);
+        squares.add(piece.board_square);
+        rebuilt.set(piece.board_square, { ...piece });
+      }
+      if (identities.size !== restoredPieces.length) throw new Error('Presentation restore contains duplicate identities');
+      assertOccupancy(rebuilt, state);
+      pieces = rebuilt;
+      epoch++;
+      current = project(state, legalMoves);
+      return freeze({ snapshot: current, transition: null, events: [{ kind: 'state_reset_or_load',
+        state_epoch: epoch, event_sequence: ++sequence, revision_before: null,
+        revision_after: null, after_ply: state.revision }] });
+    },
     reconstruct,
     advance(move: string, before: ReplayState, after: ReplayState, ply: number,
       options: { emit?: boolean; legalMoves?: readonly string[] } = {}): PresentationUpdate {

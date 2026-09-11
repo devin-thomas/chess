@@ -1,9 +1,9 @@
 # Replay core library
 
-RPL-001 through RPL-013 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, and curated replay library.
+RPL-001 through RPL-014 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, curated replay library, and full-history web cache.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
-The web transport owns cancellable playback timers; checkpoint caching is the next performance ticket.
+The web transport owns cancellable playback timers; the controller can use a full-history cache for instant web seeks while retaining an uncached reference mode.
 
 ## Use
 
@@ -44,6 +44,14 @@ reconstructs the rule and identity history and emits one reset event in a new ep
 it never emits animations for the hidden reconstruction moves. Boundary no-ops
 clear the last transition/events. Rejected operations leave them unchanged.
 
+`createReplayController({ cache: 'full' })` enables immutable checkpoints for every
+ply, including the complete rules state, legal moves, and presentation identity
+sidecar. `createReplayController({ cache: 'none' })` (also the default) is the
+uncached reference path. Cached seeks restore immediately and use an isolated
+cache-backed session for the next move, so repetition and terminal adjudication
+remain authoritative without replaying hidden moves.
+`cacheStats()` and `lastSeekTiming()` expose cache hits and measured seek timings.
+
 ## Modules
 
 - `schema.ts`: strict JSON shape parsing and canonical types. `parseReplay` throws
@@ -51,6 +59,7 @@ clear the last transition/events. Rejected operations leave them unchanged.
 - `engine.ts`: typed isolated rules sessions and lossless canonical-position/FEN conversion.
 - `validate.ts`: ordered legal execution, first-error location, and recorded-result diagnostics.
 - `controller.ts`: deterministic navigation and integrated presentation updates.
+- `cache.ts`: authoritative full-history state and presentation checkpoints for seek acceleration.
 - `presentation.ts`: stable identities, explicit effects, event sequencing, and snapshots.
 - `pgn-import.ts`: bounded PGN collection parsing, strict SAN resolution, and canonical replay conversion.
 - `library.ts`: static attributed curated Replay V1 entries and isolated lookup copies.
@@ -71,6 +80,7 @@ scores produce `W_REPLAY_RESULT` diagnostics without changing the rules result.
 npm install
 npm run typecheck
 npm run test:replay
+npm run benchmark:replay
 make test
 npm run build
 ```

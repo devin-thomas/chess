@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-013 implemented; RPL-014 through RPL-017 remain open. Phase 1 is complete; Phase 2 is in progress.
+Status: RPL-001 through RPL-014 implemented; RPL-015 through RPL-017 remain open. Phase 1 is complete; Phase 2 is complete.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -357,6 +357,8 @@ Ship a small static set of interesting replays.
 ---
 
 ## RPL-014 — Replay performance/caching
+
+Status: complete. Validated by `npm run typecheck`, `npm run test:replay`, `npm run benchmark:replay`, and `npm run build`.
 
 **Goal**
 Make arbitrary seeking effectively immediate without changing semantics.

@@ -9,7 +9,7 @@ TS_FILE := $(ROOT)/typescript/chess_cpu.ts
 RUST_SOURCE := $(ROOT)/rust/chess_cpu.rs
 RUST_BIN := $(ROOT)/build/chess_rust
 
-.PHONY: build test benchmark clean
+.PHONY: build test benchmark benchmark-replay clean
 
 build:
 	mkdir -p build
@@ -25,6 +25,9 @@ test: build
 
 benchmark: build
 	$(PYTHON) bench/benchmark.py --python "$(PYTHON) python/chess_cpu.py" --c "$(C_BIN)" --typescript "$(NODE) --experimental-strip-types $(TS_FILE)" --rust "$(RUST_BIN)" --output-dir reports
+
+benchmark-replay:
+	$(NODE) --experimental-strip-types tools/replay-cache-benchmark.ts --json-out reports/replay-cache-benchmark.json
 
 clean:
 	rm -rf build reports

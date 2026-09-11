@@ -8,6 +8,7 @@
     "test:replay": "node --experimental-strip-types --test tests/replay-*.test.ts",
     "typecheck": "tsc --noEmit",
     "check": "node --experimental-strip-types typescript/chess_cpu.ts < /dev/null",
+    "benchmark:replay": "node --experimental-strip-types tools/replay-cache-benchmark.ts",
     "run": "node --experimental-strip-types typescript/chess_cpu.ts",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",

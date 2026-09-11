@@ -21,6 +21,7 @@ test('default viewer state loads the curated replay at ply zero and paused', () 
   assert.equal(viewer.controller.status(), 'ready');
   assert.equal(viewer.controller.currentPly(), 0);
   assert.equal(viewer.paused, true);
+  assert.equal(viewer.controller.cacheMode(), 'full');
   assert.equal(viewer.boardFlipped, false);
   assert.equal(snapshot?.after_ply, 0);
   assert.equal(snapshot?.rule_state.revision, 0);

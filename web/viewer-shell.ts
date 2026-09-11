@@ -33,7 +33,7 @@ export function resolvePublicRoute(pathname: string): PublicRoute {
 }
 
 export function createViewerState(replay: Replay = DEFAULT_REPLAY): ViewerShellState {
-  const controller = createReplayController();
+  const controller = createReplayController({ cache: 'full' });
   const loaded = controller.load(replay);
   if (!loaded.ok) throw new Error('The viewer replay could not be loaded: ' + loaded.error.message);
   return {
