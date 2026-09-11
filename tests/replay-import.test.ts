@@ -7,6 +7,7 @@ import {
   pgnImportErrorMessage,
   validPgnGames,
 } from '../web/replay-import.ts';
+import { createReplayController } from '../replay/controller.ts';
 
 test('viewer PGN import exposes valid and invalid games without selecting invalid data', () => {
   const collection = parsePgnForViewer('[White "Ready"]\n1. e4 *\n\n[White "Broken"]\n1. NotASan *');
@@ -34,4 +35,21 @@ test('viewer import helpers return cloned replay data for safe replacement', () 
   const secondChoice = choosePgnGame(collection, 0);
   assert.equal(secondChoice.ok, true);
   if (secondChoice.ok) assert.equal(secondChoice.replay.moves[0], 'e2e4');
+});
+
+test('an invalid imported game cannot replace the currently loaded replay', () => {
+  const controller = createReplayController();
+  assert.equal(controller.load({
+    schema_version: 1,
+    ruleset: 'orthodox-chess-v1',
+    root: { kind: 'standard' },
+    moves: ['e2e4'],
+  }).ok, true);
+  controller.stepForward();
+  const before = controller.position();
+  const collection = parsePgnForViewer('1. NotASan *');
+  const choice = choosePgnGame(collection, 0);
+  assert.equal(choice.ok, false);
+  assert.deepEqual(controller.position(), before);
+  assert.equal(controller.currentPly(), 1);
 });
