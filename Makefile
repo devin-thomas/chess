@@ -9,7 +9,7 @@ TS_FILE := $(ROOT)/typescript/chess_cpu.ts
 RUST_SOURCE := $(ROOT)/rust/chess_cpu.rs
 RUST_BIN := $(ROOT)/build/chess_rust
 
-.PHONY: build test benchmark benchmark-replay clean
+.PHONY: build test benchmark benchmark-replay compile-replay clean
 
 build:
 	mkdir -p build
@@ -28,6 +28,10 @@ benchmark: build
 
 benchmark-replay:
 	$(NODE) --experimental-strip-types tools/replay-cache-benchmark.ts --json-out reports/replay-cache-benchmark.json
+
+compile-replay:
+	mkdir -p build
+	$(NODE) --experimental-strip-types tools/compile-replay.ts shared/replay-fixtures/opening.json build/opening.rply build/opening.rply.manifest.json
 
 clean:
 	rm -rf build reports

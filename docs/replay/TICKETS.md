@@ -1,6 +1,6 @@
 # Replay Viewer Implementation Tickets
 
-Status: RPL-001 through RPL-014 implemented; RPL-015 through RPL-017 remain open. Phase 1 is complete; Phase 2 is complete.
+Status: RPL-001 through RPL-015 implemented; RPL-016 through RPL-017 remain open. Phase 1 is complete; Phase 2 is complete.
 
 Read [REPLAY_SPEC.md](REPLAY_SPEC.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before implementation. Their precise contracts supplement every acceptance list here. Ticket numbers are identifiers, not a strict execution order. Existing modules named in the architecture are integration points; proposed modules must be created by these tickets.
 
@@ -380,6 +380,8 @@ Make arbitrary seeking effectively immediate without changing semantics.
 
 ## RPL-015 — Compile replay derivative
 
+Status: complete. Validated by `npm run typecheck` and `node --experimental-strip-types --test tests/replay-compiler.test.ts`.
+
 **Goal**
 Create the first offline compiler from canonical Replay V1 to a compact target-friendly representation.
 
@@ -395,9 +397,10 @@ Create the first offline compiler from canonical Replay V1 to a compact target-f
 
 **Acceptance**
 
-- encode/decode round trip preserves authoritative move sequence;
-- compiled replay validates against canonical source;
-- no PGN/SAN requirement remains in compiled payload.
+- encode/decode round trip preserves authoritative move sequences and standard or position roots;
+- frozen golden vectors cover Tier-1 metadata, packed promotion, source hash, and compiled payload hash;
+- compiler and decoder reject reserved bits, malformed sections, hash mismatches, and illegal decoded moves;
+- CLI emits the compact payload and JSON manifest without putting JSON/PGN/SAN in the payload.
 
 ---
 

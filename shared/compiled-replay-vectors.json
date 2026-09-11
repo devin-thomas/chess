@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "format_version": 1,
+  "description": "Frozen Replay V1 compiled-format vectors. Hex bytes are little-endian payloads.",
+  "vectors": [
+    {
+      "id": "opening",
+      "root_kind": "standard",
+      "metadata_tier": 1,
+      "move_count": 3,
+      "source_hash": "3b612314e2b65b40361bd568a37675bb323f2171cda21c8f5166e9c772884a0a",
+      "payload_hash": "0ecb4c0c23be3486ff431596afb0be0b73fc40b43c3d4343080624c75f723bc6",
+      "hex": "52504c59010201000300000025003b612314e2b65b40361bd568a37675bb323f2171cda21c8f5166e9c772884a0a010b0d00466978747572652057686974650d004669787475726520426c61636b0300312d300c0734094605"
+    },
+    {
+      "id": "promotion-q",
+      "root_kind": "position",
+      "metadata_tier": 0,
+      "move_count": 1,
+      "source_hash": "7e9e2f019bd30d6073ae94baef892ab80bb01d42a1cb56756a4244cf2bbb33a7",
+      "payload_hash": "7adc7a2d6ee2d9152256a328a7e331eb6a2b472a9ed06d1615cc39debfebe0ff",
+      "hex": "52504c590101010001004b0000007e9e2f019bd30d6073ae94baef892ab80bb01d42a1cb56756a4244cf2bbb33a70000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000e0000ff0000000001000000301e"
+    }
+  ]
+}

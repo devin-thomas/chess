@@ -1,6 +1,6 @@
 # Replay Specification V1
 
-Status: schema, validation, controller, fixtures, presentation bridge, PGN import, public viewer shell, transport, synchronized move list, Three.js board, deterministic animation effects, local PGN import UI, curated replay library, and complete-history web cache implemented (RPL-001 through RPL-014)
+Status: schema, validation, controller, fixtures, presentation bridge, PGN import, public viewer shell, transport, synchronized move list, Three.js board, deterministic animation effects, local PGN import UI, curated replay library, complete-history web cache, and frozen compiled derivative implemented (RPL-001 through RPL-015)
 Rules dependency: `SPEC.md` / `orthodox-chess-v1`
 
 ## 1. Purpose
@@ -306,7 +306,10 @@ moves
 
 Metadata SHOULD be excluded so that two sources describing the same game can resolve to the same chess replay identity even when their descriptive tags differ.
 
-Content hashing is deferred to RPL-015, which MUST specify canonical byte serialization and hash algorithm with test vectors before any compiled artifact is published. V1 runtime loading does not require a hash.
+RPL-015 defines canonical execution-payload key ordering and SHA-256 for
+compiled-source manifests; descriptive metadata is excluded from this identity.
+See [COMPILED_FORMAT.md](COMPILED_FORMAT.md). V1 runtime loading does not
+require a hash.
 
 ## 11. Conformance requirements
 

@@ -71,7 +71,9 @@ bits 12..14 promotion selector / reserved
 bit  15     reserved/version use
 ```
 
-This is an implementation direction, not a frozen bit layout. The compiler and runtime must share a versioned definition before it is treated as a file format.
+RPL-015 freezes the packed layout in [COMPILED_FORMAT.md](COMPILED_FORMAT.md).
+The earlier bit sketch is superseded by that document; the compiler and runtime
+share the versioned definition and golden vectors.
 
 Special move type does not have to be encoded if the authoritative rules engine can derive it from position + move. A presentation-focused derivative MAY precompute effect flags when that reduces runtime complexity.
 
@@ -199,6 +201,6 @@ The portability milestone is achieved when:
 
 ## 13. Phase 3 implementation gate
 
-RPL-015 freezes the binary format before RPL-016 starts: byte order, square mapping (`a1 = 0`), promotion selectors, reserved-bit handling, lengths, root encoding, metadata encoding, capacity limits, and canonical/hash bytes require decoder tests and golden vectors. No illustrative bit layout in this document is already a published format.
+RPL-015 freezes the binary format before RPL-016 starts: byte order, square mapping (`a1 = 0`), promotion selectors, reserved-bit handling, lengths, root encoding, metadata encoding, capacity limits, and canonical/hash bytes require decoder tests and golden vectors. The frozen layout is documented in [COMPILED_FORMAT.md](COMPILED_FORMAT.md), with byte vectors in `shared/compiled-replay-vectors.json`. No illustrative bit layout in this document is already a published format.
 
 RPL-016 must identify its toolchain, memory budget, engine/state reconstruction strategy, and reproducible emulator invocation. Unsupported roots or oversized payloads must fail during compilation, never truncate. RPL-017 establishes host reference states before retro integration, then compares retro output including counters, castling, raw en-passant, and termination. A fixture-specific demonstration must state its coverage; it does not establish arbitrary Replay V1 or full orthodox-rules conformance.

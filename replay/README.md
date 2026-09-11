@@ -1,6 +1,6 @@
 # Replay core library
 
-RPL-001 through RPL-014 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, curated replay library, and full-history web cache.
+RPL-001 through RPL-015 implement the [Replay V1 contract](../docs/replay/REPLAY_SPEC.md), public viewer shell, transport controls, synchronized move list, Three.js board boundary, deterministic animation effects, local PGN import UI, curated replay library, full-history web cache, and compact compiled derivative.
 The library runs in Node 24 and is compatible with the existing browser build. It
 uses the TypeScript rules engine in fixed `all-rules-enabled` mode, with no clocks.
 The web transport owns cancellable playback timers; the controller can use a full-history cache for instant web seeks while retaining an uncached reference mode.
@@ -63,6 +63,7 @@ remain authoritative without replaying hidden moves.
 - `presentation.ts`: stable identities, explicit effects, event sequencing, and snapshots.
 - `pgn-import.ts`: bounded PGN collection parsing, strict SAN resolution, and canonical replay conversion.
 - `library.ts`: static attributed curated Replay V1 entries and isolated lookup copies.
+- `compiler.ts`: versioned packed replay compiler/decoder and source/payload hash manifest.
 - `../web/replay-transport.ts`: browser-independent cursor transport with cancellable playback scheduling.
 - `../web/replay-move-list.ts`: SAN display notation derived from authoritative legal moves.
 - `../web/board3d.ts`: Three.js scene, canonical-square projection, stable piece objects, and fallback board.
@@ -81,6 +82,7 @@ npm install
 npm run typecheck
 npm run test:replay
 npm run benchmark:replay
+npm run compile:replay -- shared/replay-fixtures/opening.json build/opening.rply
 make test
 npm run build
 ```
