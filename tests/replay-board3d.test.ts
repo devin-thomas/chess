@@ -3,6 +3,7 @@ import test from 'node:test';
 import { createReplayController } from '../replay/controller.ts';
 import {
   BOARD_SQUARE_COUNT,
+  boardRendererParameters,
   canonicalBoardSquares,
   canonicalSquareToBoardCoordinate,
   canonicalSquareToIndex,
@@ -96,4 +97,9 @@ test('primitive fallback descriptors retain the presentation asset contract', ()
     visual_asset_id: 'black-knight',
     label: 'black knight',
   });
+});
+
+test('webgl renderer preserves settled frames for initial viewer captures', () => {
+  assert.equal(boardRendererParameters().preserveDrawingBuffer, true);
+  assert.equal(boardRendererParameters({ antialias: false }).antialias, false);
 });

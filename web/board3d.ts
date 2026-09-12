@@ -77,6 +77,18 @@ export interface BoardRenderResult {
   readonly error: string | null;
 }
 
+export function boardRendererParameters(
+  options: Pick<Board3DRendererOptions, 'antialias'> = {},
+): THREE.WebGLRendererParameters {
+  return {
+    antialias: options.antialias ?? true,
+    alpha: true,
+    // Keep settled frames available to browser compositors and visual capture tools.
+    preserveDrawingBuffer: true,
+    powerPreference: 'high-performance',
+  };
+}
+
 const pieceTypes: readonly PieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'];
 
 function isPieceType(value: string): value is PieceType {
@@ -370,11 +382,7 @@ export class Board3DRenderer {
     }
 
     try {
-      const parameters: THREE.WebGLRendererParameters = {
-        antialias: this.options.antialias ?? true,
-        alpha: true,
-        powerPreference: 'high-performance',
-      };
+      const parameters = boardRendererParameters(this.options);
       this.renderer = this.options.rendererFactory
         ? this.options.rendererFactory(parameters)
         : new THREE.WebGLRenderer(parameters);

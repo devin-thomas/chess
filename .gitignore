@@ -4,6 +4,7 @@ reports/
 retro/*.o
 test-results/
 .wrangler/
+.surface-sweep/
 __pycache__/
 *.pyc
 .pytest_cache/
