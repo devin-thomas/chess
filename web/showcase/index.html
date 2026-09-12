@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101617" />
+    <meta
+      name="description"
+      content="A screenshot-led tour of the Chess replay room and local simulator."
+    />
+    <title>Replay room · Showcase</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="showcase-page">
+    <div class="showcase-shell">
+      <header class="showcase-topbar">
+        <a class="showcase-brand" href="/" aria-label="Replay room home">
+          <span class="showcase-brand-mark" aria-hidden="true">♞</span>
+          <span>
+            <span class="showcase-brand-name">Replay room</span>
+            <span class="showcase-brand-subtitle">Portable chess / product tour</span>
+          </span>
+        </a>
+        <nav class="showcase-nav" aria-label="Site navigation">
+          <a href="/">Open replay room</a>
+          <a href="/simulator/">Developer simulator</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="showcase-hero" aria-labelledby="showcase-title">
+          <div class="showcase-hero-copy">
+            <p class="showcase-eyebrow">A visual tour of the replay viewer</p>
+            <h1 id="showcase-title">The board is the story.</h1>
+            <p class="showcase-lede">
+              Chess turns a canonical game record into a replay room that feels calm to enter,
+              precise to navigate, and easy to share.
+            </p>
+            <div class="showcase-hero-actions">
+              <a class="showcase-primary-link" href="/">Watch a replay <span aria-hidden="true">↗</span></a>
+              <a class="showcase-text-link" href="#workflow">See how it works <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+
+          <figure class="showcase-capture showcase-hero-capture">
+            <div class="showcase-capture-bar">
+              <span>01 / Opening position</span>
+              <span>Desktop capture</span>
+            </div>
+            <img
+              src="/showcase/assets/overview.png"
+              width="1280"
+              height="1277"
+              alt="Replay room showing the three-dimensional chess board at the opening position beside match details and replay controls."
+              fetchpriority="high"
+            />
+            <figcaption>One position, one clear invitation: press play.</figcaption>
+          </figure>
+        </section>
+
+        <section id="workflow" class="showcase-story showcase-story-split" aria-labelledby="workflow-title">
+          <div class="showcase-story-copy">
+            <p class="showcase-eyebrow">02 / Primary workflow</p>
+            <h2 id="workflow-title">Follow the line, one ply at a time.</h2>
+            <p>
+              The transport, timeline, and move list stay in the same frame as the board. Seek
+              directly to a move, flip perspective, or let the position advance at a deliberate pace.
+            </p>
+            <a class="showcase-text-link" href="/?replay=italian-castle&ply=9">Open this replay state <span aria-hidden="true">↗</span></a>
+          </div>
+          <figure class="showcase-capture showcase-workflow-capture">
+            <div class="showcase-capture-bar">
+              <span>Italian, then castle</span>
+              <span>Ply 9 / 9</span>
+            </div>
+            <picture>
+              <source media="(max-width: 560px)" srcset="/showcase/assets/workflow-mobile.png" />
+              <img
+                src="/showcase/assets/workflow.png"
+                width="1280"
+                height="1403"
+                loading="lazy"
+                alt="Replay room showing the Italian, then castle line at its final ply with the move list and timeline visible."
+              />
+            </picture>
+            <figcaption>The move list is the readable index into the 3D position.</figcaption>
+          </figure>
+        </section>
+
+        <section id="detail" class="showcase-story showcase-story-detail" aria-labelledby="detail-title">
+          <div class="showcase-story-copy">
+            <p class="showcase-eyebrow">03 / Meaningful detail</p>
+            <h2 id="detail-title">State stays visible while the scene does the work.</h2>
+            <p>
+              The board is rendered from the replay state, while the surrounding labels keep the
+              current ply, side to move, and match context legible without competing with the pieces.
+            </p>
+          </div>
+          <figure class="showcase-capture showcase-detail-capture">
+            <div class="showcase-capture-bar">
+              <span>Board detail</span>
+              <span>Settled frame</span>
+            </div>
+            <img
+              src="/showcase/assets/board-detail.png"
+              width="820"
+              height="820"
+              loading="lazy"
+              alt="Close crop of the three-dimensional replay board with sculpted pieces, warm light squares, and coordinate framing."
+            />
+            <figcaption>Material, perspective, and coordinate cues make the position readable at a glance.</figcaption>
+          </figure>
+        </section>
+
+        <section id="mobile" class="showcase-story showcase-story-mobile" aria-labelledby="mobile-title">
+          <figure class="showcase-capture showcase-mobile-capture">
+            <div class="showcase-capture-bar">
+              <span>04 / Mobile use</span>
+              <span>390 × 844</span>
+            </div>
+            <img
+              src="/showcase/assets/mobile.png"
+              width="390"
+              height="2003"
+              loading="lazy"
+              alt="Mobile replay room with the board leading the page and the replay controls stacked below it for touch use."
+            />
+            <figcaption>The board keeps priority on a phone-sized viewport.</figcaption>
+          </figure>
+          <div class="showcase-story-copy">
+            <p class="showcase-eyebrow">Designed to reflow</p>
+            <h2 id="mobile-title">A replay still feels like a replay on a phone.</h2>
+            <p>
+              Supporting cards move below the board, controls remain tappable, and the move list
+              keeps its two-column rhythm without creating horizontal overflow.
+            </p>
+            <a class="showcase-text-link" href="/?replay=fools-mate&ply=4">Try a terminal position <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section id="simulator" class="showcase-simulator" aria-labelledby="simulator-title">
+          <div class="showcase-simulator-copy">
+            <p class="showcase-eyebrow">05 / Separate by design</p>
+            <h2 id="simulator-title">The developer surface stays close at hand.</h2>
+            <p>
+              When you need engine output instead of a broadcast-style replay, the local simulator
+              remains one click away.
+            </p>
+            <a class="showcase-primary-link" href="/simulator/">Open the simulator <span aria-hidden="true">↗</span></a>
+          </div>
+          <figure class="showcase-capture showcase-simulator-capture">
+            <div class="showcase-capture-bar">
+              <span>Local CPU simulator</span>
+              <span>Developer route</span>
+            </div>
+            <picture>
+              <source media="(max-width: 560px)" srcset="/showcase/assets/simulator-mobile.png" />
+              <img
+                src="/showcase/assets/simulator.png"
+                width="1440"
+                height="1000"
+                loading="lazy"
+                alt="Developer simulator showing the local engine controls, live board, and ready state before a run."
+              />
+            </picture>
+          </figure>
+        </section>
+      </main>
+
+      <footer class="showcase-footer">
+        <span>Built from reviewed replay-room captures.</span>
+        <a href="/">Return to the replay room</a>
+      </footer>
+    </div>
+    <script type="module" src="/showcase.ts"></script>
+  </body>
+</html>

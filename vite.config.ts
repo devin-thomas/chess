@@ -12,6 +12,8 @@ export default defineConfig({
       input: {
         viewer: resolve(webRoot, "index.html"),
         simulator: resolve(webRoot, "simulator/index.html"),
+        showcase: resolve(webRoot, "showcase/index.html"),
+        showcaseRedirect: resolve(webRoot, "showcase.html"),
       },
     },
   },

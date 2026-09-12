@@ -1,0 +1,86 @@
+{
+  "showcaseRevision": "working tree after showcase implementation",
+  "sourceRevision": "756ee28 + local showcase sweep changes",
+  "capturedAt": "2026-09-11",
+  "browser": "Playwright Chromium 153.0.8010.12 headless",
+  "os": "macOS arm64",
+  "captures": [
+    {
+      "id": "showcase-overview",
+      "sourceCase": "viewer-overview-desktop",
+      "fixture": "curated opening replay at ply 0",
+      "sourceViewport": { "width": 1440, "height": 1100 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/viewer-overview-desktop.png",
+      "outputFile": "web/public/showcase/assets/overview.png",
+      "transformation": "full-page viewport capture; lossless PNG resized to 1280px wide",
+      "intrinsicDimensions": { "width": 1280, "height": 1277 },
+      "alt": "Replay room showing the three-dimensional chess board at the opening position beside match details and replay controls."
+    },
+    {
+      "id": "showcase-workflow",
+      "sourceCase": "viewer-workflow-desktop",
+      "fixture": "Italian, then castle at ply 9",
+      "sourceViewport": { "width": 1440, "height": 1100 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/viewer-workflow-desktop.png",
+      "outputFile": "web/public/showcase/assets/workflow.png",
+      "transformation": "full-page viewport capture; lossless PNG resized to 1280px wide",
+      "intrinsicDimensions": { "width": 1280, "height": 1403 },
+      "alt": "Replay room showing the Italian, then castle line at its final ply with the move list and timeline visible."
+    },
+    {
+      "id": "showcase-board-detail",
+      "sourceCase": "viewer-workflow-desktop",
+      "fixture": "Italian, then castle at ply 9",
+      "sourceViewport": { "width": 1440, "height": 1100 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/board-detail-source.png",
+      "outputFile": "web/public/showcase/assets/board-detail.png",
+      "transformation": "820x820 crop from the settled board frame; no retouching",
+      "intrinsicDimensions": { "width": 820, "height": 820 },
+      "alt": "Close crop of the three-dimensional replay board with sculpted pieces, warm light squares, and coordinate framing."
+    },
+    {
+      "id": "showcase-mobile",
+      "sourceCase": "viewer-mobile-390",
+      "fixture": "opening replay at ply 0",
+      "sourceViewport": { "width": 390, "height": 844 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/viewer-mobile-overview.png",
+      "outputFile": "web/public/showcase/assets/mobile.png",
+      "transformation": "full-page viewport capture; lossless PNG retained at device width",
+      "intrinsicDimensions": { "width": 390, "height": 2003 },
+      "alt": "Mobile replay room with the board leading the page and the replay controls stacked below it for touch use."
+    },
+    {
+      "id": "showcase-workflow-mobile",
+      "sourceCase": "viewer-workflow-mobile-390",
+      "fixture": "Italian, then castle at ply 9",
+      "sourceViewport": { "width": 390, "height": 844 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/viewer-workflow-mobile.png",
+      "outputFile": "web/public/showcase/assets/workflow-mobile.png",
+      "transformation": "full-page viewport capture; lossless PNG retained at device width",
+      "intrinsicDimensions": { "width": 390, "height": 2145 },
+      "alt": "Mobile replay room showing the Italian, then castle line at its final ply with touch-sized replay controls."
+    },
+    {
+      "id": "showcase-simulator",
+      "sourceCase": "simulator-overview-desktop",
+      "fixture": "local engine ready state",
+      "sourceViewport": { "width": 1440, "height": 1000 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/simulator-desktop.png",
+      "outputFile": "web/public/showcase/assets/simulator.png",
+      "transformation": "direct viewport capture; lossless PNG retained",
+      "intrinsicDimensions": { "width": 1440, "height": 1000 },
+      "alt": "Developer simulator showing the local engine controls, live board, and ready state before a run."
+    },
+    {
+      "id": "showcase-simulator-mobile",
+      "sourceCase": "simulator-overview-mobile-390",
+      "fixture": "local engine ready state",
+      "sourceViewport": { "width": 390, "height": 844 },
+      "sourceFile": ".surface-sweep/run-20260911/showcase/simulator-mobile.png",
+      "outputFile": "web/public/showcase/assets/simulator-mobile.png",
+      "transformation": "full-page viewport capture; lossless PNG retained at device width",
+      "intrinsicDimensions": { "width": 390, "height": 1897 },
+      "alt": "Mobile developer simulator with stacked run controls, live board, and engine summary."
+    }
+  ]
+}

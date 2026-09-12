@@ -384,6 +384,25 @@ function setSpeed(value: string): void {
   transport.setSpeed(speed);
 }
 
+function applyInitialUrlState(): void {
+  const query = new URLSearchParams(window.location.search);
+  const replayId = query.get('replay');
+  if (replayId !== null && curatedReplayById(replayId) !== null && replayId !== selectedReplayId) {
+    loadCuratedReplay(replayId);
+  }
+
+  const requestedPly = Number(query.get('ply'));
+  if (Number.isInteger(requestedPly) && requestedPly >= 0) {
+    seekTo(Math.min(requestedPly, model.controller.length()));
+  }
+
+  if (query.get('flip') === '1') transport.toggleBoardFlip();
+  if (query.get('panel') === 'import') {
+    elements.importPanel.hidden = false;
+    elements.importToggle.setAttribute('aria-expanded', 'true');
+  }
+}
+
 elements.play.addEventListener('click', togglePlayback);
 elements.first.addEventListener('click', () => seekTo(0));
 elements.previous.addEventListener('click', stepBack);
@@ -441,4 +460,5 @@ window.addEventListener('keydown', (event) => {
 });
 
 populateCuratedLibrary();
+applyInitialUrlState();
 render();
