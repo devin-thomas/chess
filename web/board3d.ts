@@ -253,41 +253,165 @@ export function fallbackAssetDescriptor(
 
 export const primitiveAssetDescriptor = fallbackAssetDescriptor;
 
+type PrimitiveMaterial = 'piece' | 'detail';
+type Vec3Tuple = readonly [number, number, number];
+type ProfilePoint = readonly [number, number];
+
 interface PrimitivePart {
   readonly geometry: THREE.BufferGeometry;
-  readonly position: readonly [number, number, number];
-  readonly rotation: readonly [number, number, number];
+  readonly position: Vec3Tuple;
+  readonly rotation: Vec3Tuple;
+  readonly material: PrimitiveMaterial;
 }
 
 type PrimitiveGeometryCache = Record<PieceType, readonly PrimitivePart[]>;
 
+function primitivePart(
+  geometry: THREE.BufferGeometry,
+  position: Vec3Tuple,
+  rotation: Vec3Tuple = [0, 0, 0],
+  material: PrimitiveMaterial = 'piece',
+): PrimitivePart {
+  return { geometry, position, rotation, material };
+}
+
+function lathePart(
+  profile: readonly ProfilePoint[],
+  position: Vec3Tuple = [0, 0, 0],
+  material: PrimitiveMaterial = 'piece',
+): PrimitivePart {
+  const geometry = new THREE.LatheGeometry(
+    profile.map(([radius, height]) => new THREE.Vector2(radius, height)),
+    16,
+  );
+  geometry.computeVertexNormals();
+  return primitivePart(geometry, position, [0, 0, 0], material);
+}
+
+function extrudedPart(
+  shape: THREE.Shape,
+  depth: number,
+  position: Vec3Tuple = [0, 0, 0],
+  material: PrimitiveMaterial = 'piece',
+): PrimitivePart {
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    bevelEnabled: true,
+    bevelSegments: 1,
+    bevelSize: 0.025,
+    bevelThickness: 0.025,
+    curveSegments: 2,
+    depth,
+    steps: 1,
+  });
+  // Center the extrusion on the piece's local front/back axis so a flipped
+  // camera sees the same silhouette and the move pivot remains at the base.
+  geometry.translate(0, 0, -depth / 2);
+  geometry.computeVertexNormals();
+  return primitivePart(geometry, position, [0, 0, 0], material);
+}
+
+function knightSilhouette(): THREE.Shape {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.22, 0.02);
+  shape.lineTo(-0.29, 0.30);
+  shape.lineTo(-0.22, 0.58);
+  shape.lineTo(-0.15, 0.78);
+  shape.lineTo(-0.24, 1.06);
+  shape.lineTo(-0.15, 1.12); // rear ear tip
+  shape.lineTo(-0.05, 0.98);
+  shape.lineTo(0.05, 1.03);
+  shape.lineTo(0.17, 0.96);
+  shape.lineTo(0.28, 0.88);
+  shape.lineTo(0.32, 0.78); // muzzle
+  shape.lineTo(0.24, 0.70);
+  shape.lineTo(0.10, 0.71);
+  shape.lineTo(0.03, 0.59);
+  shape.lineTo(0.05, 0.27);
+  shape.lineTo(0.15, 0.04);
+  shape.closePath();
+  return shape;
+}
+
+function knightSecondEar(): THREE.Shape {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.09, 0.95);
+  shape.lineTo(-0.025, 1.18);
+  shape.lineTo(0.065, 1.03);
+  shape.lineTo(0.01, 0.92);
+  shape.closePath();
+  return shape;
+}
+
 function createPrimitiveGeometryCache(): PrimitiveGeometryCache {
+  const pawnBody: readonly ProfilePoint[] = [
+    [0, 0], [0.24, 0], [0.29, 0.04], [0.34, 0.10], [0.34, 0.15],
+    [0.30, 0.20], [0.24, 0.24], [0.20, 0.30], [0.19, 0.38],
+    [0.16, 0.43], [0.15, 0.56], [0.19, 0.62], [0, 0.62],
+  ];
+  const standardBody: readonly ProfilePoint[] = [
+    [0, 0], [0.26, 0], [0.31, 0.04], [0.35, 0.10], [0.34, 0.16],
+    [0.29, 0.21], [0.23, 0.25], [0.22, 0.31], [0.25, 0.36],
+    [0.27, 0.43], [0.25, 0.76], [0.22, 0.84], [0.30, 0.89],
+    [0.30, 0.95], [0, 0.95],
+  ];
+  const bishopHead: readonly ProfilePoint[] = [
+    [0, 0], [0.13, 0], [0.19, 0.06], [0.20, 0.14], [0.16, 0.24],
+    [0.14, 0.37], [0.10, 0.50], [0.07, 0.58], [0, 0.63],
+  ];
+  const rookCrenels = [-1, 1].flatMap((x) => [-1, 1].map((z) => primitivePart(
+    new THREE.BoxGeometry(0.15, 0.17, 0.15),
+    [x * 0.19, 1.10, z * 0.19],
+  )));
+  const queenSpikes = Array.from({ length: 5 }, (_, index) => {
+    const angle = (index / 5) * Math.PI * 2 + Math.PI / 2;
+    return primitivePart(
+      new THREE.ConeGeometry(0.065, 0.30, 6),
+      [Math.cos(angle) * 0.19, 1.20, Math.sin(angle) * 0.19],
+    );
+  });
+  const bishopSlits = [-1, 1].map((side) => primitivePart(
+    new THREE.BoxGeometry(0.045, 0.34, 0.025),
+    [0, 1.14, side * 0.17],
+    [0, 0, -0.52],
+    'detail',
+  ));
+  const knightEyeGeometry = new THREE.SphereGeometry(0.035, 8, 6);
+  const knightNostrilGeometry = new THREE.SphereGeometry(0.025, 8, 6);
+  const knightMouthGeometry = new THREE.BoxGeometry(0.13, 0.018, 0.018);
   return {
     pawn: [
-      { geometry: new THREE.CylinderGeometry(0.22, 0.3, 0.46, 8), position: [0, 0.25, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.SphereGeometry(0.2, 8, 6), position: [0, 0.58, 0], rotation: [0, 0, 0] },
+      lathePart(pawnBody),
+      primitivePart(new THREE.TorusGeometry(0.16, 0.035, 8, 16), [0, 0.60, 0], [Math.PI / 2, 0, 0]),
+      primitivePart(new THREE.SphereGeometry(0.225, 16, 10), [0, 0.82, 0]),
     ],
     rook: [
-      { geometry: new THREE.CylinderGeometry(0.29, 0.34, 0.65, 8), position: [0, 0.35, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.CylinderGeometry(0.34, 0.3, 0.14, 8), position: [0, 0.74, 0], rotation: [0, 0, 0] },
+      lathePart(standardBody),
+      primitivePart(new THREE.CylinderGeometry(0.31, 0.31, 0.10, 16), [0, 0.99, 0]),
+      ...rookCrenels,
     ],
     knight: [
-      { geometry: new THREE.ConeGeometry(0.3, 0.78, 8), position: [0, 0.42, 0], rotation: [0, 0, -0.16] },
-      { geometry: new THREE.SphereGeometry(0.23, 8, 6), position: [0.08, 0.8, 0], rotation: [0, 0, 0] },
+      lathePart(pawnBody),
+      extrudedPart(knightSilhouette(), 0.30, [0, 0.24, 0]),
+      extrudedPart(knightSecondEar(), 0.24, [0, 0.24, 0]),
+      ...[-1, 1].map((side) => primitivePart(knightEyeGeometry, [0.13, 1.16, side * 0.16], [0, 0, 0], 'detail')),
+      ...[-1, 1].map((side) => primitivePart(knightNostrilGeometry, [0.27, 1.00, side * 0.16], [0, 0, 0], 'detail')),
+      ...[-1, 1].map((side) => primitivePart(knightMouthGeometry, [0.23, 0.93, side * 0.16], [0, 0, 0.08], 'detail')),
     ],
     bishop: [
-      { geometry: new THREE.ConeGeometry(0.27, 0.82, 8), position: [0, 0.43, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.SphereGeometry(0.18, 8, 6), position: [0, 0.88, 0], rotation: [0, 0, 0] },
+      lathePart(standardBody),
+      lathePart(bishopHead, [0, 0.83, 0]),
+      ...bishopSlits,
     ],
     queen: [
-      { geometry: new THREE.CylinderGeometry(0.3, 0.35, 0.7, 8), position: [0, 0.38, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.TorusGeometry(0.2, 0.055, 6, 8), position: [0, 0.78, 0], rotation: [Math.PI / 2, 0, 0] },
-      { geometry: new THREE.SphereGeometry(0.1, 8, 6), position: [0, 0.9, 0], rotation: [0, 0, 0] },
+      lathePart(standardBody),
+      primitivePart(new THREE.TorusGeometry(0.26, 0.045, 8, 16), [0, 1.00, 0], [Math.PI / 2, 0, 0]),
+      primitivePart(new THREE.SphereGeometry(0.105, 12, 8), [0, 1.10, 0], [0, 0, 0], 'detail'),
+      ...queenSpikes,
     ],
     king: [
-      { geometry: new THREE.CylinderGeometry(0.31, 0.36, 0.7, 8), position: [0, 0.38, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.BoxGeometry(0.12, 0.42, 0.12), position: [0, 0.83, 0], rotation: [0, 0, 0] },
-      { geometry: new THREE.BoxGeometry(0.38, 0.12, 0.12), position: [0, 0.84, 0], rotation: [0, 0, 0] },
+      lathePart(standardBody),
+      primitivePart(new THREE.BoxGeometry(0.11, 0.43, 0.11), [0, 1.17, 0], [0, 0, 0], 'detail'),
+      primitivePart(new THREE.BoxGeometry(0.38, 0.11, 0.11), [0, 1.28, 0], [0, 0, 0], 'detail'),
     ],
   };
 }
@@ -386,6 +510,11 @@ export class Board3DRenderer {
       this.renderer = this.options.rendererFactory
         ? this.options.rendererFactory(parameters)
         : new THREE.WebGLRenderer(parameters);
+      const shadowMap = this.renderer.shadowMap;
+      if (shadowMap) {
+        shadowMap.enabled = true;
+        shadowMap.type = THREE.PCFSoftShadowMap;
+      }
       this.renderer.setPixelRatio(this.pixelRatio());
       this.renderer.setClearColor(this.options.backgroundColor ?? 0x111820, 1);
       this.container.replaceChildren(this.renderer.domElement);
@@ -526,12 +655,20 @@ export class Board3DRenderer {
   private createScene(): void {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.options.backgroundColor ?? 0x111820);
-    this.camera = new THREE.PerspectiveCamera(31, 1, 0.1, 100);
+    this.camera = new THREE.PerspectiveCamera(33, 1, 0.1, 100);
     this.positionCamera();
 
     const ambient = new THREE.HemisphereLight(0xf4ead8, 0x17212b, 2.2);
     const key = new THREE.DirectionalLight(0xffefd3, 3.2);
     key.position.set(-4, 9, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 24;
+    key.shadow.camera.left = -7;
+    key.shadow.camera.right = 7;
+    key.shadow.camera.top = 7;
+    key.shadow.camera.bottom = -7;
     this.scene.add(ambient, key);
 
     this.boardRoot = new THREE.Group();
@@ -548,6 +685,8 @@ export class Board3DRenderer {
       boardFrame: new THREE.MeshStandardMaterial({ color: 0x171d24, roughness: 0.72, metalness: 0.1 }),
       whitePiece: new THREE.MeshStandardMaterial({ color: colorForPiece('white'), roughness: 0.42, metalness: 0.05 }),
       blackPiece: new THREE.MeshStandardMaterial({ color: colorForPiece('black'), roughness: 0.44, metalness: 0.1 }),
+      whiteDetail: new THREE.MeshStandardMaterial({ color: 0x8f5b43, roughness: 0.36, metalness: 0.08 }),
+      blackDetail: new THREE.MeshStandardMaterial({ color: 0x9fc4bd, roughness: 0.36, metalness: 0.12 }),
       moveFrom: new THREE.MeshBasicMaterial({ color: 0xffbf52, transparent: true, opacity: 0.62 }),
       moveTo: new THREE.MeshBasicMaterial({ color: 0x65d5a6, transparent: true, opacity: 0.66 }),
     };
@@ -586,9 +725,9 @@ export class Board3DRenderer {
 
   private positionCamera(): void {
     if (!this.camera) return;
-    const distance = (this.options.squareSize ?? 1) * 9.8;
+    const distance = (this.options.squareSize ?? 1) * 10.25;
     this.camera.position.set(0, distance * 0.86, this.orientationValue === 'white' ? distance : -distance);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.lookAt(0, -0.08, 0);
   }
 
   private positionBoardSquares(): void {
@@ -760,10 +899,12 @@ export class Board3DRenderer {
 
   private createPrimitivePieceVisual(piece: BoardPieceProjection): THREE.Group {
     const group = new THREE.Group();
-    group.name = `fallback:${piece.color}-${piece.piece_type}`;
+    group.name = `staunton:${piece.color}-${piece.piece_type}`;
     group.userData.fallbackAsset = fallbackAssetDescriptor(piece);
-    const material = this.sharedMaterials[piece.color === 'white' ? 'whitePiece' : 'blackPiece'];
+    const pieceMaterial = piece.color === 'white' ? 'whitePiece' : 'blackPiece';
+    const detailMaterial = piece.color === 'white' ? 'whiteDetail' : 'blackDetail';
     for (const part of this.primitiveGeometries![piece.piece_type]) {
+      const material = this.sharedMaterials[part.material === 'detail' ? detailMaterial : pieceMaterial];
       const mesh = new THREE.Mesh(part.geometry, material);
       mesh.position.set(...part.position);
       mesh.rotation.set(...part.rotation);
