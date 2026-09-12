@@ -513,7 +513,7 @@ export class Board3DRenderer {
       const shadowMap = this.renderer.shadowMap;
       if (shadowMap) {
         shadowMap.enabled = true;
-        shadowMap.type = THREE.PCFSoftShadowMap;
+        shadowMap.type = THREE.PCFShadowMap;
       }
       this.renderer.setPixelRatio(this.pixelRatio());
       this.renderer.setClearColor(this.options.backgroundColor ?? 0x111820, 1);
