@@ -37,6 +37,8 @@ const elements = {
   result: $<HTMLElement>('#replay-result'),
   event: $<HTMLElement>('#replay-event'),
   site: $<HTMLElement>('#replay-site'),
+  date: $<HTMLElement>('#replay-date'),
+  round: $<HTMLElement>('#replay-round'),
   source: $<HTMLElement>('#viewer-source'),
   ply: $<HTMLElement>('#replay-ply'),
   currentMove: $<HTMLElement>('#viewer-current-move'),
@@ -71,7 +73,7 @@ const model = createDefaultViewerState();
 const boardRenderer = createBoard3DRenderer(elements.board);
 let displayMoves = buildReplayMoveList(model.replay);
 let selectedReplayId: string | null = DEFAULT_CURATED_REPLAY_ID;
-let replayTitle = 'Opening fixture';
+let replayTitle = curatedReplayById(DEFAULT_CURATED_REPLAY_ID)?.title ?? 'Historical classic';
 let replaySource = replayMetadataText(model.replay, 'source', 'Repository-authored canonical replay');
 const speedOptions: Record<string, ReplaySpeed> = { '0.5': 0.5, '1': 1, '2': 2 };
 const transport = createReplayTransport(model.controller, {
@@ -157,8 +159,7 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
   renderBoard(snapshot);
   renderMoveList(currentPly);
   elements.stageKicker.textContent = selectedReplayId === null ? 'Imported replay · local only' : `Curated replay · ${replayTitle}`;
-  elements.title.textContent = selectedReplayId === null ? 'A game from your file.' :
-    (replayTitle === 'Opening fixture' ? 'A game worth replaying.' : replayTitle);
+  elements.title.textContent = selectedReplayId === null ? 'A game from your file.' : replayTitle;
   elements.libraryDescription.textContent = selectedReplayId === null
     ? 'Your imported game is held in this tab and is never uploaded.'
     : curatedReplayById(selectedReplayId)?.description ?? 'Choose a replay to inspect.';
@@ -169,6 +170,8 @@ function render(snapshot: PresentationSnapshot = model.controller.presentationSn
   elements.result.textContent = resultLabel(recordedResult);
   elements.event.textContent = replayMetadataText(model.replay, 'event', 'Curated replay');
   elements.site.textContent = replayMetadataText(model.replay, 'site', 'Local replay fixture');
+  elements.date.textContent = replayMetadataText(model.replay, 'date', '-');
+  elements.round.textContent = replayMetadataText(model.replay, 'round', '-');
   elements.source.textContent = replaySource;
   elements.ply.textContent = currentPly + ' / ' + length;
   elements.currentMove.textContent = currentPly === 0

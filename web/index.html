@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#111517" />
     <meta
       name="description"
-      content="Watch a curated chess replay from the opening position."
+      content="Watch famous historical chess games move by move."
     />
-    <title>Replay room · Chess</title>
+    <title>Replay room · Historical chess classics</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="viewer-page">
@@ -30,10 +30,10 @@
       <main class="viewer-layout">
         <section class="viewer-stage" aria-labelledby="viewer-title">
           <div class="viewer-stage-header">
-            <p id="viewer-stage-kicker" class="viewer-kicker">Curated replay · Opening fixture</p>
-            <h1 id="viewer-title">A game worth replaying.</h1>
+            <p id="viewer-stage-kicker" class="viewer-kicker">Curated replay · The Immortal Game</p>
+            <h1 id="viewer-title">The Immortal Game</h1>
             <p class="viewer-intro">
-              Start at the root position, then watch the canonical game unfold one ply at a time.
+              Famous games, rebuilt for the board: press play and watch the attack unfold one move at a time.
             </p>
           </div>
 
@@ -51,7 +51,7 @@
 
         <aside class="viewer-rail" aria-label="Replay information and controls">
           <section class="viewer-card viewer-match-card" aria-labelledby="match-heading">
-            <div class="viewer-card-kicker">Match card</div>
+            <div class="viewer-card-kicker">Featured classic</div>
             <h2 id="match-heading" class="sr-only">Replay match information</h2>
             <div class="viewer-player viewer-player-white">
               <span class="viewer-player-side">White</span>
@@ -69,15 +69,23 @@
             <dl class="viewer-meta-list">
               <div>
                 <dt>Event</dt>
-                <dd id="replay-event">Curated replay</dd>
+                <dd id="replay-event">Casual game</dd>
               </div>
               <div>
                 <dt>Site</dt>
-                <dd id="replay-site">Local replay fixture</dd>
+                <dd id="replay-site">London</dd>
+              </div>
+              <div>
+                <dt>Date</dt>
+                <dd id="replay-date">1851</dd>
+              </div>
+              <div>
+                <dt>Round</dt>
+                <dd id="replay-round">-</dd>
               </div>
               <div>
                 <dt>Cursor</dt>
-                <dd><span id="replay-ply">0 / 3</span> ply</dd>
+                <dd><span id="replay-ply">0 / 45</span> ply</dd>
               </div>
             </dl>
           </section>
@@ -132,16 +140,16 @@
           <section class="viewer-card viewer-library-card" data-shell="replay-library" aria-labelledby="library-heading">
             <div class="viewer-card-heading">
               <div>
-                <div class="viewer-card-kicker">More games</div>
-                <h2 id="library-heading">Replay library</h2>
+                <div class="viewer-card-kicker">The classics shelf</div>
+                <h2 id="library-heading">Historical games</h2>
               </div>
             </div>
-            <label for="viewer-replay-select">Curated replay</label>
+            <label for="viewer-replay-select">Choose a game</label>
             <select id="viewer-replay-select">
               <option value="">Imported PGN</option>
             </select>
             <button id="viewer-import-pgn" class="viewer-secondary-button viewer-import-button" type="button" aria-expanded="false" aria-controls="viewer-import-panel">Import PGN</button>
-            <p id="viewer-library-description" class="viewer-coming-soon">Choose a replay to inspect, or import your own game locally.</p>
+            <p id="viewer-library-description" class="viewer-coming-soon">Choose a famous game to inspect, or import your own PGN locally.</p>
             <div id="viewer-import-panel" class="viewer-import-panel" hidden>
               <label for="viewer-pgn-text">Paste PGN</label>
               <textarea id="viewer-pgn-text" rows="7" spellcheck="false" placeholder="[White &quot;Player One&quot;]\n\n1. e4 e5 2. Nf3 *"></textarea>
@@ -165,7 +173,7 @@
       </main>
 
       <footer class="viewer-footer">
-        <span>Source: <span id="viewer-source">shared/replay-fixtures/opening.json</span></span>
+        <span>Source: <span id="viewer-source">Historical game score - PGN Mentor archive</span></span>
         <a href="/simulator/">Open the simulator</a>
       </footer>
       <p id="viewer-live-status" class="sr-only" role="status" aria-live="polite"></p>

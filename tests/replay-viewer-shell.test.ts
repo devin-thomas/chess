@@ -25,9 +25,9 @@ test('default viewer state loads the curated replay at ply zero and paused', () 
   assert.equal(viewer.boardFlipped, false);
   assert.equal(snapshot?.after_ply, 0);
   assert.equal(snapshot?.rule_state.revision, 0);
-  assert.deepEqual(DEFAULT_REPLAY.moves, ['e2e4', 'e7e5', 'g1f3']);
-  assert.equal(DEFAULT_REPLAY.metadata?.white, 'Fixture White');
-  assert.equal(DEFAULT_REPLAY.metadata?.black, 'Fixture Black');
+  assert.equal(DEFAULT_REPLAY.moves.length, 45);
+  assert.equal(DEFAULT_REPLAY.metadata?.white, 'Adolf Anderssen');
+  assert.equal(DEFAULT_REPLAY.metadata?.black, 'Lionel Kieseritzky');
   assert.equal(DEFAULT_REPLAY.metadata?.result, '1-0');
 });
 
