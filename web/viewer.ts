@@ -30,6 +30,7 @@ const elements = {
   board: $<HTMLElement>('#viewer-board'),
   boardState: $<HTMLElement>('#viewer-board-state'),
   boardOrientation: $<HTMLElement>('#viewer-board-orientation'),
+  boardAssets: $<HTMLElement>('#viewer-board-assets'),
   stageKicker: $<HTMLElement>('#viewer-stage-kicker'),
   title: $<HTMLElement>('#viewer-title'),
   white: $<HTMLElement>('#replay-white'),
@@ -70,7 +71,19 @@ const elements = {
 };
 
 const model = createDefaultViewerState();
-const boardRenderer = createBoard3DRenderer(elements.board);
+const boardRenderer = createBoard3DRenderer(elements.board, {
+  onPieceAssetStatusChange: (status) => {
+    const labels = {
+      idle: '3D pieces idle',
+      loading: 'Loading 3D pieces...',
+      ready: '3D pieces loaded',
+      degraded: 'Some 3D pieces unavailable; using fallback',
+      unavailable: 'Using readable 3D fallback',
+    } as const;
+    elements.boardAssets.textContent = labels[status];
+    elements.boardAssets.dataset.state = status;
+  },
+});
 let displayMoves = buildReplayMoveList(model.replay);
 let selectedReplayId: string | null = DEFAULT_CURATED_REPLAY_ID;
 let replayTitle = curatedReplayById(DEFAULT_CURATED_REPLAY_ID)?.title ?? 'Historical classic';

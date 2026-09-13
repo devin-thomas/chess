@@ -1556,6 +1556,24 @@ pre {
   font-weight: 700;
 }
 
+.viewer-board-assets {
+  overflow: hidden;
+  color: #91cba5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewer-board-assets[data-state="loading"] {
+  color: #efbc78;
+}
+
+.viewer-board-assets[data-state="degraded"],
+.viewer-board-assets[data-state="unavailable"] {
+  color: #ef9a76;
+}
+
 .viewer-board-frame {
   width: min(100%, 800px);
   margin: 0 auto;

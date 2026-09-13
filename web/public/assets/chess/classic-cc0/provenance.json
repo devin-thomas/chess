@@ -1,0 +1,22 @@
+{
+  "asset_id": "classic-cc0-web-v1",
+  "source_url": "https://opengameart.org/content/3d-chess-pieces",
+  "source_download_url": "https://opengameart.org/sites/default/files/chess_pieces.zip",
+  "source_author": "tunakron",
+  "source_version_or_download_date": "2026-09-13; archive published 2023-10-02",
+  "license_identifier": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "attribution_text": "3d chess pieces by tunakron, released under CC0.",
+  "modification_summary": "The six source GLBs are vendored unchanged. ChessPieceAssetLibrary applies runtime scale, rotation/pivot preservation, board-contact alignment, and shared side materials for the web profile.",
+  "generator_version": "repository runtime normalization; source GLB export 2023-10-02",
+  "target_profile": "web-threejs",
+  "source_archive_sha256": "26fd5a4603b2f95a6751c028bbd313bd758299318e2038544506d9ec5e90423e",
+  "files": [
+    { "path": "bishop.glb", "sha256": "0792908f324b0ed12d7d05b1411c82f80dcc8a401753f34750beac57331f6415", "bytes": 87400 },
+    { "path": "king.glb", "sha256": "90b96cb192fc687fda1ef3bdb7dab53f1819e9ad587412af2c80a7078386737a", "bytes": 26588 },
+    { "path": "knight.glb", "sha256": "6386516da5775c66123d254a15fa6a85150afb4e6887228daf1ea534b59b6e31", "bytes": 14780 },
+    { "path": "pawn.glb", "sha256": "fe996c83ed2ec319eec1ceaf4f6fd5e892b6dbfd0fcae502f0499129228abaee", "bytes": 44912 },
+    { "path": "queen.glb", "sha256": "aee6bfdaf992152a61f3e5c31135bdf442affb079865bce81534d0d03b1cb736", "bytes": 59504 },
+    { "path": "rook.glb", "sha256": "16f8dc65adb886bfbf58f2d532b20fecceb178668f1b0df04d67cc4b40095635", "bytes": 27268 }
+  ]
+}

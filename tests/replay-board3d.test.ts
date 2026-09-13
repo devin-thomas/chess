@@ -13,6 +13,14 @@ import {
   projectIdentityUpdates,
   projectSnapshot,
 } from '../web/board3d.ts';
+import {
+  CLASSIC_CC0_ASSET_BASE_PATH,
+  ChessPieceAssetLibrary,
+  fallbackAssetRequired,
+  pieceAssetFile,
+  pieceAssetUrl,
+  pieceVisualAssetId,
+} from '../web/chess-piece-assets.ts';
 
 const opening = {
   schema_version: 1 as const,
@@ -97,6 +105,37 @@ test('primitive fallback descriptors retain the presentation asset contract', ()
     visual_asset_id: 'black-knight',
     label: 'black knight',
   });
+});
+
+test('piece assets map canonical types to six reusable runtime files', () => {
+  const pieceTypes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'] as const;
+  assert.deepEqual(
+    pieceTypes.map(pieceAssetFile),
+    ['king.glb', 'queen.glb', 'rook.glb', 'bishop.glb', 'knight.glb', 'pawn.glb'],
+  );
+  assert.equal(pieceAssetUrl('knight'), `${CLASSIC_CC0_ASSET_BASE_PATH}/knight.glb`);
+  assert.equal(pieceVisualAssetId('queen'), 'classic-cc0-queen');
+});
+
+test('an unloaded asset library selects a readable fallback for every piece type', () => {
+  const library = new ChessPieceAssetLibrary();
+  for (const pieceType of ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'] as const) {
+    assert.equal(fallbackAssetRequired(library, pieceType), true);
+  }
+  library.dispose();
+});
+
+test('failed model requests retain the fallback path for every canonical type', async () => {
+  const library = new ChessPieceAssetLibrary('/missing', {
+    loadAsync: async () => { throw new Error('test model unavailable'); },
+  });
+  const result = await library.load();
+  assert.equal(result.loaded.length, 0);
+  assert.equal(result.failed.size, 6);
+  for (const pieceType of ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'] as const) {
+    assert.equal(fallbackAssetRequired(library, pieceType), true);
+  }
+  library.dispose();
 });
 
 test('webgl renderer preserves settled frames for initial viewer captures', () => {

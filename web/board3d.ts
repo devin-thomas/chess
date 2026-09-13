@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import type { MoveRecord, PresentedPiece, PresentationSnapshot } from '../replay/presentation.ts';
 import type { Color, PieceType } from '../replay/schema.ts';
 import {
+  ChessPieceAssetLibrary,
+  type PieceAssetLoadState,
+} from './chess-piece-assets.ts';
+import {
   createReplayAnimationModel,
   type AnimationPieceFrame,
   type ReplayAnimationFrame,
@@ -62,6 +66,8 @@ export interface Board3DRendererOptions {
   readonly antialias?: boolean;
   readonly rendererFactory?: (parameters: THREE.WebGLRendererParameters) => THREE.WebGLRenderer;
   readonly pieceAssetFactory?: (piece: PresentedPiece) => THREE.Object3D | null;
+  readonly pieceAssetLibrary?: ChessPieceAssetLibrary;
+  readonly onPieceAssetStatusChange?: (status: PieceAssetLoadState) => void;
 }
 
 export interface BoardMountResult {
@@ -451,6 +457,7 @@ export class Board3DRenderer {
   private squareMeshes = new Map<string, THREE.Mesh>();
   private pieceObjects = new Map<string, THREE.Group>();
   private pieceVisualKeys = new Map<string, string>();
+  private pieceVisualModes = new Map<string, 'model' | 'custom' | 'fallback'>();
   private primitiveGeometries: PrimitiveGeometryCache | null = null;
   private sharedMaterials: Record<string, THREE.Material> = {};
   private fallbackRoot: HTMLElement | null = null;
@@ -462,13 +469,16 @@ export class Board3DRenderer {
   private resizeHandler: (() => void) | null = null;
   private orientationValue: BoardOrientation;
   private readonly animationModel = createReplayAnimationModel();
+  private readonly pieceAssetLibrary: ChessPieceAssetLibrary;
   private animationFrameHandle: number | null = null;
   private animationGeneration = 0;
+  private assetLoadGeneration = 0;
 
   constructor(container: HTMLElement, options: Board3DRendererOptions = {}) {
     this.container = container;
     this.options = options;
     this.orientationValue = normalizeBoardOrientation(options.orientation ?? 'white');
+    this.pieceAssetLibrary = options.pieceAssetLibrary ?? new ChessPieceAssetLibrary();
   }
 
   get status(): BoardRendererStatus {
@@ -526,12 +536,15 @@ export class Board3DRenderer {
       if (typeof window !== 'undefined') window.addEventListener('resize', this.resizeHandler);
       this.rendererMode = 'webgl';
       this.rendererError = null;
+      this.options.onPieceAssetStatusChange?.('loading');
+      void this.loadPieceAssets();
       if (this.snapshot) this.renderWebGL();
       return { status: this.rendererMode, error: null };
     } catch (error) {
       this.rendererMode = 'fallback';
       this.rendererError = errorMessage(error);
       this.renderer = null;
+      this.options.onPieceAssetStatusChange?.('unavailable');
       this.showFallbackRoot(this.rendererError);
       return { status: this.rendererMode, error: this.rendererError };
     }
@@ -608,7 +621,7 @@ export class Board3DRenderer {
       status: this.rendererMode === 'unmounted' ? 'unavailable' : this.rendererMode,
       squareCount: BOARD_SQUARE_COUNT,
       pieceCount: projection.pieces.length,
-      fallbackAssetCount: this.usesFallback ? projection.pieces.length : 0,
+      fallbackAssetCount: projection.pieces.filter((piece) => this.pieceVisualModes.get(piece.piece_identity) === 'fallback').length,
       error: this.rendererError,
     };
   }
@@ -639,12 +652,29 @@ export class Board3DRenderer {
     this.squareMeshes.clear();
     this.pieceObjects.clear();
     this.pieceVisualKeys.clear();
+    this.pieceVisualModes.clear();
     this.primitiveGeometries = null;
     this.sharedMaterials = {};
+    this.assetLoadGeneration += 1;
+    this.pieceAssetLibrary.dispose();
     this.rendererMode = 'unmounted';
     this.fallbackRoot = null;
     this.fallbackGrid = null;
     this.fallbackOrientation = null;
+  }
+
+  private async loadPieceAssets(): Promise<void> {
+    const generation = ++this.assetLoadGeneration;
+    const result = await this.pieceAssetLibrary.load();
+    if (generation !== this.assetLoadGeneration || this.rendererMode !== 'webgl') return;
+    if (result.failed.size > 0) {
+      const failures = [...result.failed.entries()].map(([pieceType, error]) => `${pieceType}: ${error}`).join('; ');
+      console.warn(`Some chess piece models could not be loaded; readable fallbacks remain active. ${failures}`);
+    }
+    this.options.onPieceAssetStatusChange?.(this.pieceAssetLibrary.loadState);
+    this.pieceVisualKeys.clear();
+    if (this.animationModel.status === 'running') this.cancelAnimation();
+    else if (this.snapshot) this.renderWebGL();
   }
 
   private pixelRatio(): number {
@@ -819,18 +849,12 @@ export class Board3DRenderer {
       const visualKey = `${projection.color}:${projection.piece_type}:${projection.visual_asset_id}`;
       if (this.pieceVisualKeys.get(piece.piece_identity) !== visualKey) {
         object.clear();
-        const custom = this.options.pieceAssetFactory?.({
-          piece_identity: projection.piece_identity,
-          piece_type: projection.piece_type,
-          color: projection.color,
-          board_square: projection.square,
-          visual_asset_id: projection.visual_asset_id,
-        });
-        const visual = custom ?? this.createPrimitivePieceVisual(projection);
+        const { visual, mode } = this.createPieceVisual(projection);
         visual.userData.piece_identity = projection.piece_identity;
-        visual.userData.assetMode = custom ? 'provided' : 'primitive-fallback';
+        visual.userData.assetMode = mode;
         object.add(visual);
         this.pieceVisualKeys.set(piece.piece_identity, visualKey);
+        this.pieceVisualModes.set(piece.piece_identity, mode);
       }
       const liftProgress = piece.position.kind === 'interpolated' ? piece.position.progress : 0;
       if (liftProgress === undefined) throw new Error(`Animation piece ${piece.piece_identity} has no interpolation progress`);
@@ -871,18 +895,12 @@ export class Board3DRenderer {
       const visualKey = `${piece.color}:${piece.piece_type}:${piece.visual_asset_id}`;
       if (this.pieceVisualKeys.get(piece.piece_identity) !== visualKey) {
         object.clear();
-        const custom = this.options.pieceAssetFactory?.({
-          piece_identity: piece.piece_identity,
-          piece_type: piece.piece_type,
-          color: piece.color,
-          board_square: piece.square,
-          visual_asset_id: piece.visual_asset_id,
-        });
-        const visual = custom ?? this.createPrimitivePieceVisual(piece);
+        const { visual, mode } = this.createPieceVisual(piece);
         visual.userData.piece_identity = piece.piece_identity;
-        visual.userData.assetMode = custom ? 'provided' : 'primitive-fallback';
+        visual.userData.assetMode = mode;
         object.add(visual);
         this.pieceVisualKeys.set(piece.piece_identity, visualKey);
+        this.pieceVisualModes.set(piece.piece_identity, mode);
       }
       object.position.set(piece.x, 0.08, piece.z);
       object.userData.board_square = piece.square;
@@ -894,10 +912,32 @@ export class Board3DRenderer {
       object.removeFromParent();
       this.pieceObjects.delete(identity);
       this.pieceVisualKeys.delete(identity);
+      this.pieceVisualModes.delete(identity);
     }
   }
 
-  private createPrimitivePieceVisual(piece: BoardPieceProjection): THREE.Group {
+  private createPieceVisual(piece: Pick<BoardPieceProjection,
+    'piece_identity' | 'piece_type' | 'color' | 'square' | 'visual_asset_id'>): {
+    visual: THREE.Object3D;
+    mode: 'model' | 'custom' | 'fallback';
+  } {
+    const presentedPiece: PresentedPiece = {
+      piece_identity: piece.piece_identity,
+      piece_type: piece.piece_type,
+      color: piece.color,
+      board_square: piece.square,
+      visual_asset_id: piece.visual_asset_id,
+    };
+    const custom = this.options.pieceAssetFactory?.(presentedPiece);
+    if (custom !== undefined && custom !== null) return { visual: custom, mode: 'custom' };
+    const pieceMaterial = piece.color === 'white' ? this.sharedMaterials.whitePiece : this.sharedMaterials.blackPiece;
+    const model = this.pieceAssetLibrary.createPieceVisual(piece.piece_type, piece.color, { piece: pieceMaterial });
+    if (model !== null) return { visual: model, mode: 'model' };
+    return { visual: this.createPrimitivePieceVisual(piece), mode: 'fallback' };
+  }
+
+  private createPrimitivePieceVisual(piece: Pick<BoardPieceProjection,
+    'piece_identity' | 'piece_type' | 'color' | 'square' | 'visual_asset_id'>): THREE.Group {
     const group = new THREE.Group();
     group.name = `staunton:${piece.color}-${piece.piece_type}`;
     group.userData.fallbackAsset = fallbackAssetDescriptor(piece);

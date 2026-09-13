@@ -86,6 +86,8 @@ Required V1 behavior:
 
 The rules engine must never query Three.js to determine legality or occupancy.
 
+The current web pack uses the six low-poly GLBs from [OpenGameArt's 3d chess pieces](https://opengameart.org/content/3d-chess-pieces) by tunakron, explicitly released as CC0. The repository-owned runtime files live in `web/public/assets/chess/classic-cc0/`, with exact download and file hashes in its `provenance.json`. `web/chess-piece-assets.ts` loads each type once, applies shared white/black materials, and normalizes height and board contact at runtime. If a model is unavailable, the renderer keeps the existing readable primitive for that piece; it never leaves an occupied square empty. Replacing the pack requires updating the six files and provenance record, not changing canonical replay state.
+
 ## 7. Visual direction
 
 V1 should establish "premium replay" rather than imitate a conventional analysis board.
