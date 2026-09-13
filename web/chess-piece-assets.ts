@@ -13,6 +13,15 @@ export const CHESS_PIECE_TYPES: readonly PieceType[] = [
 
 export const CLASSIC_CC0_ASSET_BASE_PATH = '/assets/chess/classic-cc0';
 
+// The source pawn is visually too large when every piece is normalized to the
+// same height. Keep this as a named factor so the board set can be tuned as a
+// whole without changing the source GLB.
+export const PAWN_VISUAL_SCALE = 0.8;
+
+export function pieceVisualScale(pieceType: PieceType): number {
+  return pieceType === 'pawn' ? PAWN_VISUAL_SCALE : 1;
+}
+
 const pieceAssetFiles: Readonly<Record<PieceType, string>> = {
   king: 'king.glb',
   queen: 'queen.glb',
@@ -85,7 +94,7 @@ export class ChessPieceAssetLibrary {
     this.loadStateValue = 'loading';
     this.loadPromise = Promise.allSettled(CHESS_PIECE_TYPES.map(async (pieceType) => {
       const gltf = await this.loader.loadAsync(pieceAssetUrl(pieceType, this.basePath));
-      const prototype = this.normalizePrototype(gltf.scene);
+      const prototype = this.normalizePrototype(gltf.scene, pieceType);
       this.prototypes.set(pieceType, prototype);
       return pieceType;
     })).then((results) => {
@@ -133,7 +142,7 @@ export class ChessPieceAssetLibrary {
     this.loadStateValue = 'idle';
   }
 
-  private normalizePrototype(scene: THREE.Object3D): THREE.Object3D {
+  private normalizePrototype(scene: THREE.Object3D, pieceType: PieceType): THREE.Object3D {
     scene.updateMatrixWorld(true);
     const initialBounds = new THREE.Box3().setFromObject(scene);
     const initialSize = initialBounds.getSize(new THREE.Vector3());
@@ -143,7 +152,7 @@ export class ChessPieceAssetLibrary {
 
     // Keep the source GLBs untouched. Runtime normalization gives every pack
     // the same board-contact plane, height, and move-animation pivot.
-    scene.scale.multiplyScalar(1.36 / initialSize.y);
+    scene.scale.multiplyScalar((1.36 / initialSize.y) * pieceVisualScale(pieceType));
     scene.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(scene);
     const center = bounds.getCenter(new THREE.Vector3());
