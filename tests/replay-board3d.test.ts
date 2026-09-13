@@ -21,6 +21,7 @@ import {
   pieceAssetUrl,
   pieceVisualAssetId,
   BISHOP_HEIGHT_SCALE,
+  BISHOP_WIDTH_SCALE,
   PAWN_WIDTH_SCALE,
   PIECE_REFERENCE_HEIGHT,
 } from '../web/chess-piece-assets.ts';
@@ -122,7 +123,8 @@ test('piece assets map canonical types to six reusable runtime files', () => {
 
 test('piece assets use the queen as the non-king sizing reference', () => {
   assert.equal(PIECE_REFERENCE_HEIGHT, 1.36);
-  assert.equal(PAWN_WIDTH_SCALE, 0.75);
+  assert.equal(PAWN_WIDTH_SCALE, 1);
+  assert.equal(BISHOP_WIDTH_SCALE, 1.25);
   assert.equal(BISHOP_HEIGHT_SCALE, 1.2);
 });
 

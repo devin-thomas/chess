@@ -14,7 +14,8 @@ export const CHESS_PIECE_TYPES: readonly PieceType[] = [
 export const CLASSIC_CC0_ASSET_BASE_PATH = '/assets/chess/classic-cc0';
 
 export const PIECE_REFERENCE_HEIGHT = 1.36;
-export const PAWN_WIDTH_SCALE = 0.75;
+export const PAWN_WIDTH_SCALE = 1;
+export const BISHOP_WIDTH_SCALE = 1.25;
 export const BISHOP_HEIGHT_SCALE = 1.2;
 
 function pieceFootprint(scene: THREE.Object3D): number {
@@ -169,6 +170,8 @@ export class ChessPieceAssetLibrary {
       scene.scale.x *= PAWN_WIDTH_SCALE;
       scene.scale.z *= PAWN_WIDTH_SCALE;
     } else if (pieceType === 'bishop') {
+      scene.scale.x *= BISHOP_WIDTH_SCALE;
+      scene.scale.z *= BISHOP_WIDTH_SCALE;
       scene.scale.y *= BISHOP_HEIGHT_SCALE;
     }
     scene.updateMatrixWorld(true);
