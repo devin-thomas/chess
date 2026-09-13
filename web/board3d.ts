@@ -616,7 +616,9 @@ export class Board3DRenderer {
     } else if (this.rendererMode === 'fallback') {
       this.renderFallback(snapshot);
     }
-    const projection = projectSnapshot(snapshot, this.orientationValue, this.options.squareSize ?? 1);
+    // The 3D board has one fixed world layout; perspective flipping is owned
+    // by the camera. Applying orientation to both would cancel the flip.
+    const projection = projectSnapshot(snapshot, 'white', this.options.squareSize ?? 1);
     return {
       status: this.rendererMode === 'unmounted' ? 'unavailable' : this.rendererMode,
       squareCount: BOARD_SQUARE_COUNT,
@@ -763,7 +765,7 @@ export class Board3DRenderer {
   private positionBoardSquares(): void {
     const squareSize = this.options.squareSize ?? 1;
     for (const [square, mesh] of this.squareMeshes) {
-      const coordinate = canonicalSquareToBoardCoordinate(square, this.orientationValue, squareSize);
+      const coordinate = canonicalSquareToBoardCoordinate(square, 'white', squareSize);
       mesh.position.set(coordinate.x, 0, coordinate.z);
     }
   }
@@ -802,7 +804,7 @@ export class Board3DRenderer {
   private animationProjection(piece: AnimationPieceFrame): BoardPieceProjection {
     const square = piece.position.kind === 'square' ? piece.position.square : piece.position.to;
     if (square === undefined) throw new Error(`Animation piece ${piece.piece_identity} has no board square`);
-    const target = canonicalSquareToBoardCoordinate(square, this.orientationValue, this.options.squareSize ?? 1);
+    const target = canonicalSquareToBoardCoordinate(square, 'white', this.options.squareSize ?? 1);
     if (piece.position.kind === 'square') {
       return {
         square,
@@ -819,7 +821,7 @@ export class Board3DRenderer {
     if (piece.position.from === undefined || piece.position.progress === undefined) {
       throw new Error(`Animation piece ${piece.piece_identity} has an incomplete interpolation`);
     }
-    const start = canonicalSquareToBoardCoordinate(piece.position.from, this.orientationValue, this.options.squareSize ?? 1);
+    const start = canonicalSquareToBoardCoordinate(piece.position.from, 'white', this.options.squareSize ?? 1);
     const progress = Math.min(1, Math.max(0, piece.position.progress));
     return {
       square,
@@ -873,7 +875,7 @@ export class Board3DRenderer {
     if (!this.renderer || !this.scene || !this.camera || !this.pieceRoot || !this.highlightRoot) {
       throw new Error('Three.js board scene is not initialized');
     }
-    const projection = projectSnapshot(this.snapshot!, this.orientationValue, this.options.squareSize ?? 1);
+    const projection = projectSnapshot(this.snapshot!, 'white', this.options.squareSize ?? 1);
     this.updateThreePieces(projection);
     this.updateHighlights(this.lastMove);
     this.renderer.render(this.scene, this.camera);
@@ -966,8 +968,8 @@ export class Board3DRenderer {
       return;
     }
     const squareSize = this.options.squareSize ?? 1;
-    const fromPosition = canonicalSquareToBoardCoordinate(move.from, this.orientationValue, squareSize);
-    const toPosition = canonicalSquareToBoardCoordinate(move.to, this.orientationValue, squareSize);
+    const fromPosition = canonicalSquareToBoardCoordinate(move.from, 'white', squareSize);
+    const toPosition = canonicalSquareToBoardCoordinate(move.to, 'white', squareSize);
     from.position.set(fromPosition.x, 0.075, fromPosition.z);
     to.position.set(toPosition.x, 0.075, toPosition.z);
     from.visible = true;
