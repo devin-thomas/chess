@@ -19,8 +19,8 @@ import {
   fallbackAssetRequired,
   pieceAssetFile,
   pieceAssetUrl,
-  pieceVisualScale,
   pieceVisualAssetId,
+  PIECE_REFERENCE_HEIGHT,
 } from '../web/chess-piece-assets.ts';
 
 const opening = {
@@ -118,11 +118,8 @@ test('piece assets map canonical types to six reusable runtime files', () => {
   assert.equal(pieceVisualAssetId('queen'), 'classic-cc0-queen');
 });
 
-test('piece visual scale keeps pawns at 80 percent of the normalized backline height', () => {
-  assert.equal(pieceVisualScale('pawn'), 0.8);
-  for (const pieceType of ['king', 'queen', 'rook', 'bishop', 'knight'] as const) {
-    assert.equal(pieceVisualScale(pieceType), 1);
-  }
+test('piece assets use the queen as the non-king sizing reference', () => {
+  assert.equal(PIECE_REFERENCE_HEIGHT, 1.36);
 });
 
 test('an unloaded asset library selects a readable fallback for every piece type', () => {

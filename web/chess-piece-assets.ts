@@ -13,13 +13,12 @@ export const CHESS_PIECE_TYPES: readonly PieceType[] = [
 
 export const CLASSIC_CC0_ASSET_BASE_PATH = '/assets/chess/classic-cc0';
 
-// The source pawn is visually too large when every piece is normalized to the
-// same height. Keep this as a named factor so the board set can be tuned as a
-// whole without changing the source GLB.
-export const PAWN_VISUAL_SCALE = 0.8;
+export const PIECE_REFERENCE_HEIGHT = 1.36;
 
-export function pieceVisualScale(pieceType: PieceType): number {
-  return pieceType === 'pawn' ? PAWN_VISUAL_SCALE : 1;
+function pieceFootprint(scene: THREE.Object3D): number {
+  const bounds = new THREE.Box3().setFromObject(scene);
+  const size = bounds.getSize(new THREE.Vector3());
+  return Math.max(size.x, size.z);
 }
 
 const pieceAssetFiles: Readonly<Record<PieceType, string>> = {
@@ -92,18 +91,26 @@ export class ChessPieceAssetLibrary {
   load(): Promise<PieceAssetLoadResult> {
     if (this.loadPromise !== null) return this.loadPromise;
     this.loadStateValue = 'loading';
-    this.loadPromise = Promise.allSettled(CHESS_PIECE_TYPES.map(async (pieceType) => {
-      const gltf = await this.loader.loadAsync(pieceAssetUrl(pieceType, this.basePath));
-      const prototype = this.normalizePrototype(gltf.scene, pieceType);
-      this.prototypes.set(pieceType, prototype);
-      return pieceType;
-    })).then((results) => {
+    this.loadPromise = Promise.allSettled(CHESS_PIECE_TYPES.map((pieceType) =>
+      this.loader.loadAsync(pieceAssetUrl(pieceType, this.basePath))
+        .then((gltf) => ({ pieceType, scene: gltf.scene }))
+    )).then((results) => {
       const loaded: PieceType[] = [];
       const failed = new Map<PieceType, string>();
+      const queen = results.find((result) => result.status === 'fulfilled' && result.value.pieceType === 'queen');
+      const queenScene = queen?.status === 'fulfilled' ? queen.value.scene : null;
+      const queenWidth = queenScene === null ? null : pieceFootprint(queenScene);
+      const queenHeight = queenScene === null ? null : new THREE.Box3().setFromObject(queenScene).getSize(new THREE.Vector3()).y;
+      const queenReferenceWidth = queenWidth === null || queenHeight === null || queenHeight <= 0
+        ? null
+        : queenWidth * (PIECE_REFERENCE_HEIGHT / queenHeight);
+
       results.forEach((result, index) => {
         const pieceType = CHESS_PIECE_TYPES[index];
-        if (result.status === 'fulfilled') loaded.push(result.value);
-        else failed.set(pieceType, errorMessage(result.reason));
+        if (result.status === 'fulfilled') {
+          this.prototypes.set(pieceType, this.normalizePrototype(result.value.scene, pieceType, queenReferenceWidth));
+          loaded.push(pieceType);
+        } else failed.set(pieceType, errorMessage(result.reason));
       });
       this.loadStateValue = loaded.length === CHESS_PIECE_TYPES.length ? 'ready' : 'degraded';
       return { loaded, failed };
@@ -142,7 +149,7 @@ export class ChessPieceAssetLibrary {
     this.loadStateValue = 'idle';
   }
 
-  private normalizePrototype(scene: THREE.Object3D, pieceType: PieceType): THREE.Object3D {
+  private normalizePrototype(scene: THREE.Object3D, pieceType: PieceType, queenReferenceWidth: number | null): THREE.Object3D {
     scene.updateMatrixWorld(true);
     const initialBounds = new THREE.Box3().setFromObject(scene);
     const initialSize = initialBounds.getSize(new THREE.Vector3());
@@ -150,9 +157,12 @@ export class ChessPieceAssetLibrary {
       throw new Error('Chess piece model has no measurable height');
     }
 
-    // Keep the source GLBs untouched. Runtime normalization gives every pack
-    // the same board-contact plane, height, and move-animation pivot.
-    scene.scale.multiplyScalar((1.36 / initialSize.y) * pieceVisualScale(pieceType));
+    // Keep the source GLBs untouched. The king keeps height-based sizing; all
+    // other pieces share the queen's normalized footprint on the board.
+    const scale = pieceType === 'king' || queenReferenceWidth === null
+      ? PIECE_REFERENCE_HEIGHT / initialSize.y
+      : queenReferenceWidth / Math.max(initialSize.x, initialSize.z);
+    scene.scale.multiplyScalar(scale);
     scene.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(scene);
     const center = bounds.getCenter(new THREE.Vector3());
